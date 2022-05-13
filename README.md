@@ -19,3 +19,11 @@ Your `.env` file should contain the following:
   `INFURA_ID='id'`
 - Your [Etherscan API key](https://etherscan.io/myapikey) for verification the source code:
   `ETHERSCAN_API_KEY='api key'`
+
+## Tasks before deployment, usage
+
+Pull the repository from GitHub, then install its dependencies by executing this command:
+
+```bash
+npm install
+```
