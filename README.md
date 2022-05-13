@@ -58,11 +58,12 @@ truffle migrate -f [start] --to [end] --network [name]
 
 Replace _[start]_ with the number of the first and _[end]_ with the number of the last migration script you wish to run. To run only one script, _[start]_ and _[end]_ should match. The numbers of the scripts are:
 
-- 1 - Migrations
-- 2 - BIXCIP Token $BIIX
-- 3 - $BIIX Mint (TODO)
-- 4 - Merkle distributor (TODO)
-- 5 - Merkle vesting (TODO)
+- 1 Migrations
+- 2 BIXCIP Token $BIIX
+- 3 Lottery
+- 4 $BIIX Mint (TODO)
+- 5 Merkle distributor (TODO)
+- 6 Merkle vesting (TODO)
 
 If the script fails before starting the deployment, you might need to run the first one, too.
 
