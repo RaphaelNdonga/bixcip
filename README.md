@@ -1,6 +1,17 @@
-# BIXCIP Smart Contracts
+# BIXCIP Lottery
 
-The smart contracts in this repository will be used by BIXCIP.
+This repository smart contracts (contracts) and decentralized application (DApp) for the BIXCIP lottery.
+
+## Overview
+
+The contracts are stored here:
+
+- '/contracts'
+- '/lottery-dapp/blockchain/contracts'
+
+The DApp is stored here:
+
+- /lottery-dapp
 
 ## Requirements
 
