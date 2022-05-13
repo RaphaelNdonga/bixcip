@@ -6,8 +6,8 @@ This repository smart contracts (contracts) and decentralized application (DApp)
 
 The contracts are stored here:
 
-- '/contracts'
-- '/lottery-dapp/blockchain/contracts'
+- /contracts
+- /lottery-dapp/blockchain/contracts
 
 The DApp is stored here:
 
