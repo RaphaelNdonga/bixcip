@@ -27,3 +27,23 @@ Pull the repository from GitHub, then install its dependencies by executing this
 ```bash
 npm install
 ```
+
+## Deployment
+
+To deploy the smart contracts to a network, replace _[networkName]_ in this command:
+
+```bash
+truffle migrate --network [networkName]
+```
+
+Networks can be configured in _truffle-config.js_. We've preconfigured the following:
+
+- `development` (for local testing)
+- `ethereum` (Ethereum Mainnet)
+- `goerli` (Görli Ethereum Testnet)
+- `kovan` (Kovan Ethereum Testnet)
+- `ropsten` (Ropsten Ethereum Testnet)
+- `bsc` (Binance Smart Chain)
+- `bsctest` (Binance Smart Chain Testnet)
+- `polygon` (Polygon Mainnet (formerly Matic))
+- `mumbai` (Matic Mumbai Testnet)
