@@ -142,7 +142,7 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Ether Lottery</title>
+        <title>BIXCIP Lottery</title>
         <meta name="description" content="An Ethereum Lottery dApp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -151,7 +151,7 @@ export default function Home() {
         <nav className="navbar mt-4 mb-4">
           <div className="container">
             <div className="navbar-brand">
-              <h1>Ether Lottery</h1>
+              <h1>BIXCIP Lottery</h1>
             </div>
             <div className="navbar-end">
               <button onClick={connectWalletHandler} className="button is-link">Connect Wallet</button>
