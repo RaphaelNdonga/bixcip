@@ -41,7 +41,7 @@ contract BIXCIPLottery is VRFConsumerBase {
 
     function getBalance() public view returns (uint) {
         return address(this).balance;
-    }f
+    }
 
     function getPlayers() public view returns (address payable[] memory) {
         return players;
