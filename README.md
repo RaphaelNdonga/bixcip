@@ -78,9 +78,68 @@ Replace _[start]_ with the number of the first and _[end]_ with the number of th
 
 If the script fails before starting the deployment, you might need to run the first one, too.
 
-## Example Response
+### Initial Migration
 
-Here is an example response after running: `$ truffle migrate -f 1 --to 1 --network ropsten`
+Here is an example response after running: `$ truffle migrate -f 1 --to 1 --network rinkeby`
+
+```
+Compiling your contracts...
+===========================
+> Compiling ./contracts/token/BIXCIPLottery.sol
+> Compiling ./contracts/token/BIXCIPToken.sol
+> Artifacts written to /Users/skurilyak/dev/phoenixteam/bixcip/bixcip-lottery/build/contracts
+> Compiled successfully using:
+   - solc: 0.8.11+commit.d7f03943.Emscripten.clang
+
+
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 29970705 (0x1c95111)
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0x5ca4e2dc7ed1a4c58f7cb7529ac8e74623d6b576c1c14d24ad5f15fccfe6b782
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xCd3277033DEDb76919cA79E4d14821cd5A67EaCD
+   > block number:        10723618
+   > block timestamp:     1653270583
+   > account:             0x68A3ccD4eDDcB7c1Ac924E8b32340a6c8f5cC522
+   > balance:             0.288061917908292935
+   > gas used:            155210 (0x25e4a)
+   > gas price:           2.50000001 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0003880250015521 ETH
+
+   Pausing for 2 confirmations...
+
+   -------------------------------
+   > confirmation number: 1 (block: 10723619)
+   > confirmation number: 2 (block: 10723620)
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.0003880250015521 ETH
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.0003880250015521 ETH
+```
+
+This step creates two transactions which can be viewed on Etherscan: 
+
+1. [0x5ca4e2dc7ed1a4c58f7cb7529ac8e74623d6b576c1c14d24ad5f15fccfe6b782](https://rinkeby.etherscan.io/tx/0x5ca4e2dc7ed1a4c58f7cb7529ac8e74623d6b576c1c14d24ad5f15fccfe6b782)
+2. [0x6ed0db4f9af0cd1994d370e8da7ccdcc73a3999fd6f6cafde1a63d52404fa996](https://rinkeby.etherscan.io/tx/0x6ed0db4f9af0cd1994d370e8da7ccdcc73a3999fd6f6cafde1a63d52404fa996)
+
+### Deploy Token
+
+Here is an example response after running: `$ truffle migrate -f 2 --to 2 --network rinkeby`
 
 ```
 Compiling your contracts...
@@ -90,60 +149,9 @@ Compiling your contracts...
 
 Starting migrations...
 ======================
-> Network name:    'ropsten'
-> Network id:      3
-> Block gas limit: 8000000 (0x7a1200)
-
-
-1_initial_migration.js
-======================
-
-   Deploying 'Migrations'
-   ----------------------
-   > transaction hash:    0x7094834eb10887c7fb27e52d57cfe3ef8b5e43e53de61445041b73440a51e377
-   > Blocks: 0            Seconds: 40
-   > contract address:    0x2F7a8eD9b105edcb2b005cF179ae76B2a5f503AD
-   > block number:        12261551
-   > block timestamp:     1652442262
-   > account:             0x68A3ccD4eDDcB7c1Ac924E8b32340a6c8f5cC522
-   > balance:             0.125729849748786715
-   > gas used:            155222 (0x25e56)
-   > gas price:           4.703748055 gwei
-   > value sent:          0 ETH
-   > total cost:          0.00073012518059321 ETH
-
-   Pausing for 1 confirmations...
-
-   -------------------------------
-   > confirmation number: 1 (block: 12261552)   > Saving migration to chain.
-   > Saving artifacts
-   -------------------------------------
-   > Total cost:     0.00073012518059321 ETH
-
-Summary
-=======
-> Total deployments:   1
-> Final cost:          0.00073012518059321 ETH
-```
-
-Here are the transaction details on Etherscan: [https://ropsten.etherscan.io/tx/0x7094834eb10887c7fb27e52d57cfe3ef8b5e43e53de61445041b73440a51e377](https://ropsten.etherscan.io/tx/0x7094834eb10887c7fb27e52d57cfe3ef8b5e43e53de61445041b73440a51e377)
-
-Here is an example response after running: `$ truffle migrate -f 2 --to 2 --network ropsten`
-
-```
-Compiling your contracts...
-===========================
-> Compiling ./contracts/token/BIXCIPToken.sol
-> Artifacts written to /Users/skurilyak/dev/phoenixteam/bixcip/bixcip-contracts/build/contracts
-> Compiled successfully using:
-   - solc: 0.8.10+commit.fc410830.Emscripten.clang
-
-
-Starting migrations...
-======================
-> Network name:    'ropsten'
-> Network id:      3
-> Block gas limit: 8000000 (0x7a1200)
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 30000000 (0x1c9c380)
 
 
 2_deploy_token.js
@@ -151,34 +159,89 @@ Starting migrations...
 
    Deploying 'BIXCIPToken'
    -----------------------
-   > transaction hash:    0xde9364b7bcd1883f23278f47dedb97bb3b24999ff4030f8f136ed44dc90ecdce
-   > Blocks: 0            Seconds: 32
-   > contract address:    0xcee6015460a8eB36C20f166c5DB15d60D6b8f16C
-   > block number:        12261574
-   > block timestamp:     1652442823
+   > transaction hash:    0x279fcd40b332dbb9f1643beedb47c3122ce25000545e96b5e8d5ef08dc55b266
+   > Blocks: 0            Seconds: 12
+   > contract address:    0x28d52924B178DaC365AF54E7677072e71eA1C9A1
+   > block number:        10723629
+   > block timestamp:     1653270748
    > account:             0x68A3ccD4eDDcB7c1Ac924E8b32340a6c8f5cC522
-   > balance:             0.120772698684068467
+   > balance:             0.285310602897287675
    > gas used:            1054836 (0x101874)
-   > gas price:           4.493301753 gwei
+   > gas price:           2.50000001 gwei
    > value sent:          0 ETH
-   > total cost:          0.004739696447927508 ETH
+   > total cost:          0.00263709001054836 ETH
 
-   Pausing for 1 confirmations...
+   Pausing for 2 confirmations...
 
    -------------------------------
-   > confirmation number: 1 (block: 12261575)
+   > confirmation number: 1 (block: 10723630)
+   > confirmation number: 2 (block: 10723631)
    > Saving migration to chain.
    > Saving artifacts
    -------------------------------------
-   > Total cost:     0.004739696447927508 ETH
+   > Total cost:     0.00263709001054836 ETH
 
 Summary
 =======
 > Total deployments:   1
-> Final cost:          0.004739696447927508 ETH
+> Final cost:          0.00263709001054836 ETH
 ```
 
-Here are the transaction details on Etherscan: [https://ropsten.etherscan.io/tx/0xde9364b7bcd1883f23278f47dedb97bb3b24999ff4030f8f136ed44dc90ecdce](https://ropsten.etherscan.io/tx/0xde9364b7bcd1883f23278f47dedb97bb3b24999ff4030f8f136ed44dc90ecdce)
+This step creates one transaction which can be viewed on Etherscan: 
+
+1. [0x266560364b8dec6b18e0c0a8b0496d440d22e13d0eb47c2a409f8ed503464b51](https://rinkeby.etherscan.io/tx/0x266560364b8dec6b18e0c0a8b0496d440d22e13d0eb47c2a409f8ed503464b51)
+
+### Lottery Migration
+
+```
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 30000000 (0x1c9c380)
+
+
+3_lottery_migration.js
+======================
+
+   Deploying 'BIXCIPLottery'
+   -------------------------
+   > transaction hash:    0xa2cd448d8eb92c9993bc42e5bbc7f68c6d10b6c0f0e1d776e9e9b25229f6ce60
+   > Blocks: 1            Seconds: 16
+   > contract address:    0xea0034256127D938E6409011C8c06386B1C2f84a
+   > block number:        10723652
+   > block timestamp:     1653271093
+   > account:             0x68A3ccD4eDDcB7c1Ac924E8b32340a6c8f5cC522
+   > balance:             0.283482912889919735
+   > gas used:            702486 (0xab816)
+   > gas price:           2.50000001 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00175621500702486 ETH
+
+   Pausing for 2 confirmations...
+
+   -------------------------------
+   > confirmation number: 1 (block: 10723653)
+   > confirmation number: 2 (block: 10723654)
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.00175621500702486 ETH
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.00175621500702486 ETH
+```
+
+This step creates one transaction which can be viewed on Etherscan: 
+
+1. [0xa2cd448d8eb92c9993bc42e5bbc7f68c6d10b6c0f0e1d776e9e9b25229f6ce60](https://rinkeby.etherscan.io/tx/0xa2cd448d8eb92c9993bc42e5bbc7f68c6d10b6c0f0e1d776e9e9b25229f6ce60)
 
 ## Verification
 
