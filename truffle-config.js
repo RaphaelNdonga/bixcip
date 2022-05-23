@@ -83,6 +83,20 @@ module.exports = {
       timeoutBlocks: 200,
       skipDryRun: true
     },
+    rinkeby: {
+      provider: () =>
+        new HDWalletProvider({
+          mnemonic: process.env.MNEMONIC,
+          providerOrUrl: `wss://rinkeby.infura.io/ws/v3/${process.env.INFURA_ID}`,
+          chainId: 4
+        }),
+      network_id: 4,
+      gas: 3500000,
+      confirmations: 2,
+      networkCheckTimeout: 90000,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
     ropsten: {
       provider: () =>
         new HDWalletProvider({
@@ -164,7 +178,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.10", // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.11", // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       settings: {
         // See the solidity docs for advice about optimization and evmVersion
