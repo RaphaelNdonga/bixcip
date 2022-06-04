@@ -4,3 +4,5 @@ scripts/readyInput.json
 scripts/result.json
 .env
 .vscode
+artifacts/
+cache/
