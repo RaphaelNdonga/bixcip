@@ -11,15 +11,10 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
     // Your subscription ID.
     uint64 s_subscriptionId;
 
-    // Rinkeby coordinator. For other networks,
-    // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    address vrfCoordinator = 0x6168499c0cFfCaCD319c818142124B7A15E857ab;
-
     // The gas lane to use, which specifies the maximum gas price to bump to.
     // For a list of available gas lanes on each network,
     // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    bytes32 keyHash =
-        0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
+    bytes32 keyHash;
 
     // Depends on the number of requested values that you want sent to the
     // fulfillRandomWords() function. Storing each word costs about 20,000 gas,
@@ -34,16 +29,21 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
 
     // For this example, retrieve 2 random values in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-    uint32 numWords = 3;
+    uint32 numWords;
 
     uint256[] public s_randomWords;
     uint256 public s_requestId;
     address s_owner;
 
-    constructor(uint64 subscriptionId) VRFConsumerBaseV2(vrfCoordinator) {
-        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+    constructor(
+        address _vrfCoordinator,
+        bytes32 _keyHash,
+        uint32 _numWords
+    ) VRFConsumerBaseV2(_vrfCoordinator) {
+        keyHash = _keyHash;
+        numWords = _numWords;
+        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         s_owner = msg.sender;
-        s_subscriptionId = subscriptionId;
     }
 
     // Assumes the subscription is funded sufficiently.
@@ -58,6 +58,13 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
         );
     }
 
+    function createNewSubscription() external {
+        address memory consumers = new address[](1);
+        consumers[0] = address(this);
+        s_subscriptionId = COORDINATOR.createSubscription();
+        COORDINATOR.addConsumer(s_subscriptionId, consumers[0]);
+    }
+
     function fulfillRandomWords(
         uint256, /* requestId */
         uint256[] memory randomWords
@@ -67,6 +74,10 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
 
     function getRandomWords() external view returns (uint256[] memory) {
         return s_randomWords;
+    }
+
+    function getSubscriptionId() external view returns (uint256) {
+        return s_subscriptionId;
     }
 
     modifier onlyOwner() {
