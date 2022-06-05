@@ -8,7 +8,7 @@ describe("RandomNumberGeneratorTest", function () {
     let LinkToken;
     let acc1;
     let acc2;
-    this.beforeEach(async function () {
+    this.beforeAll(async function () {
         const RandomNumberGeneratorFactory = await ethers.getContractFactory("RandomNumberGenerator");
         const networkName = network.name
         RandomNumberGenerator = await RandomNumberGeneratorFactory.deploy(
@@ -18,7 +18,7 @@ describe("RandomNumberGeneratorTest", function () {
             3
         );
         await RandomNumberGenerator.deployed();
-        console.log("Random Number Generator address: ", RandomNumberGenerator.address)
+        console.log("Random Number Generator address: ", RandomNumberGenerator.address);
         [acc1, acc2] = await ethers.getSigners();
         LinkToken = await ethers.getContractAt("ILinkToken", networks[networkName].linkToken);
         let amount = ethers.utils.parseUnits("1", "ether");
