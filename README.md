@@ -250,3 +250,10 @@ For automatic verification of the source code on Etherscan you can use [truffle 
 ```bash
 truffle run verify [contractName] --network [networkName]
 ```
+
+## Smart Contracts
+### RandomNumberGenerator.sol
+This smart contract generates random numbers using Chainlink. It generates 3 random numbers as specified in `numWords` attribute.
+`requestRandomWords` generates the random numbers and `getRandomWords` fetches the random numbers from the contract.
+
+`BIXCIPLottery.sol` will use this smart contract to obtain random winners of the lottery.
