@@ -1,8 +1,7 @@
 const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers, network } = require("hardhat");
-const { resolve } = require("path");
-const { networks } = require("../hardhat-config");
+const { networks } = require("../hardhat.config");
 
 describe("RandomNumberGeneratorTest", function () {
     let RandomNumberGenerator;
@@ -19,6 +18,7 @@ describe("RandomNumberGeneratorTest", function () {
             3
         );
         await RandomNumberGenerator.deployed();
+        console.log("Random Number Generator address: ", RandomNumberGenerator.address)
         [acc1, acc2] = await ethers.getSigners();
         LinkToken = await ethers.getContractAt("ILinkToken", networks[networkName].linkToken);
         let amount = ethers.utils.parseUnits("1", "ether");

@@ -1,5 +1,5 @@
 const hardhat = require("hardhat")
-const { networks } = require("../hardhat-config")
+const { networks } = require("../hardhat.config")
 
 const main = async () => {
     const RandomNumberGeneratorFactory = await hardhat.ethers.getContractFactory("RandomNumberGenerator")
