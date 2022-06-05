@@ -4,9 +4,11 @@ pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 
 contract RandomNumberGenerator is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface COORDINATOR;
+    LinkTokenInterface LINKTOKEN;
 
     // Your subscription ID.
     uint64 s_subscriptionId;
@@ -38,11 +40,13 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
     constructor(
         address _vrfCoordinator,
         bytes32 _keyHash,
+        address _linkToken,
         uint32 _numWords
     ) VRFConsumerBaseV2(_vrfCoordinator) {
         keyHash = _keyHash;
         numWords = _numWords;
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
+        LINKTOKEN = LinkTokenInterface(_linkToken);
         s_owner = msg.sender;
         createNewSubscription();
     }
@@ -66,6 +70,14 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
         COORDINATOR.addConsumer(s_subscriptionId, consumers[0]);
     }
 
+    function topupSubscription(uint256 amount) external onlyOwner {
+        LINKTOKEN.transferAndCall(
+            address(COORDINATOR),
+            amount,
+            abi.encode(s_subscriptionId)
+        );
+    }
+
     function fulfillRandomWords(
         uint256, /* requestId */
         uint256[] memory randomWords
@@ -75,6 +87,12 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
 
     function getRandomWords() external view returns (uint256[] memory) {
         return s_randomWords;
+    }
+
+    function getSubscriptionBalance() external view returns (uint96) {
+        uint96 balance;
+        (balance, , , ) = COORDINATOR.getSubscription(s_subscriptionId);
+        return balance;
     }
 
     function getSubscriptionId() external view returns (uint64) {
