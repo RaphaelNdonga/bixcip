@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers, network } = require("hardhat");
 const { resolve } = require("path");
-const { networks } = require("../hardhat.config");
+const { networks } = require("../hardhat-config");
 
 describe("RandomNumberGeneratorTest", function () {
     let RandomNumberGenerator;
