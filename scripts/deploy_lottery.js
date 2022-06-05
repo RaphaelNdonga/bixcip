@@ -1,10 +1,12 @@
 const hardhat = require("hardhat")
+const { networks } = require("../hardhat.config")
 
 const main = async () => {
     const RandomNumberGeneratorFactory = await hardhat.ethers.getContractFactory("RandomNumberGenerator")
     const RandomNumberGenerator = await RandomNumberGeneratorFactory.deploy(
         networks[networkName].vrfCoordinator,
         networks[networkName].keyHash,
+        networks[networkName].linkToken,
         3
     )
     await RandomNumberGenerator.deployed()
