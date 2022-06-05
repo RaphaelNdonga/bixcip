@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { BigNumber } = require("ethers");
-const { ethers } = require("hardhat")
+const { ethers, network } = require("hardhat");
+const { networks } = require("../hardhat.config");
 
 describe("RandomNumberGeneratorTest", function () {
     let RandomNumberGenerator;
@@ -8,9 +9,10 @@ describe("RandomNumberGeneratorTest", function () {
     let acc2;
     this.beforeEach(async function () {
         const RandomNumberGeneratorFactory = await ethers.getContractFactory("RandomNumberGenerator");
+        const networkName = network.name
         RandomNumberGenerator = await RandomNumberGeneratorFactory.deploy(
-            "0x6168499c0cFfCaCD319c818142124B7A15E857ab",
-            "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
+            networks[networkName].vrfCoordinator,
+            networks[networkName].keyHash,
             3
         );
         await RandomNumberGenerator.deployed();
