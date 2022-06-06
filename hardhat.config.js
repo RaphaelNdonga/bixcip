@@ -35,6 +35,11 @@ module.exports = {
       linkToken: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"
     }
   },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS !== undefined,
+    currency: 'USD',
+    coinmarketcap: process.env.GAS_REPORTER_COIN_MARKET_CAP_API_KEY,
+  },
   mocha: {
     timeout: 200000
   }
