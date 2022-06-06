@@ -21,6 +21,13 @@ module.exports = {
       keyHash: "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f",
       linkToken: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
     },
+    tBNB: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2],
+      vrfCoordinator: "0x6A2AAd07396B36Fe02a22b33cf443582f682c82f",
+      keyHash: "0xd4bb89654db74673a187bd804519e65e3f71a52bc55f11da7601a13dcf505314",
+      linkToken: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06"
+    },
     'truffle-dashboard': {
       url: "http://localhost:24012/rpc",
       vrfCoordinator: "0x6168499c0cFfCaCD319c818142124B7A15E857ab",

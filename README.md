@@ -71,7 +71,7 @@ Replace _[start]_ with the number of the first and _[end]_ with the number of th
 
 - 1 Migrations
 - 2 BIXCIP Token $BIIX
-- 3 Lottery
+- 3 BIXCIP Lottery
 - 4 $BIIX Mint (TODO)
 - 5 Merkle distributor (TODO)
 - 6 Merkle vesting (TODO)
@@ -257,3 +257,22 @@ This smart contract generates random numbers using Chainlink. It generates 3 ran
 `requestRandomWords` generates the random numbers and `getRandomWords` fetches the random numbers from the contract.
 
 `BIXCIPLottery.sol` will use this smart contract to obtain random winners of the lottery.
+
+## Gas Reports
+### Mumbai Testnet Gas Report:
+·------------------------------------------------|----------------------------|-------------|----------------------------·
+|              Solc version: 0.8.9               ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 6718946 gas  │
+·················································|····························|·············|·····························
+|  Methods                                                                                                               │
+··························|······················|··············|·············|·············|·············|···············
+|  Contract               ·  Method              ·  Min         ·  Max        ·  Avg        ·  # calls    ·  eur (avg)   │
+··························|······················|··············|·············|·············|·············|···············
+|  ERC20                  ·  approve             ·           -  ·          -  ·      49245  ·          1  ·           -  │
+··························|······················|··············|·············|·············|·············|···············
+|  ERC20                  ·  transfer            ·       34706  ·      52380  ·      49773  ·          7  ·           -  │
+··························|······················|··············|·············|·············|·············|···············
+|  RandomNumberGenerator  ·  requestRandomWords  ·           -  ·          -  ·      93178  ·          1  ·           -  │
+··························|······················|··············|·············|·············|·············|···············
+|  RandomNumberGenerator  ·  topupSubscription   ·           -  ·          -  ·      82000  ·          1  ·           -  │
+·-------------------------|----------------------|--------------|-------------|-------------|-------------|--------------·
+
