@@ -2,7 +2,9 @@
   "name": "bixcip-contracts",
   "version": "1.0.0",
   "description": "Token Minting and Distribution Infrastructure for BIXCIP",
-  "scripts": {},
+  "scripts": {
+    "test-gas": "REPORT_GAS=1 hardhat test"
+  },
   "keywords": [],
   "license": "UNLICENSED",
   "dependencies": {
