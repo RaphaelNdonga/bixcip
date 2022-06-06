@@ -22,7 +22,8 @@ describe("RandomNumberGeneratorTest", function () {
         [acc1, acc2] = await ethers.getSigners();
         LinkToken = await ethers.getContractAt("ILinkToken", networks[networkName].linkToken);
         let amount = ethers.utils.parseUnits("1", "ether");
-        await LinkToken.transfer(RandomNumberGenerator.address, amount)
+        let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
+        await txn.wait();
     })
     it("Should have 1 link", async () => {
         let contractBalance = await LinkToken.balanceOf(RandomNumberGenerator.address);
@@ -36,6 +37,7 @@ describe("RandomNumberGeneratorTest", function () {
     it("Should send 1 link to the VRF Coordinator", async () => {
         let amount = ethers.utils.parseUnits("1", "ether");
         let txn = await RandomNumberGenerator.topupSubscription(amount);
+        await txn.wait();
         let subscriptionBalance = await RandomNumberGenerator.getSubscriptionBalance();
         let bigBalance = new BigNumber.from(subscriptionBalance);
         console.log("Subscription balance: ", bigBalance)
@@ -53,9 +55,10 @@ describe("RandomNumberGeneratorTest", function () {
     })
     it("Should generate 3 random numbers on request", async () => {
         const txn = await RandomNumberGenerator.requestRandomWords();
+        await txn.wait();
         console.log("Transaction: ", txn);
         console.log("Waiting for time to pass");
-        await new Promise(r => setTimeout(r, 180000));
+        await new Promise(r => setTimeout(r, 60000));
         let randomNumberArray = await RandomNumberGenerator.getRandomWords();
         console.log("Random Number Array: ", randomNumberArray);
         expect(randomNumberArray.length).to.be.greaterThan(0);
