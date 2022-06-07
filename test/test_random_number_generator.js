@@ -19,11 +19,10 @@ describe("RandomNumberGeneratorTest", function () {
             vrfCoordinator = await vrfCoordinatorFactory.deploy(0, 0);
             await vrfCoordinator.deployed();
 
-            const mockLinkFactory = await ethers.getContractFactory("BIIX");
-            LinkToken = await mockLinkFactory.deploy(
-                ethers.utils.parseUnits("5000000", "ether"),
-                [acc1.address]
-            );
+            const LinkFactory = await ethers.getContractFactory("LinkToken");
+            LinkToken = await LinkFactory.deploy();
+            await LinkToken.deployed()
+            console.log("Link Token address: ", LinkToken.address)
             RandomNumberGenerator = await RandomNumberGeneratorFactory.deploy(
                 vrfCoordinator.address,
                 "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
@@ -59,20 +58,16 @@ describe("RandomNumberGeneratorTest", function () {
 
     })
     it("Should send 1 link to the VRF Coordinator", async () => {
-        if (network.name === "hardhat") {
-            //This shortcut has been placed because sending link to a local vrf is of no consequence
-            expect(true).to.equal(true);
-        } else {
-            let amount = ethers.utils.parseUnits("1", "ether");
-            let txn = await RandomNumberGenerator.topupSubscription(amount);
-            await txn.wait();
-            let subscriptionBalance = await RandomNumberGenerator.getSubscriptionBalance();
-            let bigBalance = new BigNumber.from(subscriptionBalance);
-            console.log("Subscription balance: ", bigBalance)
-            let bigZero = new BigNumber.from(0);
-            let exists = bigBalance.gt(bigZero);
-            expect(exists).to.equal(true);
-        }
+        let amount = ethers.utils.parseUnits("1", "ether");
+        let txn = await RandomNumberGenerator.topupSubscription(amount);
+        await txn.wait();
+        let subscriptionBalance = await RandomNumberGenerator.getSubscriptionBalance();
+        let bigBalance = new BigNumber.from(subscriptionBalance);
+        console.log("Subscription balance: ", bigBalance)
+        let bigZero = new BigNumber.from(0);
+        let exists = bigBalance.gt(bigZero);
+        expect(exists).to.equal(true);
+
     })
     it("Should generate a subscription id", async () => {
         let subscriptionId = await RandomNumberGenerator.getSubscriptionId();

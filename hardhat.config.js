@@ -5,7 +5,16 @@ require("hardhat-gas-reporter");
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.8.9",
+  solidity: {
+    compilers: [{
+      version: "0.8.9"
+    },
+    {
+      version: "0.4.24"
+    }
+    ]
+
+  },
   networks: {
     rinkeby: {
       url: process.env.ALCHEMY_RINKEBY_KEY,
