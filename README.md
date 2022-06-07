@@ -298,6 +298,7 @@ This smart contract generates random numbers using Chainlink. It generates 3 ran
 ```
 
 ### Local Gas Report
+
 ·-------------------------|----------------------------|-------------|-----------------------------·
 |   Solc version: 0.8.9   ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 30000000 gas  │
 ··························|····························|·············|······························
