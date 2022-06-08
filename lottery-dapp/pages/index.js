@@ -172,7 +172,7 @@ export default function Home() {
               <h1>BIXCIP Lottery</h1>
             </div>
             <div className="navbar-end">
-              {!connected ? <button onClick={connectWalletHandler} className="button is-link">Connect Wallet</button> : <button className="button is-link">Connected</button>}
+              {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
             </div>
           </div>
         </nav>
