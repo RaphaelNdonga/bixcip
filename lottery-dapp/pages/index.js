@@ -138,17 +138,18 @@ export default function Home() {
 
   const accountsWereChanged = (accounts) => {
     console.log('The accounts have changed', accounts);
+    console.log(accounts[0])
     setAddress(accounts[0])
   }
 
   useEffect(() => {
     window.ethereum.on('accountsChanged', accountsWereChanged);
-    return window.ethereum.removeListener('accountsChanged', accountsWereChanged);
-  }, []);
+    return () => {
+      window.ethereum.removeListener('accountsChanged', accountsWereChanged);
+    }
+  }, [address]);
 
-
-
-
+  // window.ethereum.on('accountsChanged', accountsWereChanged);
 
 
   return (
