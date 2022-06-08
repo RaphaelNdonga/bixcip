@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Web3 from 'web3';
 import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
-import * as lotteryFile from "../../build/contracts/BIXCIPLottery.json";
+import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
 
 export default function Home() {
   const [web3, setWeb3] = useState()
