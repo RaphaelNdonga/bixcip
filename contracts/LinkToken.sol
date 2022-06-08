@@ -3,7 +3,6 @@ pragma solidity ^0.4.11;
 
 import "@chainlink/contracts/src/v0.4/ERC677Token.sol";
 import {StandardToken as linkStandardToken} from "@chainlink/contracts/src/v0.4/vendor/StandardToken.sol";
-import "hardhat/console.sol";
 
 contract LinkToken is linkStandardToken, ERC677Token {
     uint256 public constant totalSupply = 10**27;
@@ -26,7 +25,6 @@ contract LinkToken is linkStandardToken, ERC677Token {
         uint256 _value,
         bytes _data
     ) public validRecipient(_to) returns (bool success) {
-        console.log("Transfer and call has been called");
         return super.transferAndCall(_to, _value, _data);
     }
 
