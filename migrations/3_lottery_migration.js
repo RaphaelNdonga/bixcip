@@ -4,15 +4,15 @@ const fs = require("fs");
 
 module.exports = function (deployer) {
   deployer.deploy(BIXCIPLottery, RandomNumberGenerator.address).then(() => {
-    fs.copyFile("/home/raphael/blockchain/bixcip-lottery/build/contracts/BIXCIPLottery.json", "/home/raphael/blockchain/bixcip-lottery/lottery-dapp/blockchain/BIXCIPLottery.json", (err) => {
+    console.log("Bixciplottery address: ", BIXCIPLottery.address);
+    console.log("Bixciplottery network: ", BIXCIPLottery.networks);
+    console.log("Bixciplottery abi: ", BIXCIPLottery.abi);
+    fs.copyFile(__dirname + "/../build/contracts/BIXCIPLottery.json", __dirname + "/../lottery-dapp/blockchain/BIXCIPLottery.json", (err) => {
       if (err) {
         console.log("Error occurred while copying file")
         throw err
       }
       console.log("File copied successfully");
     })
-    console.log("Bixciplottery address: ", BIXCIPLottery.address);
-    console.log("Bixciplottery network: ", BIXCIPLottery.networks);
-    console.log("Bixciplottery abi: ", BIXCIPLottery.abi);
   });
 };

@@ -7,7 +7,7 @@ import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
 
 export default function Home() {
   const [web3, setWeb3] = useState()
-  const [address, setAddress] = useState()
+  const [address, setAddress] = useState('')
   const [lcContract, setLcContract] = useState()
   const [lotteryPot, setLotteryPot] = useState()
   const [lotteryPlayers, setPlayers] = useState([])
@@ -107,37 +107,29 @@ export default function Home() {
     setSuccessMsg('')
     /* check if MetaMask is installed */
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-      try {
-        /* request wallet connection */
-        await window.ethereum.request({ method: "eth_requestAccounts" })
-        /* create web3 instance & set to state */
-        const web3 = new Web3(window.ethereum)
-        /* set web3 instance in React state */
-        setWeb3(web3)
-        /* get list of accounts */
-        const accounts = await web3.eth.getAccounts()
-        /* set account 1 to React state */
-        setAddress(accounts[0])
+      /* request wallet connection */
+      await window.ethereum.request({ method: "eth_requestAccounts" })
+      /* create web3 instance & set to state */
+      const web3 = new Web3(window.ethereum)
+      /* set web3 instance in React state */
+      setWeb3(web3)
+      /* get list of accounts */
+      const accounts = await web3.eth.getAccounts()
+      console.log("Accounts: ", accounts);
 
-        /* create local contract copy */
+      /* set account 1 to React state */
+      console.log("Account: ", accounts[0]);
+      setAddress(accounts[0])
 
-        const lotteryAbi = lotteryFile.abi;
-        const lotteryAddress = lotteryFile.networks[window.ethereum.networkVersion].address;
+      /* create local contract copy */
 
-        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+      const lotteryAbi = lotteryFile.abi;
+      const lotteryAddress = lotteryFile.networks[window.ethereum.networkVersion].address;
 
-        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress)
-        setLcContract(lc)
+      console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
-        window.ethereum.on('accountsChanged', async () => {
-          const accounts = await web3.eth.getAccounts()
-          console.log(accounts[0])
-          /* set account 1 to React state */
-          setAddress(accounts[0])
-        })
-      } catch (err) {
-        setError(err.message)
-      }
+      const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress)
+      setLcContract(lc)
     } else {
       /* MetaMask is not installed */
       console.log("Please install MetaMask")
