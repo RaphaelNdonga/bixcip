@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
-import Head from 'next/head'
-import Web3 from 'web3'
-import lotteryContract from '../blockchain/lottery'
-import styles from '../styles/Home.module.css'
-import 'bulma/css/bulma.css'
+import { useState, useEffect } from 'react';
+import Head from 'next/head';
+import Web3 from 'web3';
+import styles from '../styles/Home.module.css';
+import 'bulma/css/bulma.css';
+import * as lotteryFile from "../../build/contracts/BIXCIPLottery.json";
 
 export default function Home() {
   const [web3, setWeb3] = useState()
@@ -64,7 +64,7 @@ export default function Home() {
         gasPrice: null
       })
       updateState()
-    } catch(err) {
+    } catch (err) {
       setError(err.message)
     }
   }
@@ -79,7 +79,7 @@ export default function Home() {
         gas: 300000,
         gasPrice: null
       })
-    } catch(err) {
+    } catch (err) {
       setError(err.message)
     }
   }
@@ -97,7 +97,7 @@ export default function Home() {
       const winnerAddress = await lcContract.methods.lotteryHistory(lotteryId).call()
       setSuccessMsg(`The winner is ${winnerAddress}`)
       updateState()
-    } catch(err) {
+    } catch (err) {
       setError(err.message)
     }
   }
@@ -109,7 +109,7 @@ export default function Home() {
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       try {
         /* request wallet connection */
-        await window.ethereum.request({ method: "eth_requestAccounts"})
+        await window.ethereum.request({ method: "eth_requestAccounts" })
         /* create web3 instance & set to state */
         const web3 = new Web3(window.ethereum)
         /* set web3 instance in React state */
@@ -120,7 +120,13 @@ export default function Home() {
         setAddress(accounts[0])
 
         /* create local contract copy */
-        const lc = lotteryContract(web3)
+
+        const lotteryAbi = lotteryFile.abi;
+        const lotteryAddress = lotteryFile.networks[window.ethereum.networkVersion].address;
+
+        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress)
         setLcContract(lc)
 
         window.ethereum.on('accountsChanged', async () => {
@@ -129,7 +135,7 @@ export default function Home() {
           /* set account 1 to React state */
           setAddress(accounts[0])
         })
-      } catch(err) {
+      } catch (err) {
         setError(err.message)
       }
     } else {

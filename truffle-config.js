@@ -21,13 +21,13 @@ module.exports = {
       port: 7545,
       network_id: "*"
     },
-    // Dashboard assumes mumbai network will be selected
+    // Dashboard assumes testnet bnb network will be selected
     dashboard: {
       port: 24012,
       host: "localhost",
-      vrfCoordinator: "0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed",
-      keyHash: "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f",
-      linkToken: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
+      vrfCoordinator: "0x6A2AAd07396B36Fe02a22b33cf443582f682c82f",
+      keyHash: "0xd4bb89654db74673a187bd804519e65e3f71a52bc55f11da7601a13dcf505314",
+      linkToken: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06"
     }
   },
   //
