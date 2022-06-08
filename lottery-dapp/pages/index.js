@@ -15,6 +15,7 @@ export default function Home() {
   const [lotteryId, setLotteryId] = useState()
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [connected, setConnected] = useState(false)
 
   useEffect(() => {
     updateState()
@@ -139,6 +140,13 @@ export default function Home() {
   const accountsWereChanged = (accounts) => {
     console.log('The accounts have changed', accounts);
     console.log(accounts[0])
+    if (accounts[0] === undefined) {
+      console.log("Setting connected to false");
+      setConnected(false)
+    } else {
+      console.log("Setting connected to true");
+      setConnected(true)
+    }
     setAddress(accounts[0])
   }
 
@@ -148,9 +156,6 @@ export default function Home() {
       window.ethereum.removeListener('accountsChanged', accountsWereChanged);
     }
   }, [address]);
-
-  // window.ethereum.on('accountsChanged', accountsWereChanged);
-
 
   return (
     <div>
@@ -167,7 +172,7 @@ export default function Home() {
               <h1>BIXCIP Lottery</h1>
             </div>
             <div className="navbar-end">
-              <button onClick={connectWalletHandler} className="button is-link">Connect Wallet</button>
+              {!connected ? <button onClick={connectWalletHandler} className="button is-link">Connect Wallet</button> : <button className="button is-link">Connected</button>}
             </div>
           </div>
         </nav>
