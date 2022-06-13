@@ -5,6 +5,7 @@ pragma solidity ^0.8.4;
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "hardhat/console.sol";
 
 contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     uint96 public immutable BASE_FEE;
@@ -102,9 +103,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
      * @param _requestId the request to fulfill
      * @param _consumer the VRF randomness consumer to send the result to
      */
-    function fulfillRandomWords(uint256 _requestId, address _consumer)
-        external
-    {
+    function fulfillRandomWords(uint256 _requestId, address _consumer) public {
         fulfillRandomWordsWithOverride(_requestId, _consumer, new uint256[](0));
     }
 
@@ -120,6 +119,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
         address _consumer,
         uint256[] memory _words
     ) public {
+        console.log("Fulfill randmoness has been called");
         uint256 startGas = gasleft();
         if (s_requests[_requestId].subId == 0) {
             revert("nonexistent request");
@@ -204,6 +204,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
             _numWords,
             msg.sender
         );
+        fulfillRandomWords(requestId, msg.sender);
         return requestId;
     }
 
