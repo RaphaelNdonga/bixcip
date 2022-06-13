@@ -78,18 +78,14 @@ describe("RandomNumberGeneratorTest", function () {
         expect(exists).to.equal(true);
     })
     it("Should generate 3 random numbers on request", async () => {
-        if (network.name == "hardhat") {
-            //This shortcut has been placed because chainlink cannot generate random numbers in a local blockchain
-            expect(true).to.equal(true);
-        } else {
-            const txn = await RandomNumberGenerator.requestRandomWords();
-            await txn.wait();
-            console.log("Transaction: ", txn);
-            console.log("Waiting for time to pass");
+        const txn = await RandomNumberGenerator.requestRandomWords();
+        await txn.wait();
+        console.log("Transaction: ", txn);
+        console.log("Waiting for time to pass");
+        if (network.name !== "hardhat")
             await new Promise(r => setTimeout(r, 60000));
-            let randomNumberArray = await RandomNumberGenerator.getRandomWords();
-            console.log("Random Number Array: ", randomNumberArray);
-            expect(randomNumberArray.length).to.be.greaterThan(0);
-        }
+        let randomNumberArray = await RandomNumberGenerator.getRandomWords();
+        console.log("Random Number Array: ", randomNumberArray);
+        expect(randomNumberArray.length).to.be.greaterThan(0);
     })
 })
