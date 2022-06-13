@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers, network } = require("hardhat");
 const { networks } = require("../hardhat.config");
+const fs = require("fs").promises;
 
 describe("RandomNumberGeneratorTest", function () {
     let RandomNumberGenerator;
@@ -47,6 +48,7 @@ describe("RandomNumberGeneratorTest", function () {
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         }
+        await fs.writeFile(`${__dirname}/RandomNumberGenerator.json`, JSON.stringify({ Address: RandomNumberGenerator.address }, undefined, 2));
     })
     it("Should have 1 link", async () => {
         let contractBalance = await LinkToken.balanceOf(RandomNumberGenerator.address);
@@ -89,3 +91,4 @@ describe("RandomNumberGeneratorTest", function () {
         expect(randomNumberArray.length).to.be.greaterThan(0);
     })
 })
+

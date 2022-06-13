@@ -36,6 +36,10 @@ contract BIXCIPLottery {
         return players;
     }
 
+    function getRandomNumbers() public view returns (uint256[] memory) {
+        return s_randomWords;
+    }
+
     function enter() public payable {
         require(msg.value > .01 ether);
 
