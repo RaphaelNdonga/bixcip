@@ -49,11 +49,11 @@ contract BIXCIPLottery {
 
     function pickWinner() public onlyOwner {
         randomNumberGenerator.requestRandomWords();
+        s_randomWords = randomNumberGenerator.getRandomWords();
         // getRandomNumber();
     }
 
     function payWinner() public {
-        s_randomWords = randomNumberGenerator.getRandomWords();
         require(
             s_randomWords.length > 0,
             "The random number has not yet been generated"

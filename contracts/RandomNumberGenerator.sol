@@ -5,6 +5,7 @@ pragma solidity ^0.8.7;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
+import "hardhat/console.sol";
 
 contract RandomNumberGenerator is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface COORDINATOR;
@@ -82,6 +83,8 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
         uint256, /* requestId */
         uint256[] memory randomWords
     ) internal override {
+        console.log("Fulfill randomness rng.sol has been called");
+        console.log("random no", randomWords[0]);
         s_randomWords = randomWords;
     }
 

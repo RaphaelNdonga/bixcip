@@ -10,6 +10,7 @@ describe("RandomNumberGeneratorTest", function () {
     let acc1;
     let acc2;
     let vrfCoordinator;
+    let Lottery;
     this.beforeAll(async function () {
         [acc1, acc2] = await ethers.getSigners();
         const RandomNumberGeneratorFactory = await ethers.getContractFactory("RandomNumberGenerator");
@@ -48,7 +49,9 @@ describe("RandomNumberGeneratorTest", function () {
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         }
-        await fs.writeFile(`${__dirname}/RandomNumberGenerator.json`, JSON.stringify({ Address: RandomNumberGenerator.address }, undefined, 2));
+        const LotteryFactory = await ethers.getContractFactory("BIXCIPLottery");
+        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address);
+        await Lottery.deployed();
     })
     it("Should have 1 link", async () => {
         let contractBalance = await LinkToken.balanceOf(RandomNumberGenerator.address);
@@ -82,13 +85,33 @@ describe("RandomNumberGeneratorTest", function () {
     it("Should generate 3 random numbers on request", async () => {
         const txn = await RandomNumberGenerator.requestRandomWords();
         await txn.wait();
-        console.log("Transaction: ", txn);
         console.log("Waiting for time to pass");
         if (network.name !== "hardhat")
             await new Promise(r => setTimeout(r, 60000));
         let randomNumberArray = await RandomNumberGenerator.getRandomWords();
         console.log("Random Number Array: ", randomNumberArray);
         expect(randomNumberArray.length).to.be.greaterThan(0);
+    })
+    it("should allow entrance after 0.1 ether has been deposited", async () => {
+        const txn = await Lottery.enter({ value: ethers.utils.parseEther("0.1") });
+        await txn.wait();
+        players = await Lottery.getPlayers();
+        console.log(players);
+        let present = false;
+        for (let i = 0; i < players.length; i++) {
+            if (players[i] == (acc1.address || acc2.address)) {
+                present = true;
+            }
+        }
+        expect(present).to.equal(true);
+    })
+
+    it("Should get 3 random numbers when picking a winner", async () => {
+        const txn = await Lottery.pickWinner();
+        await txn.wait();
+        const randomNumberArray = await Lottery.getRandomNumbers();
+        console.log("Random number array: ", randomNumberArray);
+        expect(randomNumberArray.length).to.equal(3);
     })
 })
 
