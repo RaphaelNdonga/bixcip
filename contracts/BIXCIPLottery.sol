@@ -43,35 +43,37 @@ contract BIXCIPLottery {
     function enter() public payable {
         require(msg.value > .01 ether);
 
-        // address of player entering lottery
         players.push(payable(msg.sender));
     }
 
-    function pickWinner() public onlyOwner {
+    function pickWinners() public onlyOwner {
         randomNumberGenerator.requestRandomWords();
         s_randomWords = randomNumberGenerator.getRandomWords();
-        // getRandomNumber();
     }
 
-    function payWinner() public {
+    function payWinners() public {
         require(
             s_randomWords.length > 0,
             "The random number has not yet been generated"
         );
-        uint256 randomResult = s_randomWords[0];
-        require(
-            randomResult > 0,
-            "Must have a source of randomness before choosing winner"
-        );
-        uint256 index = randomResult % players.length;
-        players[index].transfer(address(this).balance);
 
-        lotteryHistory[lotteryId] = players[index];
-        lotteryId++;
+        for (uint96 i = 0; i < s_randomWords.length; i++) {
+            uint256 randomResult = s_randomWords[i];
+            require(
+                randomResult > 0,
+                "Must have a source of randomness before choosing winner"
+            );
+            uint256 index = randomResult % players.length;
+            uint256 amount = address(this).balance / s_randomWords.length;
+            players[index].transfer(amount);
+
+            lotteryHistory[lotteryId] = players[index];
+            lotteryId++;
+        }
 
         // reset the state of the contract
         players = new address payable[](0);
-        randomResult = 0;
+        s_randomWords = new uint256[](0);
     }
 
     modifier onlyOwner() {

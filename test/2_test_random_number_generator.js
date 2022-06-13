@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { BigNumber } = require("ethers");
-const { ethers, network } = require("hardhat");
+const { ethers, network, waffle } = require("hardhat");
 const { networks } = require("../hardhat.config");
 const fs = require("fs").promises;
 
@@ -107,11 +107,24 @@ describe("RandomNumberGeneratorTest", function () {
     })
 
     it("Should get 3 random numbers when picking a winner", async () => {
-        const txn = await Lottery.pickWinner();
+        const txn = await Lottery.pickWinners();
         await txn.wait();
         const randomNumberArray = await Lottery.getRandomNumbers();
         console.log("Random number array: ", randomNumberArray);
         expect(randomNumberArray.length).to.equal(3);
+    })
+
+    it("Should pay the winners accordingly", async () => {
+        const initialBalance = await waffle.provider.getBalance(acc1.address);
+        console.log("initial balance", initialBalance);
+        const txn = await Lottery.payWinners();
+        await txn.wait();
+        const finalBalance = await waffle.provider.getBalance(acc1.address);
+        console.log("final balance", finalBalance);
+
+        const isGreater = finalBalance.gt(initialBalance)
+
+        expect(isGreater).to.equal(true);
     })
 })
 
