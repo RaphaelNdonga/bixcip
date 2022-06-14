@@ -51,7 +51,7 @@ contract BIXCIPLottery {
         s_randomWords = randomNumberGenerator.getRandomWords();
     }
 
-    function payWinners() public {
+    function payWinners() public onlyOwner {
         require(
             s_randomWords.length > 0,
             "The random number has not yet been generated"
