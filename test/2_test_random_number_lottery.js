@@ -92,8 +92,8 @@ describe("RandomNumberGeneratorTest", function () {
         console.log("Random Number Array: ", randomNumberArray);
         expect(randomNumberArray.length).to.be.greaterThan(0);
     })
-    it("should allow entrance after 0.1 ether has been deposited", async () => {
-        const txn = await Lottery.enter({ value: ethers.utils.parseEther("0.1") });
+    it("should allow entrance after 0.01 ether has been deposited", async () => {
+        const txn = await Lottery.enter({ value: ethers.utils.parseEther("0.01") });
         await txn.wait();
         players = await Lottery.getPlayers();
         console.log(players);

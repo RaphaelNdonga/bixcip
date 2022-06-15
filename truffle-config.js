@@ -1,3 +1,4 @@
+require('dotenv').config();
 module.exports = {
   // Uncommenting the defaults below
   // provides for an easier quick-start with Ganache.
@@ -5,6 +6,12 @@ module.exports = {
   // See details at: https://trufflesuite.com/docs/truffle/reference/configuration
   // on how to specify configuration options!
   //
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY
+  },
   compilers: {
     solc: {
       version: "pragma",

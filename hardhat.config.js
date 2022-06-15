@@ -1,6 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
 require("hardhat-gas-reporter");
+require("@nomiclabs/hardhat-etherscan");
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -43,6 +44,9 @@ module.exports = {
       keyHash: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
       linkToken: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"
     }
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

@@ -49,7 +49,7 @@ contract BIXCIPLottery {
     }
 
     function enter() public payable {
-        require(msg.value > .01 ether, "Insufficient amount");
+        require(msg.value >= .01 ether, "Insufficient amount");
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
