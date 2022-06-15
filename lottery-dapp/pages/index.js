@@ -70,39 +70,6 @@ export default function Home() {
     }
   }
 
-  const pickWinnerHandler = async () => {
-    setError('')
-    setSuccessMsg('')
-    console.log(`address from pick winner :: ${address}`)
-    try {
-      await lcContract.methods.pickWinner().send({
-        from: address,
-        gas: 300000,
-        gasPrice: null
-      })
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
-  const payWinnerHandler = async () => {
-    setError('')
-    setSuccessMsg('')
-    try {
-      await lcContract.methods.payWinner().send({
-        from: address,
-        gas: 300000,
-        gasPrice: null
-      })
-      console.log(`lottery id :: ${lotteryId}`)
-      const winnerAddress = await lcContract.methods.lotteryHistory(lotteryId).call()
-      setSuccessMsg(`The winner is ${winnerAddress}`)
-      updateState()
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
   const connectWalletHandler = async () => {
     setError('')
     setSuccessMsg('')
@@ -183,14 +150,6 @@ export default function Home() {
                 <section className="mt-5">
                   <p>Enter the lottery by sending 0.01 Ether</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
-                </section>
-                <section className="mt-6">
-                  <p><b>Admin only:</b> Pick winner</p>
-                  <button onClick={pickWinnerHandler} className="button is-primary is-large is-light mt-3">Pick Winner</button>
-                </section>
-                <section className="mt-6">
-                  <p><b>Admin only:</b> Pay winner</p>
-                  <button onClick={payWinnerHandler} className="button is-success is-large is-light mt-3">Pay Winner</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
