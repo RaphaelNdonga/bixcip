@@ -126,5 +126,19 @@ describe("RandomNumberGeneratorTest", function () {
 
         expect(isGreater).to.equal(true);
     })
+
+    it("Should set the correct enum state", async () => {
+        const open = 0;
+        const closed = 1;
+        let lotteryState = await Lottery.getLotteryState();
+        console.log(lotteryState);
+        expect(lotteryState).to.equal(closed);
+        const txn = await Lottery.startLottery();
+        await txn.wait();
+        lotteryState = await Lottery.getLotteryState();
+        console.log(lotteryState);
+        expect(lotteryState).to.equal(open)
+
+    })
 })
 

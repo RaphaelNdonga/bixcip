@@ -3,6 +3,7 @@
 pragma solidity ^0.8.7;
 
 import "../interfaces/IRandomNumberGenerator.sol";
+import "hardhat/console.sol";
 
 contract BIXCIPLottery {
     address payable[] public players;
@@ -11,6 +12,12 @@ contract BIXCIPLottery {
     IRandomNumberGenerator randomNumberGenerator;
     uint256[] public s_randomWords;
     address s_owner;
+    enum LotteryState {
+        OPEN,
+        CLOSED
+    }
+
+    LotteryState lotteryState;
 
     constructor(address randomNumberGeneratorAddress) {
         s_owner = msg.sender;
@@ -18,6 +25,7 @@ contract BIXCIPLottery {
         randomNumberGenerator = IRandomNumberGenerator(
             randomNumberGeneratorAddress
         );
+        startLottery();
     }
 
     function getWinnerByLottery(uint256 lottery)
@@ -41,7 +49,9 @@ contract BIXCIPLottery {
     }
 
     function enter() public payable {
-        require(msg.value > .01 ether);
+        require(msg.value > .01 ether, "Insufficient amount");
+
+        require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
         players.push(payable(msg.sender));
     }
@@ -74,6 +84,20 @@ contract BIXCIPLottery {
         // reset the state of the contract
         players = new address payable[](0);
         s_randomWords = new uint256[](0);
+        closeLottery();
+    }
+
+    function startLottery() public onlyOwner {
+        lotteryState = LotteryState.OPEN;
+    }
+
+    function closeLottery() public onlyOwner {
+        console.log("Closing the lottery");
+        lotteryState = LotteryState.CLOSED;
+    }
+
+    function getLotteryState() public view returns (LotteryState) {
+        return lotteryState;
     }
 
     modifier onlyOwner() {
