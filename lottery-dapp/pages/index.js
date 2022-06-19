@@ -119,6 +119,10 @@ export default function Home() {
     updateState()
   }, [lcContract]);
 
+  useEffect(() => {
+    connectWalletHandler();
+  }, [])
+
   const checkChain = (chainId) => {
     console.log("checking chain...", chainId);
     if (chainId !== "0x4") {
