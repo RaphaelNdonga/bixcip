@@ -103,7 +103,7 @@ export default function Home() {
   }
 
   const checkConnection = (accounts) => {
-    console.log('The accounts have changed', accounts);
+    console.log('checking accounts...', accounts);
     console.log(accounts[0])
     if (accounts[0] === undefined) {
       console.log("Setting connected to false");
@@ -120,7 +120,7 @@ export default function Home() {
   }, [lcContract]);
 
   const checkChain = (chainId) => {
-    console.log(chainId);
+    console.log("checking chain...", chainId);
     if (chainId !== "0x4") {
       setIsCorrectChain(false);
     } else {
@@ -133,8 +133,8 @@ export default function Home() {
   }
 
   const determineConnection = async () => {
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
-    checkConnection(accounts)
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    checkConnection(accounts);
   }
 
   useEffect(() => {
