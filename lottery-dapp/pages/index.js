@@ -4,22 +4,20 @@ import Web3 from 'web3';
 import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
 import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
+import { check } from 'prettier';
 
 export default function Home() {
-  const [web3, setWeb3] = useState()
-  const [address, setAddress] = useState('')
-  const [lcContract, setLcContract] = useState()
-  const [lotteryPot, setLotteryPot] = useState()
-  const [lotteryPlayers, setPlayers] = useState([])
-  const [lotteryHistory, setLotteryHistory] = useState([])
-  const [lotteryId, setLotteryId] = useState()
-  const [error, setError] = useState('')
-  const [successMsg, setSuccessMsg] = useState('')
-  const [connected, setConnected] = useState(false)
-
-  useEffect(() => {
-    updateState()
-  }, [lcContract])
+  const [web3, setWeb3] = useState();
+  const [address, setAddress] = useState('');
+  const [lcContract, setLcContract] = useState();
+  const [lotteryPot, setLotteryPot] = useState();
+  const [lotteryPlayers, setPlayers] = useState([]);
+  const [lotteryHistory, setLotteryHistory] = useState([]);
+  const [lotteryId, setLotteryId] = useState();
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [connected, setConnected] = useState(false);
+  const [isCorrectChain, setIsCorrectChain] = useState(false);
 
   const updateState = () => {
     if (lcContract) getPot()
@@ -104,7 +102,7 @@ export default function Home() {
     }
   }
 
-  const accountsWereChanged = (accounts) => {
+  const checkConnection = (accounts) => {
     console.log('The accounts have changed', accounts);
     console.log(accounts[0])
     if (accounts[0] === undefined) {
@@ -118,11 +116,37 @@ export default function Home() {
   }
 
   useEffect(() => {
-    window.ethereum.on('accountsChanged', accountsWereChanged);
-    return () => {
-      window.ethereum.removeListener('accountsChanged', accountsWereChanged);
+    updateState()
+  }, [lcContract]);
+
+  const checkChain = (chainId) => {
+    console.log(chainId);
+    if (chainId !== "0x4") {
+      setIsCorrectChain(false);
+    } else {
+      setIsCorrectChain(true);
     }
-  }, [address]);
+  }
+  const determineChain = async () => {
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    checkChain(chainId);
+  }
+
+  const determineConnection = async () => {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+    checkConnection(accounts)
+  }
+
+  useEffect(() => {
+    determineChain();
+    determineConnection();
+    window.ethereum.on('accountsChanged', checkConnection);
+    window.ethereum.on('chainChanged', checkChain);
+    return () => {
+      window.ethereum.removeListener('accountsChanged', checkConnection);
+      window.ethereum.removeListener('chainChanged', checkChain);
+    }
+  });
 
   return (
     <div>
@@ -138,9 +162,9 @@ export default function Home() {
             <div className="navbar-brand">
               <h1>BIXCIP Lottery</h1>
             </div>
-            <div className="navbar-end">
+            {isCorrectChain ? <div className="navbar-end">
               {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
-            </div>
+            </div> : <p> Ensure you are connected to the rinkeby network</p>}
           </div>
         </nav>
         <div className="container">
