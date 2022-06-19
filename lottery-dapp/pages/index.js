@@ -88,9 +88,8 @@ export default function Home() {
       setAddress(accounts[0])
 
       /* create local contract copy */
-
       const lotteryAbi = lotteryFile.abi;
-      const lotteryAddress = lotteryFile.networks[window.ethereum.networkVersion].address;
+      const lotteryAddress = lotteryFile.networks["4"].address;
 
       console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
