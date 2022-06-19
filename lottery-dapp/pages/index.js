@@ -162,12 +162,13 @@ export default function Home() {
             <div className="navbar-brand">
               <h1>BIXCIP Lottery</h1>
             </div>
-            {isCorrectChain ? <div className="navbar-end">
-              {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
-            </div> : <p> Ensure you are connected to the rinkeby network</p>}
+            {isCorrectChain ?
+              <div className="navbar-end">
+                {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
+              </div> : <div className="navbar-end"> <button className='button is-danger is-large' disabled>Ensure you are connected to the rinkeby network</button> </div>}
           </div>
         </nav>
-        <div className="container">
+        {isCorrectChain && <div className="container">
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">
@@ -243,7 +244,7 @@ export default function Home() {
               </div>
             </div>
           </section>
-        </div>
+        </div>}
       </main>
 
       <footer className={styles.footer}>
