@@ -112,6 +112,21 @@ For automatic verification of the source code on Etherscan you can use [truffle 
 truffle run verify [contractName] --network [networkName]
 ```
 
+## Admin Operations
+Admin currently refers to the user who deployed the Lottery to the blockchain.
+
+After verifying the source code on etherscan, you can use it to perform the following priviledged operations:
+
+- Start the lottery
+- Close the lottery
+- Pick the winners
+- Pay the winners
+
+
+<div align="center">
+      <img src="images/Screenshot from 2022-06-20 21-40-03.png" width="800px">
+     </div>
+
 ## Smart Contracts
 
 ### RandomNumberGenerator.sol
