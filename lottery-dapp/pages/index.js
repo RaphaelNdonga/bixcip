@@ -97,7 +97,8 @@ export default function Home() {
       setLcContract(lc)
     } else {
       /* MetaMask is not installed */
-      console.log("Please install MetaMask")
+      console.log("Metamask still not installed")
+      alert("Please install MetaMask")
     }
   }
 
