@@ -8,9 +8,9 @@ import Modal from './components/Modal';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import { ethers } from 'ethers';
 
 export default function Home() {
-  const [web3, setWeb3] = useState();
   const [address, setAddress] = useState('');
   const [lcContract, setLcContract] = useState();
   const [lotteryPot, setLotteryPot] = useState();
@@ -34,8 +34,8 @@ export default function Home() {
   }
 
   const getPot = async () => {
-    const pot = await lcContract.methods.getBalance().call()
-    setLotteryPot(web3.utils.fromWei(pot, 'ether'))
+    const pot = await lcContract.methods.getBalance().call();
+    setLotteryPot(ethers.utils.formatEther(pot));
   }
 
   const getPlayers = async () => {
@@ -86,7 +86,6 @@ export default function Home() {
       /* create web3 instance & set to state */
       const web3 = new Web3(window.ethereum)
       /* set web3 instance in React state */
-      setWeb3(web3)
       setupContractAndAddress(web3);
 
       window.ethereum.on('accountsChanged', checkConnection);
@@ -154,7 +153,6 @@ export default function Home() {
   const connectWalletConnect = async () => {
     await wcProvider.enable();
     const web3 = new Web3(wcProvider);
-    setWeb3(web3);
     setupContractAndAddress(web3);
   }
 
