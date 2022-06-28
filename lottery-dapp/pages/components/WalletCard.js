@@ -9,13 +9,15 @@ export default function WalletCard(props) {
         }}>
             <div class="card-content">
                 <div class="media">
-                    <div class="media-left">
-                        <figure class="image is-48x48">
-                            {props.walletImg}
-                        </figure>
-                    </div>
-                    <div class="media-content">
-                        <p class="title">{props.walletContent}</p>
+                    <div class="columns is-vcentered is-multiline is-mobile">
+                        <div class="column is-one-quarter mr-4">
+                            <figure class="image is-48x48">
+                                {props.walletImg}
+                            </figure>
+                        </div>
+                        <div class="column">
+                            <p>{props.walletContent}</p>
+                        </div>
                     </div>
                 </div>
             </div>

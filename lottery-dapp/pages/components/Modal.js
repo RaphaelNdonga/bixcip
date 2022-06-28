@@ -14,8 +14,9 @@ export default function Modal(props) {
             }}></div>
             <div class="modal-content">
                 <div class="box">
+                    <p class="subtitle m-2">Connect your wallet</p>
                     <WalletCard close={() => { props.setConnectClicked(false) }} connect={props.connectMetamask} walletImg={<Image src={metamaskImage} alt="placeholder image" />} walletContent="Metamask" />
-                    <WalletCard close={() => { props.setConnectClicked(false) }} connect={props.connectWalletConnect} walletImg={<Image src={walletconnectImage} alt="Placeholder image" />} walletContent="Wallet Connect" />
+                    <WalletCard close={() => { props.setConnectClicked(false) }} connect={props.connectWalletConnect} walletImg={<Image src={walletconnectImage} alt="Placeholder image" />} walletContent="WalletConnect" />
                 </div>
             </div>
             <button class="modal-close is-large" aria-label="close" onClick={() => {
