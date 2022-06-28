@@ -69,7 +69,7 @@ export default function Home() {
     }
   }
 
-  const connectWalletHandler = async () => {
+  const connectMetamask = async () => {
     setError('')
     setSuccessMsg('')
     /* check if MetaMask is installed */
@@ -167,14 +167,13 @@ export default function Home() {
               {!connected ? <button onClick={() => {
 
                 setConnectClicked(true)
-                connectWalletHandler()
 
               }} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
             </div>
           </div>
         </nav>
         <div className="container">
-          {connectClicked && <Modal setConnectClicked={setConnectClicked} />}
+          {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} />}
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">

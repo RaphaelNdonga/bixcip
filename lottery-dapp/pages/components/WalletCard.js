@@ -3,7 +3,10 @@ import 'bulma/css/bulma.css';
 
 export default function WalletCard(props) {
     return (
-        <div class="card">
+        <div class="card" onClick={() => {
+            props.connect()
+            props.close()
+        }}>
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
