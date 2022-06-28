@@ -138,15 +138,6 @@ export default function Home() {
       setIsCorrectChain(true);
     }
   }
-  const determineChain = async () => {
-    const chainId = await window.ethereum.request({ method: "eth_chainId" });
-    checkChain(chainId);
-  }
-
-  const determineConnection = async () => {
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
-    checkConnection(accounts);
-  }
 
   const connectWalletConnect = async () => {
     await wcProvider.enable();
