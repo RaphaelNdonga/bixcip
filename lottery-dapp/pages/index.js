@@ -5,6 +5,9 @@ import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
 import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
 import Modal from './components/Modal';
+import WalletConnect from '@walletconnect/client';
+import QRCodeModal from '@walletconnect/qrcode-modal';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 
 export default function Home() {
   const [web3, setWeb3] = useState();
@@ -19,6 +22,10 @@ export default function Home() {
   const [connected, setConnected] = useState(false);
   const [isCorrectChain, setIsCorrectChain] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
+
+  const wcProvider = new WalletConnectProvider({
+    infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
+  });
 
   const updateState = () => {
     if (lcContract) getPot()
@@ -80,21 +87,7 @@ export default function Home() {
       const web3 = new Web3(window.ethereum)
       /* set web3 instance in React state */
       setWeb3(web3)
-      /* get list of accounts */
-      const accounts = await web3.eth.getAccounts()
-
-      checkConnection(accounts);
-
-      setAddress(accounts[0]);
-
-      /* create local contract copy */
-      const lotteryAbi = lotteryFile.abi;
-      const lotteryAddress = lotteryFile.networks["4"].address;
-
-      console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
-
-      const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
-      setLcContract(lc);
+      setupContractAndAddress(web3);
 
       window.ethereum.on('accountsChanged', checkConnection);
       window.ethereum.on('chainChanged', checkChain);
@@ -103,6 +96,24 @@ export default function Home() {
       console.log("Metamask still not installed")
       alert("Please install MetaMask")
     }
+  }
+
+  const setupContractAndAddress = async (web3) => {
+    /* get list of accounts */
+    const accounts = await web3.eth.getAccounts()
+
+    checkConnection(accounts);
+
+    setAddress(accounts[0]);
+
+    /* create local contract copy */
+    const lotteryAbi = lotteryFile.abi;
+    const lotteryAddress = lotteryFile.networks["4"].address;
+
+    console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+    const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+    setLcContract(lc);
   }
 
   const checkConnection = (accounts) => {
@@ -140,6 +151,13 @@ export default function Home() {
     checkConnection(accounts);
   }
 
+  const connectWalletConnect = async () => {
+    await wcProvider.enable();
+    const web3 = new Web3(wcProvider);
+    setWeb3(web3);
+    setupContractAndAddress(web3);
+  }
+
   useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
@@ -173,7 +191,9 @@ export default function Home() {
           </div>
         </nav>
         <div className="container">
-          {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} />}
+          {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
+            connectWalletConnect();
+          }} />}
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">
