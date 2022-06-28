@@ -81,11 +81,12 @@ export default function Home() {
       setWeb3(web3)
       /* get list of accounts */
       const accounts = await web3.eth.getAccounts()
-      console.log("Accounts: ", accounts);
 
-      /* set account 1 to React state */
-      console.log("Account: ", accounts[0]);
-      setAddress(accounts[0])
+      checkConnection(accounts);
+
+
+
+      setAddress(accounts[0]);
 
       /* create local contract copy */
       const lotteryAbi = lotteryFile.abi;
@@ -93,8 +94,11 @@ export default function Home() {
 
       console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
-      const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress)
-      setLcContract(lc)
+      const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+      setLcContract(lc);
+
+      window.ethereum.on('accountsChanged', checkConnection);
+      window.ethereum.on('chainChanged', checkChain);
     } else {
       /* MetaMask is not installed */
       console.log("Metamask still not installed")
@@ -119,10 +123,6 @@ export default function Home() {
     updateState()
   }, [lcContract]);
 
-  useEffect(() => {
-    connectWalletHandler();
-  }, [])
-
   const checkChain = (chainId) => {
     console.log("checking chain...", chainId);
     if (chainId !== "0x4") {
@@ -142,13 +142,11 @@ export default function Home() {
   }
 
   useEffect(() => {
-    determineChain();
-    determineConnection();
-    window.ethereum.on('accountsChanged', checkConnection);
-    window.ethereum.on('chainChanged', checkChain);
     return () => {
-      window.ethereum.removeListener('accountsChanged', checkConnection);
-      window.ethereum.removeListener('chainChanged', checkChain);
+      if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+        window.ethereum.removeListener('accountsChanged', checkConnection);
+        window.ethereum.removeListener('chainChanged', checkChain);
+      }
     }
   });
 
@@ -166,13 +164,12 @@ export default function Home() {
             <div className="navbar-brand">
               <h1>BIXCIP Lottery</h1>
             </div>
-            {isCorrectChain ?
-              <div className="navbar-end">
-                {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
-              </div> : <div className="navbar-end"> <button className='button is-danger is-large' disabled>Ensure you are connected to the rinkeby network</button> </div>}
+            <div className="navbar-end">
+              {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
+            </div>
           </div>
         </nav>
-        {isCorrectChain && <div className="container">
+        <div className="container">
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">
@@ -248,7 +245,7 @@ export default function Home() {
               </div>
             </div>
           </section>
-        </div>}
+        </div>
       </main>
 
       <footer className={styles.footer}>
