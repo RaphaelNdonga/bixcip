@@ -5,8 +5,6 @@ import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
 import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
 import Modal from './components/Modal';
-import WalletConnect from '@walletconnect/client';
-import QRCodeModal from '@walletconnect/qrcode-modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
 
