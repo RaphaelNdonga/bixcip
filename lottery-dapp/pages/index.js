@@ -145,15 +145,6 @@ export default function Home() {
     setupContractAndAddress(web3);
   }
 
-  useEffect(() => {
-    return () => {
-      if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-        window.ethereum.removeListener('accountsChanged', checkConnection);
-        window.ethereum.removeListener('chainChanged', checkChain);
-      }
-    }
-  });
-
   return (
     <div>
       <Head>
