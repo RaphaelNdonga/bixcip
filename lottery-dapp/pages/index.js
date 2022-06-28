@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
 import * as lotteryFile from "../blockchain/BIXCIPLottery.json";
-import { check } from 'prettier';
+import Modal from './components/Modal';
 
 export default function Home() {
   const [web3, setWeb3] = useState();
@@ -18,6 +18,7 @@ export default function Home() {
   const [successMsg, setSuccessMsg] = useState('');
   const [connected, setConnected] = useState(false);
   const [isCorrectChain, setIsCorrectChain] = useState(false);
+  const [connectClicked, setConnectClicked] = useState(false);
 
   const updateState = () => {
     if (lcContract) getPot()
@@ -69,6 +70,7 @@ export default function Home() {
   }
 
   const connectWalletHandler = async () => {
+    console.log("Connect clicked", connectClicked);
     setError('')
     setSuccessMsg('')
     /* check if MetaMask is installed */
@@ -83,8 +85,6 @@ export default function Home() {
       const accounts = await web3.eth.getAccounts()
 
       checkConnection(accounts);
-
-
 
       setAddress(accounts[0]);
 
@@ -165,11 +165,17 @@ export default function Home() {
               <h1>BIXCIP Lottery</h1>
             </div>
             <div className="navbar-end">
-              {!connected ? <button onClick={connectWalletHandler} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
+              {!connected ? <button onClick={() => {
+
+                setConnectClicked(true)
+                connectWalletHandler()
+
+              }} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
             </div>
           </div>
         </nav>
         <div className="container">
+          {connectClicked && <Modal setConnectClicked={setConnectClicked} />}
           <section className="mt-5">
             <div className="columns">
               <div className="column is-two-thirds">
