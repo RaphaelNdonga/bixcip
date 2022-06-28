@@ -70,7 +70,6 @@ export default function Home() {
   }
 
   const connectWalletHandler = async () => {
-    console.log("Connect clicked", connectClicked);
     setError('')
     setSuccessMsg('')
     /* check if MetaMask is installed */
