@@ -1,5 +1,10 @@
 import React from "react";
 import 'bulma/css/bulma.css';
+import WalletCard from "./WalletCard";
+import walletconnectImage from "../images/walletconnect.svg";
+import metamaskImage from "../images/metamask.svg";
+import Image from "next/image";
+
 
 export default function Modal(props) {
     return (
@@ -8,9 +13,8 @@ export default function Modal(props) {
                 props.setConnectClicked(false)
             }}></div>
             <div class="modal-content">
-                <p class="image is-4by3">
-                    <img src="https://bulma.io/images/placeholders/1280x960.png" alt="" />
-                </p>
+                <WalletCard walletImg={<Image src={metamaskImage} alt="placeshika image" />} walletContent="Metamask" />
+                <WalletCard walletImg={<Image src={walletconnectImage} alt="Placeholder image" />} walletContent="Wallet Connect" />
             </div>
             <button class="modal-close is-large" aria-label="close" onClick={() => {
                 props.setConnectClicked(false)
