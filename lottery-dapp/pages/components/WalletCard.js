@@ -1,5 +1,6 @@
 import React from "react";
 import 'bulma/css/bulma.css';
+import '../../styles/Home.module.css';
 
 export default function WalletCard(props) {
     return (

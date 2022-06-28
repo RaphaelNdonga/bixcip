@@ -14,3 +14,11 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.card-content {
+  cursor: pointer;
+}
+
+.card-content:hover {
+  background-color: aliceblue;
+}
