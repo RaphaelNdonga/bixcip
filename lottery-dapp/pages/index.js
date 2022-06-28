@@ -143,6 +143,9 @@ export default function Home() {
     await wcProvider.enable();
     const web3 = new Web3(wcProvider);
     setupContractAndAddress(web3);
+
+    wcProvider.on("accountsChanged", checkConnection);
+    wcProvider.on("chainChanged", checkChain);
   }
 
   return (
