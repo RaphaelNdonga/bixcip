@@ -3,15 +3,19 @@
 pragma solidity ^0.8.7;
 
 import "../interfaces/IRandomNumberGenerator.sol";
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract BIXCIPLottery {
     address payable[] public players;
     uint256 public lotteryId;
-    mapping(uint256 => address payable) public lotteryHistory;
+    mapping(uint256 => address) public lotteryHistory;
     IRandomNumberGenerator randomNumberGenerator;
     uint256[] public s_randomWords;
     address s_owner;
+    address public biixToken;
+    uint256 public biixValue = 0.001 ether;
+    uint256 public ticketFee = 100 ether;
+    address[] public winners;
     enum LotteryState {
         OPEN,
         CLOSED
@@ -19,20 +23,17 @@ contract BIXCIPLottery {
 
     LotteryState lotteryState;
 
-    constructor(address randomNumberGeneratorAddress) {
+    constructor(address _randomNumberGeneratorAddress, address _biixToken) {
         s_owner = msg.sender;
         lotteryId = 1;
         randomNumberGenerator = IRandomNumberGenerator(
-            randomNumberGeneratorAddress
+            _randomNumberGeneratorAddress
         );
+        biixToken = _biixToken;
         startLottery();
     }
 
-    function getWinnerByLottery(uint256 lottery)
-        public
-        view
-        returns (address payable)
-    {
+    function getWinnerByLottery(uint256 lottery) public view returns (address) {
         return lotteryHistory[lottery];
     }
 
@@ -48,36 +49,72 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter() public payable {
-        require(msg.value >= .01 ether, "Insufficient amount");
+    function enter() public {
+        uint256 allowance = IERC20(biixToken).allowance(
+            msg.sender,
+            address(this)
+        );
+
+        IERC20(biixToken).transferFrom(msg.sender, address(this), ticketFee);
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
         players.push(payable(msg.sender));
     }
 
+    function sendBIIX(uint256 amount) public payable {
+        require(
+            msg.value >= convertBIIXToEth(amount),
+            "BIXCIPLottery: Ether sent was not enough for BIIX"
+        );
+        IERC20(biixToken).transfer(msg.sender, amount);
+    }
+
+    function convertBIIXToEth(uint256 amount) public view returns (uint256) {
+        return amount * biixValue;
+    }
+
+    function getTicketFee() public view returns (uint256) {
+        return ticketFee;
+    }
+
+    function getBIIXValue() public view returns (uint256) {
+        return biixValue;
+    }
+
+    function setBIIXValue(uint256 _biixValue) public onlyOwner {
+        biixValue = _biixValue;
+    }
+
+    function setTicketFee(uint256 _ticketFee) public onlyOwner {
+        ticketFee = _ticketFee;
+    }
+
     function pickWinners() public onlyOwner {
         randomNumberGenerator.requestRandomWords();
         s_randomWords = randomNumberGenerator.getRandomWords();
+        for (uint96 i = 0; i < s_randomWords.length; i++) {
+            uint256 randomResult = s_randomWords[i];
+            require(
+                randomResult > 0,
+                "BIXCIPLottery: Must have a source of randomness before choosing winner"
+            );
+            uint256 index = randomResult % players.length;
+            winners.push(players[index]);
+        }
     }
 
     function payWinners() public onlyOwner {
         require(
             s_randomWords.length > 0,
-            "The random number has not yet been generated"
+            "BIXCIPLottery: The random number has not yet been generated"
         );
 
-        for (uint96 i = 0; i < s_randomWords.length; i++) {
-            uint256 randomResult = s_randomWords[i];
-            require(
-                randomResult > 0,
-                "Must have a source of randomness before choosing winner"
-            );
-            uint256 index = randomResult % players.length;
-            uint256 amount = address(this).balance / s_randomWords.length;
-            players[index].transfer(amount);
-
-            lotteryHistory[lotteryId] = players[index];
+        for (uint96 i = 0; i < winners.length; i++) {
+            uint256 amount = IERC20(biixToken).balanceOf((address(this))) /
+                winners.length;
+            IERC20(biixToken).transfer(winners[i], amount);
+            lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
         }
 
@@ -92,7 +129,6 @@ contract BIXCIPLottery {
     }
 
     function closeLottery() public onlyOwner {
-        console.log("Closing the lottery");
         lotteryState = LotteryState.CLOSED;
     }
 

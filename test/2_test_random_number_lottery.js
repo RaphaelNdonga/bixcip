@@ -49,9 +49,29 @@ describe("RandomNumberGeneratorTest", function () {
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         }
+        const BIIXContractFactory = await ethers.getContractFactory("BIIX");
+        [acc1, acc2] = await ethers.getSigners();
+        const investors = [acc1.address, acc2.address];
+        console.log("Investors: ", investors);
+        BIIXContract = await BIIXContractFactory.deploy(
+            ethers.utils.parseUnits("5000000", "ether"),
+            investors
+        );
+        await BIIXContract.deployed();
         const LotteryFactory = await ethers.getContractFactory("BIXCIPLottery");
-        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address);
+        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, BIIXContract.address);
         await Lottery.deployed();
+    })
+    it("should have total supply of 5000000", async () => {
+        let totalSupply = await BIIXContract.totalSupply();
+        expect(totalSupply).to.equal(ethers.utils.parseUnits("5000000", "ether"));
+    })
+    it("should distribute supply among investors", async () => {
+        let acc1Balance = await BIIXContract.balanceOf(acc1.address);
+        let acc2Balance = await BIIXContract.balanceOf(acc2.address);
+        console.log("account 1 balance: ", acc1Balance);
+        console.log("account 2 balance: ", acc2Balance);
+        expect(acc1Balance).to.equal(acc2Balance);
     })
     it("Should have 1 link", async () => {
         let contractBalance = await LinkToken.balanceOf(RandomNumberGenerator.address);
@@ -92,8 +112,11 @@ describe("RandomNumberGeneratorTest", function () {
         console.log("Random Number Array: ", randomNumberArray);
         expect(randomNumberArray.length).to.be.greaterThan(0);
     })
-    it("should allow entrance after 0.01 ether has been deposited", async () => {
-        const txn = await Lottery.enter({ value: ethers.utils.parseEther("0.01") });
+    it("should allow entrance after BIIX ticket fee has been deposited", async () => {
+        let ticketFee = new BigNumber.from(await Lottery.getTicketFee());
+        const approveTxn = await BIIXContract.approve(Lottery.address, ticketFee);
+        await approveTxn.wait();
+        const txn = await Lottery.enter();
         await txn.wait();
         players = await Lottery.getPlayers();
         console.log(players);
@@ -103,6 +126,10 @@ describe("RandomNumberGeneratorTest", function () {
                 present = true;
             }
         }
+        const balance = new BigNumber.from(await BIIXContract.balanceOf(Lottery.address));
+
+        // ethers.utils.parseEther("0.01")    
+        expect(balance >= ticketFee);
         expect(present).to.equal(true);
     })
 
@@ -115,11 +142,11 @@ describe("RandomNumberGeneratorTest", function () {
     })
 
     it("Should pay the winners accordingly", async () => {
-        const initialBalance = await waffle.provider.getBalance(acc1.address);
+        const initialBalance = await BIIXContract.balanceOf(acc1.address);
         console.log("initial balance", initialBalance);
         const txn = await Lottery.payWinners();
         await txn.wait();
-        const finalBalance = await waffle.provider.getBalance(acc1.address);
+        const finalBalance = await BIIXContract.balanceOf(acc1.address);
         console.log("final balance", finalBalance);
 
         const isGreater = finalBalance.gt(initialBalance)
