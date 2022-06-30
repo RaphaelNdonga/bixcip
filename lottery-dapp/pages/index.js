@@ -82,6 +82,24 @@ export default function Home() {
     }
   }
 
+  const buyBIIXTokens = async () => {
+    setError('');
+    setSuccessMsg('');
+
+    try {
+      const rcvAmount = ethers.utils.parseEther("1");
+      const sendAmount = BigNumber.from(await lcContract.methods.convertBIIXToEth(rcvAmount).call());
+      await lcContract.methods.sendBIIX(rcvAmount).send({
+        from: address,
+        value: sendAmount
+      });
+      updateState();
+    } catch (error) {
+      setError(error.message);
+    }
+
+  }
+
   const connectMetamask = async () => {
     setError('')
     setSuccessMsg('')
@@ -186,12 +204,12 @@ export default function Home() {
             <div className="columns">
               <div className="column is-two-thirds">
                 <section className="mt-5">
-                  <p>Enter the lottery by sending 100 BIIX</p>
+                  <p>Enter the lottery by sending 1 BIIX</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
                 </section>
                 <section className="mt-5">
                   <p>Don't have BIIX Tokens?</p>
-                  <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Buy now</button>
+                  <button onClick={buyBIIXTokens} className="button is-link is-large is-light mt-3">Buy now</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
