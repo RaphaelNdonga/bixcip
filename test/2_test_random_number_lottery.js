@@ -4,7 +4,7 @@ const { ethers, network, waffle } = require("hardhat");
 const { networks } = require("../hardhat.config");
 const fs = require("fs").promises;
 
-describe("RandomNumberGeneratorTest", function () {
+describe("End to End Lottery Smart Contracts Test", function () {
     let RandomNumberGenerator;
     let LinkToken;
     let acc1;
@@ -61,17 +61,22 @@ describe("RandomNumberGeneratorTest", function () {
         const LotteryFactory = await ethers.getContractFactory("BIXCIPLottery");
         Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, BIIXContract.address);
         await Lottery.deployed();
+        const transferTxn = await BIIXContract.transfer(Lottery.address, ethers.utils.parseEther("1000000"));
+        await transferTxn.wait();
     })
     it("should have total supply of 5000000", async () => {
         let totalSupply = await BIIXContract.totalSupply();
         expect(totalSupply).to.equal(ethers.utils.parseUnits("5000000", "ether"));
     })
     it("should distribute supply among investors", async () => {
-        let acc1Balance = await BIIXContract.balanceOf(acc1.address);
-        let acc2Balance = await BIIXContract.balanceOf(acc2.address);
+        let acc1Balance = BigNumber.from(await BIIXContract.balanceOf(acc1.address));
+        let acc2Balance = BigNumber.from(await BIIXContract.balanceOf(acc2.address));
+        let lotteryBalance = BigNumber.from(await BIIXContract.balanceOf(Lottery.address));
         console.log("account 1 balance: ", acc1Balance);
         console.log("account 2 balance: ", acc2Balance);
-        expect(acc1Balance).to.equal(acc2Balance);
+        expect(acc1Balance.gt(0));
+        expect(acc2Balance.gt(0));
+        expect(lotteryBalance.gt(0));
     })
     it("Should have 1 link", async () => {
         let contractBalance = await LinkToken.balanceOf(RandomNumberGenerator.address);
@@ -128,6 +133,8 @@ describe("RandomNumberGeneratorTest", function () {
         }
         const balance = new BigNumber.from(await BIIXContract.balanceOf(Lottery.address));
 
+        console.log("contract balance: ", balance);
+
         // ethers.utils.parseEther("0.01")    
         expect(balance >= ticketFee);
         expect(present).to.equal(true);
@@ -152,6 +159,21 @@ describe("RandomNumberGeneratorTest", function () {
         const isGreater = finalBalance.gt(initialBalance)
 
         expect(isGreater).to.equal(true);
+    })
+
+    it("should send 100 biix tokens when user buys", async () => {
+        const initialBalance = BigNumber.from(await BIIXContract.balanceOf(acc1.address));
+        const lotteryBIIXBalance = BigNumber.from(await BIIXContract.balanceOf(Lottery.address));
+        console.log("initial account balance: ", initialBalance);
+        console.log("lottery balance: ", lotteryBIIXBalance)
+        const rcvAmount = BigNumber.from(ethers.utils.parseEther("100"));
+        const sndAmount = BigNumber.from(await Lottery.convertBIIXToEth(rcvAmount));
+        console.log("Receive and send amounts: ", rcvAmount, sndAmount);
+        const sendBIIXTxn = await Lottery.sendBIIX(rcvAmount, { value: sndAmount });
+        await sendBIIXTxn.wait();
+        const finalBalance = BigNumber.from(await BIIXContract.balanceOf(acc1.address));
+
+        expect(finalBalance.gt(initialBalance))
     })
 
     it("Should set the correct enum state", async () => {

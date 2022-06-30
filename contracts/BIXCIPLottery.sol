@@ -13,7 +13,7 @@ contract BIXCIPLottery {
     uint256[] public s_randomWords;
     address s_owner;
     address public biixToken;
-    uint256 public biixValue = 0.001 ether;
+    uint256 public biixPerEth = 1000;
     uint256 public ticketFee = 100 ether;
     address[] public winners;
     enum LotteryState {
@@ -50,11 +50,6 @@ contract BIXCIPLottery {
     }
 
     function enter() public {
-        uint256 allowance = IERC20(biixToken).allowance(
-            msg.sender,
-            address(this)
-        );
-
         IERC20(biixToken).transferFrom(msg.sender, address(this), ticketFee);
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
@@ -71,19 +66,19 @@ contract BIXCIPLottery {
     }
 
     function convertBIIXToEth(uint256 amount) public view returns (uint256) {
-        return amount * biixValue;
+        return amount / biixPerEth;
     }
 
     function getTicketFee() public view returns (uint256) {
         return ticketFee;
     }
 
-    function getBIIXValue() public view returns (uint256) {
-        return biixValue;
+    function getBIIXPerEthValue() public view returns (uint256) {
+        return biixPerEth;
     }
 
-    function setBIIXValue(uint256 _biixValue) public onlyOwner {
-        biixValue = _biixValue;
+    function setBIIXPerEthValue(uint256 _biixPerEth) public onlyOwner {
+        biixPerEth = _biixPerEth;
     }
 
     function setTicketFee(uint256 _ticketFee) public onlyOwner {
