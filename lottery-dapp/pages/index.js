@@ -189,6 +189,10 @@ export default function Home() {
                   <p>Enter the lottery by sending 100 BIIX</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
                 </section>
+                <section className="mt-5">
+                  <p>Don't have BIIX Tokens?</p>
+                  <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Buy now</button>
+                </section>
                 <section>
                   <div className="container has-text-danger mt-6">
                     <p>{error}</p>
