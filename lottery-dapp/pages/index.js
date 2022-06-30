@@ -3,14 +3,18 @@ import Head from 'next/head';
 import Web3 from 'web3';
 import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
-import * as lotteryFile from "./blockchain/BIXCIPLottery.json";
+import lotteryAddress from "./blockchain/BIXCIPLotteryAddress.json";
+import lotteryAbi from "./blockchain/BIXCIPLotteryAbi.json"
+import biixAddress from "./blockchain/BIIXAddress.json"
+import biixAbi from "./blockchain/BIIXAbi.json"
 import Modal from './components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 export default function Home() {
   const [address, setAddress] = useState('');
   const [lcContract, setLcContract] = useState();
+  const [biixContract, setBiixContract] = useState();
   const [lotteryPot, setLotteryPot] = useState();
   const [lotteryPlayers, setPlayers] = useState([]);
   const [lotteryHistory, setLotteryHistory] = useState([]);
@@ -26,13 +30,13 @@ export default function Home() {
   });
 
   const updateState = () => {
-    if (lcContract) getPot()
+    if (biixContract) getPot()
     if (lcContract) getPlayers()
     if (lcContract) getLotteryId()
   }
 
   const getPot = async () => {
-    const pot = await lcContract.methods.getBalance().call();
+    const pot = await biixContract.methods.balanceOf(lotteryAddress).call();
     setLotteryPot(ethers.utils.formatEther(pot));
   }
 
@@ -62,13 +66,17 @@ export default function Home() {
     setError('')
     setSuccessMsg('')
     try {
+      console.log("Lottery Address: ", lotteryAddress);
+      const ticketFee = await lcContract.methods.getTicketFee().call();
+      const bigTicketFee = BigNumber.from(ticketFee);
+      console.log("Ticket fee: ", bigTicketFee);
+      await biixContract.methods.approve(lotteryAddress, bigTicketFee).send({
+        from: address
+      });
       await lcContract.methods.enter().send({
-        from: address,
-        value: '15000000000000000',
-        gas: 300000,
-        gasPrice: null
-      })
-      updateState()
+        from: address
+      });
+      updateState();
     } catch (err) {
       setError(err.message)
     }
@@ -97,20 +105,19 @@ export default function Home() {
 
   const setupContractAndAddress = async (web3) => {
     /* get list of accounts */
-    const accounts = await web3.eth.getAccounts()
+    const accounts = await web3.eth.getAccounts();
 
     checkConnection(accounts);
 
     setAddress(accounts[0]);
 
-    /* create local contract copy */
-    const lotteryAbi = lotteryFile.abi;
-    const lotteryAddress = lotteryFile.networks["4"].address;
-
     console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
     const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
     setLcContract(lc);
+
+    const biixToken = new web3.eth.Contract(biixAbi, biixAddress);
+    setBiixContract(biixToken);
   }
 
   const checkConnection = (accounts) => {
@@ -128,7 +135,7 @@ export default function Home() {
 
   useEffect(() => {
     updateState()
-  }, [lcContract]);
+  }, [lcContract, biixContract]);
 
   const checkChain = (chainId) => {
     console.log("checking chain...", chainId);
@@ -179,7 +186,7 @@ export default function Home() {
             <div className="columns">
               <div className="column is-two-thirds">
                 <section className="mt-5">
-                  <p>Enter the lottery by sending 0.015 Ether</p>
+                  <p>Enter the lottery by sending 100 BIIX</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
                 </section>
                 <section>
@@ -242,7 +249,7 @@ export default function Home() {
                     <div className="card-content">
                       <div className="content">
                         <h2>Pot</h2>
-                        <p>{lotteryPot} Ether</p>
+                        <p>{lotteryPot} BIIX</p>
                       </div>
                     </div>
                   </div>
