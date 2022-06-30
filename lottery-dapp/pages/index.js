@@ -208,7 +208,7 @@ export default function Home() {
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
                 </section>
                 <section className="mt-5">
-                  <p>Don't have BIIX Tokens?</p>
+                  <p>Dont have BIIX Tokens?</p>
                   <button onClick={buyBIIXTokens} className="button is-link is-large is-light mt-3">Buy now</button>
                 </section>
                 <section>
