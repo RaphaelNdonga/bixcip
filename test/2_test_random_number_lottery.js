@@ -4,7 +4,7 @@ const { ethers, network, waffle } = require("hardhat");
 const { networks } = require("../hardhat.config");
 const fs = require("fs").promises;
 
-describe("RandomNumberGeneratorTest", function () {
+describe("End to End Lottery Smart Contracts Test", function () {
     let RandomNumberGenerator;
     let LinkToken;
     let acc1;
@@ -131,6 +131,18 @@ describe("RandomNumberGeneratorTest", function () {
         // ethers.utils.parseEther("0.01")    
         expect(balance >= ticketFee);
         expect(present).to.equal(true);
+    })
+
+    it("should send 100 biix tokens when user buys", async () => {
+        const initialBalance = BigNumber.from(await BIIXContract.balanceOf(acc1.address));
+        const rcvAmount = BigNumber.from(ethers.utils.parseEther("100"));
+        const sndAmount = BigNumber.from(await Lottery.convertBIIXToEth(rcvAmount));
+        console.log("Receive and send amounts: ", rcvAmount, sndAmount);
+        const sendBIIXTxn = await Lottery.sendBIIX(rcvAmount, { value: sndAmount });
+        await sendBIIXTxn.wait();
+        const finalBalance = BigNumber.from(await BIIXContract.balanceOf(acc1.address));
+
+        expect(finalBalance.gt(initialBalance))
     })
 
     it("Should get 3 random numbers when picking a winner", async () => {
