@@ -10,10 +10,10 @@ module.exports = function (deployer) {
     console.log("Bixciplottery abi: ", BIXCIPLottery.abi);
     fs.copyFile(__dirname + "/../build/contracts/BIXCIPLottery.json", __dirname + "/../lottery-dapp/pages/blockchain/BIXCIPLottery.json", (err) => {
       if (err) {
-        console.log("Error occurred while copying file")
+        console.log("Error occurred while copying Lottery file")
         throw err
       }
-      console.log("File copied successfully");
+      console.log("Lottery File copied successfully");
     })
   });
 };

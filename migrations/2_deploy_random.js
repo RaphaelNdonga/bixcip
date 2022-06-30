@@ -5,19 +5,17 @@ const web3 = require("web3");
 
 module.exports = async (deployer, network, accounts) => {
   let randomNumberGeneratorAddress;
-  deployer.deploy(
+  let LinkToken = await ILinkToken.at(networks[network].linkToken);
+  await deployer.deploy(
     RandomNumberGenerator,
     networks[network].vrfCoordinator,
     networks[network].keyHash,
     networks[network].linkToken,
     3
-  ).then(async () => {
-    randomNumberGeneratorAddress = RandomNumberGenerator.address;
-    console.log("Random generator address: ", randomNumberGeneratorAddress);
-    let LinkToken = await ILinkToken.at(networks[network].linkToken);
-    console.log("Link Token Address: ", LinkToken.address)
-    LinkToken.transfer(randomNumberGeneratorAddress, web3.utils.toWei("1", "ether"));
-  }).catch((error) => {
-    console.log("Error in 2_deploy_random.js", error);
-  });
+  )
+  randomNumberGeneratorAddress = RandomNumberGenerator.address;
+  console.log("Random generator address: ", randomNumberGeneratorAddress);
+
+  console.log("Link Token Address: ", LinkToken.address)
+  await LinkToken.transfer(randomNumberGeneratorAddress, web3.utils.toWei("1", "ether"));
 };
