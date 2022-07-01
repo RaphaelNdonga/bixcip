@@ -87,7 +87,7 @@ export default function Home() {
     setSuccessMsg('');
 
     try {
-      const rcvAmount = ethers.utils.parseEther("1");
+      const rcvAmount = ethers.utils.parseEther("100");
       const sendAmount = BigNumber.from(await lcContract.methods.convertBIIXToEth(rcvAmount).call());
       await lcContract.methods.sendBIIX(rcvAmount).send({
         from: address,
