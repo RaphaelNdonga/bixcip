@@ -100,6 +100,39 @@ export default function Home() {
 
   }
 
+  const importBIIXToken = async () => {
+    if (!connected) {
+      return
+    }
+    if (wcProvider.connected) {
+      console.log("Importing through Wallet connect")
+      await wcProvider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: biixAddress,
+            symbol: 'BIIX',
+            decimals: '18'
+          }
+        }
+      })
+    } else {
+      console.log("Importing through metamask")
+      await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: biixAddress,
+            symbol: 'BIIX',
+            decimals: '18'
+          }
+        }
+      })
+    }
+  }
+
   const connectMetamask = async () => {
     setError('')
     setSuccessMsg('')
@@ -210,6 +243,10 @@ export default function Home() {
                 <section className="mt-5">
                   <p>Dont have BIIX Tokens?</p>
                   <button onClick={buyBIIXTokens} className="button is-link is-large is-light mt-3">Buy now</button>
+                </section>
+                <section className="mt-5">
+                  <p>Cant see BIIX in wallet?</p>
+                  <button onClick={importBIIXToken} className="button is-link is-large is-light mt-3">Import now</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
