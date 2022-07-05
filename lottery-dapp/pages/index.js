@@ -25,9 +25,9 @@ export default function Home() {
   const [isCorrectChain, setIsCorrectChain] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
 
-  const wcProvider = new WalletConnectProvider({
+  const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
-  });
+  }));
 
   const updateState = () => {
     if (biixContract) getPot()
@@ -100,6 +100,40 @@ export default function Home() {
 
   }
 
+  const importBIIXToken = async () => {
+    if (!connected) {
+      return
+    }
+    console.log("importBIIXToken: wc connected: ", wcProvider.connected);
+    if (wcProvider.connected) {
+      console.log("Importing through Wallet connect")
+      await wcProvider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: biixAddress,
+            symbol: 'BIIX',
+            decimals: '18'
+          }
+        }
+      })
+    } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+      console.log("Importing through metamask")
+      await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: biixAddress,
+            symbol: 'BIIX',
+            decimals: '18'
+          }
+        }
+      })
+    }
+  }
+
   const connectMetamask = async () => {
     setError('')
     setSuccessMsg('')
@@ -169,6 +203,8 @@ export default function Home() {
     const web3 = new Web3(wcProvider);
     setupContractAndAddress(web3);
 
+    console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
     wcProvider.on("accountsChanged", checkConnection);
     wcProvider.on("chainChanged", checkChain);
   }
@@ -210,6 +246,10 @@ export default function Home() {
                 <section className="mt-5">
                   <p>Dont have BIIX Tokens?</p>
                   <button onClick={buyBIIXTokens} className="button is-link is-large is-light mt-3">Buy now</button>
+                </section>
+                <section className="mt-5">
+                  <p>Cant see BIIX in wallet?</p>
+                  <button onClick={importBIIXToken} className="button is-link is-large is-light mt-3">Import now</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
