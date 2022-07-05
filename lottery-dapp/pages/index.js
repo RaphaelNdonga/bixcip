@@ -25,9 +25,9 @@ export default function Home() {
   const [isCorrectChain, setIsCorrectChain] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
 
-  const wcProvider = new WalletConnectProvider({
+  const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
-  });
+  }));
 
   const updateState = () => {
     if (biixContract) getPot()
@@ -104,6 +104,7 @@ export default function Home() {
     if (!connected) {
       return
     }
+    console.log("importBIIXToken: wc connected: ", wcProvider.connected);
     if (wcProvider.connected) {
       console.log("Importing through Wallet connect")
       await wcProvider.request({
@@ -201,6 +202,8 @@ export default function Home() {
     await wcProvider.enable();
     const web3 = new Web3(wcProvider);
     setupContractAndAddress(web3);
+
+    console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 
     wcProvider.on("accountsChanged", checkConnection);
     wcProvider.on("chainChanged", checkChain);
