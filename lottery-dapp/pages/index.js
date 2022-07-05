@@ -216,12 +216,15 @@ export default function Home() {
   }
 
   const connectWalletConnect = async () => {
+    localStorage.clear()
     await wcProvider.enable();
     const chainId = await wcProvider.request({ method: "eth_chainId" });
     console.log("Wallet connect chain id: ", chainId);
     if (`0x${chainId}` !== rinkebyId) {
       await switchChain()
     }
+    const newChainId = await wcProvider.request({ method: "eth_chainId" });
+    console.log("Wallet connect new chain id: ", newChainId);
     const web3 = new Web3(wcProvider);
 
     setupContractAndAddress(web3);
