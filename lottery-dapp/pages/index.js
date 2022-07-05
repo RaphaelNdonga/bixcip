@@ -154,7 +154,7 @@ export default function Home() {
       setupContractAndAddress(web3);
 
       window.ethereum.on('accountsChanged', checkConnection);
-      // window.ethereum.on('chainChanged', switchChain);
+      window.ethereum.on('chainChanged', switchChain);
     } else {
       /* MetaMask is not installed */
       console.log("Metamask still not installed")
@@ -197,6 +197,7 @@ export default function Home() {
   }, [lcContract, biixContract]);
 
   const switchChain = async () => {
+    console.log("Switching chain...")
     if (wcProvider.connected) {
       await wcProvider.request({
         method: "wallet_switchEthereumChain",
@@ -217,6 +218,7 @@ export default function Home() {
   const connectWalletConnect = async () => {
     await wcProvider.enable();
     const chainId = await wcProvider.request({ method: "eth_chainId" });
+    console.log("Wallet connect chain id: ", chainId);
     if (`0x${chainId}` !== rinkebyId) {
       await switchChain()
     }
@@ -227,7 +229,7 @@ export default function Home() {
     console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 
     wcProvider.on("accountsChanged", checkConnection);
-    // wcProvider.on("chainChanged", switchChain);
+    wcProvider.on("chainChanged", switchChain);
   }
 
   return (
