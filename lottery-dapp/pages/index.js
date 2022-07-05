@@ -215,8 +215,13 @@ export default function Home() {
     }
   }
 
+  const disconnectHandler = () => {
+    console.log("Wallet disconnected")
+    localStorage.clear();
+    setConnected(false);
+  }
+
   const connectWalletConnect = async () => {
-    localStorage.clear()
     await wcProvider.enable();
     const chainId = await wcProvider.request({ method: "eth_chainId" });
     console.log("Wallet connect chain id: ", chainId);
@@ -233,6 +238,7 @@ export default function Home() {
 
     wcProvider.on("accountsChanged", checkConnection);
     wcProvider.on("chainChanged", switchChain);
+    wcProvider.on("disconnect", disconnectHandler);
   }
 
   return (
