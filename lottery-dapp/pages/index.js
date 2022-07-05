@@ -22,8 +22,8 @@ export default function Home() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [connected, setConnected] = useState(false);
-  const [isCorrectChain, setIsCorrectChain] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
+  const [rinkebyId, setRinkebyId] = useState("0x4");
 
   const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -140,6 +140,13 @@ export default function Home() {
     /* check if MetaMask is installed */
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       /* request wallet connection */
+      const chainId = await window.ethereum.request({ method: "eth_chainId" })
+      console.log("connectMetamask: chainId: ", chainId)
+
+      if (chainId !== rinkebyId) {
+        console.log("connectMetamask: switching chains: ")
+        await switchChain()
+      }
       await window.ethereum.request({ method: "eth_requestAccounts" })
       /* create web3 instance & set to state */
       const web3 = new Web3(window.ethereum)
@@ -147,7 +154,7 @@ export default function Home() {
       setupContractAndAddress(web3);
 
       window.ethereum.on('accountsChanged', checkConnection);
-      window.ethereum.on('chainChanged', checkChain);
+      // window.ethereum.on('chainChanged', switchChain);
     } else {
       /* MetaMask is not installed */
       console.log("Metamask still not installed")
@@ -189,24 +196,38 @@ export default function Home() {
     updateState()
   }, [lcContract, biixContract]);
 
-  const checkChain = (chainId) => {
-    console.log("checking chain...", chainId);
-    if (chainId !== "0x4") {
-      setIsCorrectChain(false);
-    } else {
-      setIsCorrectChain(true);
+  const switchChain = async () => {
+    if (wcProvider.connected) {
+      await wcProvider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{
+          chainId: rinkebyId
+        }]
+      })
+    } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{
+          chainId: rinkebyId
+        }]
+      })
     }
   }
 
   const connectWalletConnect = async () => {
     await wcProvider.enable();
+    const chainId = await wcProvider.request({ method: "eth_chainId" });
+    if (`0x${chainId}` !== rinkebyId) {
+      await switchChain()
+    }
     const web3 = new Web3(wcProvider);
+
     setupContractAndAddress(web3);
 
     console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 
     wcProvider.on("accountsChanged", checkConnection);
-    wcProvider.on("chainChanged", checkChain);
+    // wcProvider.on("chainChanged", switchChain);
   }
 
   return (
