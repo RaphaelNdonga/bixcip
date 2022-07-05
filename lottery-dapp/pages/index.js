@@ -118,7 +118,7 @@ export default function Home() {
           }
         }
       })
-    } else {
+    } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       console.log("Importing through metamask")
       await window.ethereum.request({
         method: 'wallet_watchAsset',
