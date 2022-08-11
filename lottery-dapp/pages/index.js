@@ -5,16 +5,14 @@ import styles from '../styles/Home.module.css';
 import 'bulma/css/bulma.css';
 import lotteryAddress from "./blockchain/BIXCIPLotteryAddress.json";
 import lotteryAbi from "./blockchain/BIXCIPLotteryAbi.json"
-import biixAddress from "./blockchain/BIIXAddress.json"
-import biixAbi from "./blockchain/BIIXAbi.json"
 import Modal from './components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 
+
 export default function Home() {
   const [address, setAddress] = useState('');
   const [lcContract, setLcContract] = useState();
-  const [biixContract, setBiixContract] = useState();
   const [lotteryPot, setLotteryPot] = useState();
   const [lotteryPlayers, setPlayers] = useState([]);
   const [lotteryHistory, setLotteryHistory] = useState([]);
@@ -24,19 +22,23 @@ export default function Home() {
   const [connected, setConnected] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
   const [rinkebyId, setRinkebyId] = useState("0x4");
+  const [web3, setWeb3] = useState();
 
   const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
   }));
 
   const updateState = () => {
-    if (biixContract) getPot()
-    if (lcContract) getPlayers()
-    if (lcContract) getLotteryId()
+    if (lcContract) {
+      getPot()
+      getLotteryId()
+      getPlayers()
+    }
   }
 
   const getPot = async () => {
-    const pot = await biixContract.methods.balanceOf(lotteryAddress).call();
+    const pot = await web3.eth.getBalance(lotteryAddress);
+    console.log("Pot is : ", pot);
     setLotteryPot(ethers.utils.formatEther(pot));
   }
 
@@ -70,11 +72,9 @@ export default function Home() {
       const ticketFee = await lcContract.methods.getTicketFee().call();
       const bigTicketFee = BigNumber.from(ticketFee);
       console.log("Ticket fee: ", bigTicketFee);
-      await biixContract.methods.approve(lotteryAddress, bigTicketFee).send({
-        from: address
-      });
       await lcContract.methods.enter().send({
-        from: address
+        from: address,
+        value: bigTicketFee
       });
       updateState();
     } catch (err) {
@@ -82,75 +82,24 @@ export default function Home() {
     }
   }
 
-  const buyBIIXTokens = async () => {
+  const connectMetamask = async () => {
     setError('');
     setSuccessMsg('');
-
-    try {
-      const rcvAmount = ethers.utils.parseEther("100");
-      const sendAmount = BigNumber.from(await lcContract.methods.convertBIIXToEth(rcvAmount).call());
-      await lcContract.methods.sendBIIX(rcvAmount).send({
-        from: address,
-        value: sendAmount
-      });
-      updateState();
-    } catch (error) {
-      setError(error.message);
-    }
-
-  }
-
-  const importBIIXToken = async () => {
-    if (!connected) {
-      return
-    }
-    console.log("importBIIXToken: wc connected: ", wcProvider.connected);
-    if (wcProvider.connected) {
-      console.log("Importing through Wallet connect")
-      await wcProvider.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address: biixAddress,
-            symbol: 'BIIX',
-            decimals: '18'
-          }
-        }
-      })
-    } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
-      console.log("Importing through metamask")
-      await window.ethereum.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: {
-            address: biixAddress,
-            symbol: 'BIIX',
-            decimals: '18'
-          }
-        }
-      })
-    }
-  }
-
-  const connectMetamask = async () => {
-    setError('')
-    setSuccessMsg('')
     /* check if MetaMask is installed */
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       /* request wallet connection */
-      const chainId = await window.ethereum.request({ method: "eth_chainId" })
-      console.log("connectMetamask: chainId: ", chainId)
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      console.log("connectMetamask: chainId: ", chainId);
 
       if (chainId !== rinkebyId) {
-        console.log("connectMetamask: switching chains: ")
-        await switchChain()
+        console.log("connectMetamask: switching chains: ");
+        await switchChain();
       }
-      await window.ethereum.request({ method: "eth_requestAccounts" })
+      await window.ethereum.request({ method: "eth_requestAccounts" });
       /* create web3 instance & set to state */
-      const web3 = new Web3(window.ethereum)
+      const web3 = new Web3(window.ethereum);
       /* set web3 instance in React state */
+      setWeb3(web3);
       setupContractAndAddress(web3);
 
       window.ethereum.on('accountsChanged', checkConnection);
@@ -174,9 +123,6 @@ export default function Home() {
 
     const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
     setLcContract(lc);
-
-    const biixToken = new web3.eth.Contract(biixAbi, biixAddress);
-    setBiixContract(biixToken);
   }
 
   const checkConnection = (accounts) => {
@@ -194,7 +140,7 @@ export default function Home() {
 
   useEffect(() => {
     updateState()
-  }, [lcContract, biixContract]);
+  }, [lcContract]);
 
   const switchChain = async () => {
     console.log("Switching chain...")
@@ -272,16 +218,8 @@ export default function Home() {
             <div className="columns">
               <div className="column is-two-thirds">
                 <section className="mt-5">
-                  <p>Enter the lottery by sending 100 BIIX</p>
+                  <p>Enter the lottery by sending 0.1 ether</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
-                </section>
-                <section className="mt-5">
-                  <p>Dont have BIIX Tokens?</p>
-                  <button onClick={buyBIIXTokens} className="button is-link is-large is-light mt-3">Buy now</button>
-                </section>
-                <section className="mt-5">
-                  <p>Cant see BIIX in wallet?</p>
-                  <button onClick={importBIIXToken} className="button is-link is-large is-light mt-3">Import now</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
@@ -343,7 +281,7 @@ export default function Home() {
                     <div className="card-content">
                       <div className="content">
                         <h2>Pot</h2>
-                        <p>{lotteryPot} BIIX</p>
+                        <p>{lotteryPot} Ether</p>
                       </div>
                     </div>
                   </div>
