@@ -12,24 +12,23 @@ contract BIXCIPLottery {
     IRandomNumberGenerator randomNumberGenerator;
     uint256[] public s_randomWords;
     address s_owner;
-    address public biixToken;
-    uint256 public biixPerEth = 1000;
-    uint256 public ticketFee = 100 ether;
-    address[] public winners;
+    uint256 public ticketFee = 0.01 ether;
+    address payable[] public winners;
     enum LotteryState {
         OPEN,
         CLOSED
     }
+    uint256 public prizeMoney;
 
     LotteryState lotteryState;
 
-    constructor(address _randomNumberGeneratorAddress, address _biixToken) {
+    constructor(address _randomNumberGeneratorAddress, uint256 _prizeMoney) {
         s_owner = msg.sender;
+        prizeMoney = _prizeMoney;
         lotteryId = 1;
         randomNumberGenerator = IRandomNumberGenerator(
             _randomNumberGeneratorAddress
         );
-        biixToken = _biixToken;
         startLottery();
     }
 
@@ -49,36 +48,16 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter() public {
-        IERC20(biixToken).transferFrom(msg.sender, address(this), ticketFee);
+    function enter() public payable {
+        require(msg.value >= 0.01 ether, "Insufficient amount");
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
         players.push(payable(msg.sender));
     }
 
-    function sendBIIX(uint256 amount) public payable {
-        require(
-            msg.value >= convertBIIXToEth(amount),
-            "BIXCIPLottery: Ether sent was not enough for BIIX"
-        );
-        IERC20(biixToken).transfer(msg.sender, amount);
-    }
-
-    function convertBIIXToEth(uint256 amount) public view returns (uint256) {
-        return amount / biixPerEth;
-    }
-
     function getTicketFee() public view returns (uint256) {
         return ticketFee;
-    }
-
-    function getBIIXPerEthValue() public view returns (uint256) {
-        return biixPerEth;
-    }
-
-    function setBIIXPerEthValue(uint256 _biixPerEth) public onlyOwner {
-        biixPerEth = _biixPerEth;
     }
 
     function setTicketFee(uint256 _ticketFee) public onlyOwner {
@@ -106,9 +85,8 @@ contract BIXCIPLottery {
         );
 
         for (uint96 i = 0; i < winners.length; i++) {
-            uint256 amount = IERC20(biixToken).balanceOf((address(this))) /
-                winners.length;
-            IERC20(biixToken).transfer(winners[i], amount);
+            uint256 amount = prizeMoney / winners.length;
+            winners[i].transfer(amount);
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
         }
