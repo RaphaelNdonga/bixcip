@@ -18,3 +18,10 @@ model rounds {
   title       String @db.VarChar(255)
   description String @db.VarChar(255)
 }
+
+model assets {
+  id          Int    @id @default(autoincrement())
+  url         String @db.VarChar(255)
+  title       String @db.VarChar(255)
+  description String @db.VarChar(255)
+}
