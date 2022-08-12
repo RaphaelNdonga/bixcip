@@ -11,3 +11,10 @@ model accounts {
   id      Int    @id @default(autoincrement())
   address String @db.VarChar(255)
 }
+
+model rounds {
+  id          Int    @id @default(autoincrement())
+  date        String @db.VarChar(255)
+  title       String @db.VarChar(255)
+  description String @db.VarChar(255)
+}
