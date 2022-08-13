@@ -227,7 +227,7 @@ export default function Home() {
                   <p className='is-size-1'>WIN ART EVERY WEEK!</p>
                   <p className='is-size-5 mb-5'>BIXCIP is a blockchain lottery for artists and art collectors. It uses Chainlink oracle to randomize winner selection for every art piece sold!</p>
                   <button className='button is-danger is-outlined mr-3'>See how it works</button>
-                  <button onClick={enterLotteryHandler} className="button is-danger">Play now</button>
+                  <button onClick={enterLotteryHandler} className="button is-danger">Play Lottery</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
@@ -247,7 +247,7 @@ export default function Home() {
               </div>
             </div>
           </section>
-          <section className='is-flex is-justify-content-center'>
+          <section className='is-flex is-justify-content-center mt-5'>
             <p className='is-size-5'>Trusted by millions of developers </p>
           </section>
           <section className='is-flex is-justify-content-center'>
@@ -256,16 +256,16 @@ export default function Home() {
           <section className='is-flex is-justify-content-center'>
             <p className='is-size-5'>Built on secure platforms</p>
           </section>
-          <section className='columns is-mobile is-centered is-multiline'>
-            <section className='column is-narrow'>
+          <section className='columns is-mobile is-centered is-multiline mt-5'>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
               <Image src={ethImg} height='50px' width='50px' />
               <p>Ethereum</p>
             </section>
-            <section className='column is-narrow'>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
               <Image src={metamaskWalletImg} height='50px' width='50px' />
               <p>Metamask/WalletConnect Wallet</p>
             </section>
-            <section className='column is-narrow'>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
               <Image src={chainlinkImg} height='50px' width='50px' />
               <p>Chainlink</p>
             </section>
