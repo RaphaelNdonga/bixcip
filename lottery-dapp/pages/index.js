@@ -204,12 +204,12 @@ export default function Home() {
               <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
             <div className="navbar-end">
-              <button class="button is-danger is-outlined mr-3">Login</button>
-              {!connected ? <button onClick={() => {
+              {!connected ? <button class="button is-danger is-outlined mr-3" onClick={() => {
 
                 setConnectClicked(true)
 
-              }} className="button is-danger">Play Lottery</button> : <button className="button is-danger is-large" disabled>Connected</button>}
+              }}>Login</button> : <button className="button is-danger is-outlined mr-3" disabled>Connected</button>}
+              <button onClick={enterLotteryHandler} className="button is-danger">Play Lottery</button>
             </div>
           </div>
         </nav>
