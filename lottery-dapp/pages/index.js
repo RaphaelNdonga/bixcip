@@ -11,6 +11,9 @@ import { BigNumber, ethers } from 'ethers';
 import Image from "next/image";
 import bixcipLogo from '../pages/images/bixcip-logo.png';
 import slurpyImg from '../pages/images/slurpy.png'
+import metamaskWalletImg from '../pages/images/metamask_wallet.png';
+import chainlinkImg from './images/chainlink.png';
+import ethImg from './images/eth.png';
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -239,10 +242,33 @@ export default function Home() {
               </div>
               <div className='column is-flex is-justify-content-center'>
                 <section className="mt-5">
-                  <Image src={slurpyImg} height='300px' width='300px' />
+                  <Image src={slurpyImg} height='300px' width='250px' />
                 </section>
               </div>
             </div>
+          </section>
+          <section className='is-flex is-justify-content-center'>
+            <p className='is-size-5'>Trusted by millions of developers </p>
+          </section>
+          <section className='is-flex is-justify-content-center'>
+            <p className='is-size-5'>&amp;</p>
+          </section>
+          <section className='is-flex is-justify-content-center'>
+            <p className='is-size-5'>Built on secure platforms</p>
+          </section>
+          <section className='columns is-mobile is-centered is-multiline'>
+            <section className='column is-narrow'>
+              <Image src={ethImg} height='50px' width='50px' />
+              <p>Ethereum</p>
+            </section>
+            <section className='column is-narrow'>
+              <Image src={metamaskWalletImg} height='50px' width='50px' />
+              <p>Metamask/WalletConnect Wallet</p>
+            </section>
+            <section className='column is-narrow'>
+              <Image src={chainlinkImg} height='50px' width='50px' />
+              <p>Chainlink</p>
+            </section>
           </section>
         </div>
       </main>
