@@ -256,7 +256,7 @@ export default function Home() {
           <section className='is-flex is-justify-content-center'>
             <p className='is-size-5'>Built on secure platforms</p>
           </section>
-          <section className='columns is-mobile is-centered is-multiline mt-5'>
+          <section className='columns is-mobile is-centered is-multiline mt-6'>
             <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
               <Image src={ethImg} height='50px' width='50px' />
               <p>Ethereum</p>
@@ -269,6 +269,9 @@ export default function Home() {
               <Image src={chainlinkImg} height='50px' width='50px' />
               <p>Chainlink</p>
             </section>
+          </section>
+          <section className='is-flex is-justify-content-center mt-6'>
+            <p className='is-size-2'>FEATURES</p>
           </section>
         </div>
       </main>
