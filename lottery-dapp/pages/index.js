@@ -20,6 +20,7 @@ import roundWinnersImg from './images/round_winners.png';
 import img1 from './images/letter_1.png';
 import img2 from './images/letter_2.png';
 import img3 from './images/letter_3.png';
+import Link from 'next/link';
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -218,7 +219,7 @@ export default function Home() {
                 setConnectClicked(true)
 
               }}>Login</button> : <button className="button is-danger is-outlined mr-3" disabled>Connected</button>}
-              <button onClick={enterLotteryHandler} className="button is-danger">Play Lottery</button>
+              <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
             </div>
           </div>
         </nav>
