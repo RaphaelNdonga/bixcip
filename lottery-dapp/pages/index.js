@@ -14,6 +14,12 @@ import slurpyImg from '../pages/images/slurpy.png'
 import metamaskWalletImg from '../pages/images/metamask_wallet.png';
 import chainlinkImg from './images/chainlink.png';
 import ethImg from './images/eth.png';
+import artLeftImg from './images/artleft.png';
+import walletImg from './images/wallet.png';
+import roundWinnersImg from './images/round_winners.png';
+import img1 from './images/letter_1.png';
+import img2 from './images/letter_2.png';
+import img3 from './images/letter_3.png';
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -270,8 +276,57 @@ export default function Home() {
               <p>Chainlink</p>
             </section>
           </section>
+          <section className='is-flex is-justify-content-center mt-6 mb-6'>
+            <p className='is-size-3'>FEATURES</p>
+          </section>
+          <section className='is-flex is-flex-direction-column'>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Dope Art</p>
+                <p className='is-size-5'>We work with artists, creators, innovators and designers to bring you the best art work from around the world</p>
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-center'>
+                <Image src={artLeftImg} height='300px' width='250px' />
+              </section>
+            </section>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <Image src={walletImg} height='300px' width='400px' />
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Anonymous Play</p>
+                <p className='is-size-5'>The BIXCIP Lottery is truly anonymous. Not even the BIXCIP team knows the identity of those playing the lottery thanks to Ethereum</p>
+              </section>
+            </section>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Truly Random</p>
+                <p className='is-size-5'>The BIXCIP Lottery is truly random. Nobody can predict the winner in advance. Behind the hood, we use Chainlink, a decentralized oracle</p>
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-center'>
+                <Image src={roundWinnersImg} height='300px' width='400px' />
+              </section>
+            </section>
+          </section>
           <section className='is-flex is-justify-content-center mt-6'>
-            <p className='is-size-2'>FEATURES</p>
+            <p className='is-size-3 mt-6 mb-6'>HOW IT WORKS</p>
+          </section>
+          <section className='columns is-centered'>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img1} height='50px' width='30px' />
+              <p className='mb-6'>Step 1: Select Art</p>
+              <p className='is-size-5'>Pick your favorite art. Can't decide? Pick more than one!</p>
+            </section>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img2} height='50px' width='50px' />
+              <p className='mb-6'>Step 2: Purchase Ticket</p>
+              <p className='is-size-5'>Purchase a lottery ticket for each art piece. Can't decide? Pick more than one.</p>
+            </section>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img3} height='50px' width='50px' />
+              <p className='mb-6'>Step 3: Win Art</p>
+              <p className='is-size-5'>Every round has 3 winners. Get lucky and win the art you choose.</p>
+            </section>
           </section>
         </div>
       </main>
