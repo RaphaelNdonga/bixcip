@@ -286,7 +286,7 @@ export default function Home() {
                 <p className='is-size-1 mt-5 mb-5'>Dope Art</p>
                 <p className='is-size-5'>We work with artists, creators, innovators and designers to bring you the best art work from around the world</p>
               </section>
-              <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <section className='column is-flex is-flex-direction-column is-align-items-end'>
                 <Image src={artLeftImg} height='300px' width='250px' />
               </section>
             </section>
@@ -304,7 +304,7 @@ export default function Home() {
                 <p className='is-size-1 mt-5 mb-5'>Truly Random</p>
                 <p className='is-size-5'>The BIXCIP Lottery is truly random. Nobody can predict the winner in advance. Behind the hood, we use Chainlink, a decentralized oracle</p>
               </section>
-              <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <section className='column is-flex is-flex-direction-column is-align-items-end'>
                 <Image src={roundWinnersImg} height='300px' width='400px' />
               </section>
             </section>
