@@ -235,7 +235,7 @@ export default function Home() {
                   </div>
                 </section>
               </div>
-              <div className={`${styles.lotteryinfo} column`}>
+              <div className='column'>
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
