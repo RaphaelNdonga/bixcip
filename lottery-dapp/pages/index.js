@@ -10,7 +10,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 import Image from "next/image";
 import bixcipLogo from '../pages/images/bixcip-logo.png';
-
+import slurpyImg from '../pages/images/slurpy.png'
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -221,8 +221,10 @@ export default function Home() {
             <div className="columns">
               <div className="column">
                 <section className="mt-5">
-                  <p>Enter the lottery by sending 0.1 ether</p>
-                  <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
+                  <p className='is-size-1'>WIN ART EVERY WEEK!</p>
+                  <p className='is-size-5 mb-5'>BIXCIP is a blockchain lottery for artists and art collectors. It uses Chainlink oracle to randomize winner selection for every art piece sold!</p>
+                  <button className='button is-danger is-outlined mr-3'>See how it works</button>
+                  <button onClick={enterLotteryHandler} className="button is-danger">Play now</button>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
@@ -235,59 +237,9 @@ export default function Home() {
                   </div>
                 </section>
               </div>
-              <div className='column'>
+              <div className='column is-flex is-justify-content-center'>
                 <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Lottery History</h2>
-                        {
-                          (lotteryHistory && lotteryHistory.length > 0) && lotteryHistory.map(item => {
-                            if (lotteryId != item.id) {
-                              return <div className="history-entry mt-3" key={item.id}>
-                                <div>Lottery #{item.id} winner:</div>
-                                <div>
-                                  <a href={`https://etherscan.io/address/${item.address}`} target="_blank" rel="noreferrer">
-                                    {item.address}
-                                  </a>
-                                </div>
-                              </div>
-                            }
-                          })
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Players ({lotteryPlayers.length})</h2>
-                        <ul className="ml-0">
-                          {
-                            (lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
-                              return <li key={`${player}-${index}`}>
-                                <a href={`https://etherscan.io/address/${player}`} target="_blank" rel="noreferrer">
-                                  {player}
-                                </a>
-                              </li>
-                            })
-                          }
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Pot</h2>
-                        <p>{lotteryPot} Ether</p>
-                      </div>
-                    </div>
-                  </div>
+                  <Image src={slurpyImg} height='300px' width='300px' />
                 </section>
               </div>
             </div>
