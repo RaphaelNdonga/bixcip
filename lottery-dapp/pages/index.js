@@ -203,7 +203,7 @@ export default function Home() {
             <div className="navbar-brand">
               <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
-            <div className="navbar-end">
+            <div className="navbar-end mt-4 mb-4">
               {!connected ? <button class="button is-danger is-outlined mr-3" onClick={() => {
 
                 setConnectClicked(true)
@@ -219,7 +219,7 @@ export default function Home() {
           }} />}
           <section className="mt-5">
             <div className="columns">
-              <div className="column is-two-thirds">
+              <div className="column">
                 <section className="mt-5">
                   <p>Enter the lottery by sending 0.1 ether</p>
                   <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
@@ -235,7 +235,7 @@ export default function Home() {
                   </div>
                 </section>
               </div>
-              <div className={`${styles.lotteryinfo} column is-one-third`}>
+              <div className={`${styles.lotteryinfo} column`}>
                 <section className="mt-5">
                   <div className="card">
                     <div className="card-content">
