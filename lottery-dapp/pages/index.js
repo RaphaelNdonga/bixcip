@@ -8,6 +8,8 @@ import lotteryAbi from "./blockchain/BIXCIPLotteryAbi.json"
 import Modal from './components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
+import Image from "next/image";
+import bixcipLogo from '../pages/images/bixcip-logo.png';
 
 
 export default function Home() {
@@ -199,14 +201,15 @@ export default function Home() {
         <nav className="navbar mt-4 mb-4">
           <div className="container">
             <div className="navbar-brand">
-              <h1>BIXCIP Lottery</h1>
+              <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
             <div className="navbar-end">
+              <button class="button is-danger is-outlined mr-3">Login</button>
               {!connected ? <button onClick={() => {
 
                 setConnectClicked(true)
 
-              }} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
+              }} className="button is-danger">Play Lottery</button> : <button className="button is-danger is-large" disabled>Connected</button>}
             </div>
           </div>
         </nav>
