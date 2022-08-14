@@ -47,7 +47,7 @@ export default function Play({ assets }) {
                 </nav>
                 <div className="container">
                     <p className="is-size-1">SELECT ART TO WIN</p>
-                    <div className="image-container">
+                    <div className={styles.bixcip_list}>
                         {bixcipElements}
                     </div>
                 </div>

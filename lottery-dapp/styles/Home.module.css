@@ -31,3 +31,14 @@
 }
 
 
+.bixcip_list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bixcip_item {
+  display: flex;
+  flex-direction: column;
+  padding: 4rem;
+  width: 30%;
+}
