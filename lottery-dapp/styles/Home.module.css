@@ -42,3 +42,9 @@
   padding: 4rem;
   width: 30%;
 }
+
+.bixcip_img_frame {
+  padding: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-bottom: 1rem;
+}
