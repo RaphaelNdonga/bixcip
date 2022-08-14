@@ -8,7 +8,19 @@ import lotteryAbi from "./blockchain/BIXCIPLotteryAbi.json"
 import Modal from './components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
-
+import Image from "next/image";
+import bixcipLogo from '../pages/images/bixcip-logo.png';
+import slurpyImg from '../pages/images/slurpy.png'
+import metamaskWalletImg from '../pages/images/metamask_wallet.png';
+import chainlinkImg from './images/chainlink.png';
+import ethImg from './images/eth.png';
+import artLeftImg from './images/artleft.png';
+import walletImg from './images/wallet.png';
+import roundWinnersImg from './images/round_winners.png';
+import img1 from './images/letter_1.png';
+import img2 from './images/letter_2.png';
+import img3 from './images/letter_3.png';
+import Link from 'next/link';
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -199,14 +211,15 @@ export default function Home() {
         <nav className="navbar mt-4 mb-4">
           <div className="container">
             <div className="navbar-brand">
-              <h1>BIXCIP Lottery</h1>
+              <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
-            <div className="navbar-end">
-              {!connected ? <button onClick={() => {
+            <div className="navbar-end mt-4 mb-4">
+              {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
 
                 setConnectClicked(true)
 
-              }} className="button is-link is-large">Connect Wallet</button> : <button className="button is-link is-large" disabled>Connected</button>}
+              }}>Login</button> : <button className="button is-danger is-outlined mr-3" disabled>Connected</button>}
+              <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
             </div>
           </div>
         </nav>
@@ -216,10 +229,12 @@ export default function Home() {
           }} />}
           <section className="mt-5">
             <div className="columns">
-              <div className="column is-two-thirds">
+              <div className="column">
                 <section className="mt-5">
-                  <p>Enter the lottery by sending 0.1 ether</p>
-                  <button onClick={enterLotteryHandler} className="button is-link is-large is-light mt-3">Play now</button>
+                  <p className='is-size-1'>WIN ART EVERY WEEK!</p>
+                  <p className='is-size-5 mb-5'>BIXCIP is a blockchain lottery for artists and art collectors. It uses Chainlink oracle to randomize winner selection for every art piece sold!</p>
+                  <button className='button is-danger is-outlined mr-3'>See how it works</button>
+                  <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
@@ -232,62 +247,87 @@ export default function Home() {
                   </div>
                 </section>
               </div>
-              <div className={`${styles.lotteryinfo} column is-one-third`}>
+              <div className='column is-flex is-justify-content-center'>
                 <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Lottery History</h2>
-                        {
-                          (lotteryHistory && lotteryHistory.length > 0) && lotteryHistory.map(item => {
-                            if (lotteryId != item.id) {
-                              return <div className="history-entry mt-3" key={item.id}>
-                                <div>Lottery #{item.id} winner:</div>
-                                <div>
-                                  <a href={`https://etherscan.io/address/${item.address}`} target="_blank" rel="noreferrer">
-                                    {item.address}
-                                  </a>
-                                </div>
-                              </div>
-                            }
-                          })
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Players ({lotteryPlayers.length})</h2>
-                        <ul className="ml-0">
-                          {
-                            (lotteryPlayers && lotteryPlayers.length > 0) && lotteryPlayers.map((player, index) => {
-                              return <li key={`${player}-${index}`}>
-                                <a href={`https://etherscan.io/address/${player}`} target="_blank" rel="noreferrer">
-                                  {player}
-                                </a>
-                              </li>
-                            })
-                          }
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section className="mt-5">
-                  <div className="card">
-                    <div className="card-content">
-                      <div className="content">
-                        <h2>Pot</h2>
-                        <p>{lotteryPot} Ether</p>
-                      </div>
-                    </div>
-                  </div>
+                  <Image src={slurpyImg} height='300px' width='250px' />
                 </section>
               </div>
             </div>
+          </section>
+          <section className='is-flex is-justify-content-center mt-5'>
+            <p className='is-size-5'>Trusted by millions of developers </p>
+          </section>
+          <section className='is-flex is-justify-content-center'>
+            <p className='is-size-5'>&amp;</p>
+          </section>
+          <section className='is-flex is-justify-content-center'>
+            <p className='is-size-5'>Built on secure platforms</p>
+          </section>
+          <section className='columns is-mobile is-centered is-multiline mt-6'>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
+              <Image src={ethImg} height='50px' width='50px' />
+              <p>Ethereum</p>
+            </section>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
+              <Image src={metamaskWalletImg} height='50px' width='50px' />
+              <p>Metamask/WalletConnect Wallet</p>
+            </section>
+            <section className='column is-narrow is-flex is-flex-direction-column is-align-items-center mr-5'>
+              <Image src={chainlinkImg} height='50px' width='50px' />
+              <p>Chainlink</p>
+            </section>
+          </section>
+          <section className='is-flex is-justify-content-center mt-6 mb-6'>
+            <p className='is-size-3'>FEATURES</p>
+          </section>
+          <section className='is-flex is-flex-direction-column'>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Dope Art</p>
+                <p className='is-size-5'>We work with artists, creators, innovators and designers to bring you the best art work from around the world</p>
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-end'>
+                <Image src={artLeftImg} height='300px' width='250px' />
+              </section>
+            </section>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <Image src={walletImg} height='300px' width='400px' />
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Anonymous Play</p>
+                <p className='is-size-5'>The BIXCIP Lottery is truly anonymous. Not even the BIXCIP team knows the identity of those playing the lottery thanks to Ethereum</p>
+              </section>
+            </section>
+            <section className='columns'>
+              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+                <p className='is-size-1 mt-5 mb-5'>Truly Random</p>
+                <p className='is-size-5'>The BIXCIP Lottery is truly random. Nobody can predict the winner in advance. Behind the hood, we use Chainlink, a decentralized oracle</p>
+              </section>
+              <section className='column is-flex is-flex-direction-column is-align-items-end'>
+                <Image src={roundWinnersImg} height='300px' width='400px' />
+              </section>
+            </section>
+          </section>
+          <section className='is-flex is-justify-content-center mt-6'>
+            <p className='is-size-3 mt-6 mb-6'>HOW IT WORKS</p>
+          </section>
+          <section className='columns is-centered'>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img1} height='50px' width='30px' />
+              <p className='mb-6'>Step 1: Select Art</p>
+              <p className='is-size-5'>Pick your favorite art. Cant decide? Pick more than one!</p>
+            </section>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img2} height='50px' width='50px' />
+              <p className='mb-6'>Step 2: Purchase Ticket</p>
+              <p className='is-size-5'>Purchase a lottery ticket for each art piece. Cant decide? Pick more than one.</p>
+            </section>
+            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+              <Image src={img3} height='50px' width='50px' />
+              <p className='mb-6'>Step 3: Win Art</p>
+              <p className='is-size-5'>Every round has 3 winners. Get lucky and win the art you choose.</p>
+            </section>
           </section>
         </div>
       </main>
