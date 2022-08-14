@@ -5,6 +5,7 @@ import Image from "next/image";
 import bixcipLogo from '../images/bixcip-logo.png';
 import "bulma/css/bulma.css"
 import { PrismaClient } from "@prisma/client"
+import Bixcip from "../components/Bixcip";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -20,6 +21,10 @@ export async function getStaticProps() {
 export default function Play({ assets }) {
     const [bixcipData, setBixcipData] = useState(assets);
     console.log(bixcipData)
+    const bixcipElements = bixcipData.map((data) => {
+        return <Bixcip title={data.title} url={data.url} />
+    });
+    console.log(bixcipElements)
     return (
         <div>
             <Head>
@@ -43,7 +48,7 @@ export default function Play({ assets }) {
                 <div className="container">
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className="image-container">
-
+                        {bixcipElements}
                     </div>
                 </div>
             </main>
