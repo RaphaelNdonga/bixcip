@@ -19,6 +19,7 @@ export async function getStaticProps() {
 
 export default function Play({ assets }) {
     const [bixcipData, setBixcipData] = useState(assets);
+    console.log(bixcipData)
     return (
         <div>
             <Head>
