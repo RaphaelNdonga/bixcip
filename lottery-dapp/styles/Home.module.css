@@ -35,6 +35,8 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: 4rem;
+  max-height: 800px;
+  overflow-y: scroll;
 }
 
 .bixcip_item {
