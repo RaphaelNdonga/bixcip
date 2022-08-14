@@ -6,6 +6,10 @@ import bixcipLogo from '../images/bixcip-logo.png';
 import "bulma/css/bulma.css"
 import { PrismaClient } from "@prisma/client"
 import Bixcip from "../components/Bixcip";
+import buyTicketsImg from '../images/buy_tickets.png';
+import img1 from '../images/letter_1.png';
+import img2 from '../images/letter_2.png';
+import img3 from '../images/letter_3.png';
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -49,7 +53,36 @@ export default function Play({ assets }) {
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
+                    </div><div className="is-flex is-justify-content-center mt-6">
+                        <p>You selected one artwork</p>
                     </div>
+                    <div className="is-flex is-justify-content-center mt-5">
+                        <p>Your next step is to purchase a ticket</p>
+                    </div>
+                    <div className="is-flex is-justify-content-center mt-5 mb-6">
+                        <Image src={buyTicketsImg} height="100px" width="200px" />
+                    </div>
+                    <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
+                        <p>HOW IT WORKS</p>
+                    </div>
+                    <section className='columns is-centered mt-5'>
+                        <section className='column is-flex is-flex-direction-column is-align-items-center'>
+                            <Image src={img1} height='50px' width='30px' />
+                            <p className='mb-6'>Step 1: Select Art</p>
+                            <p className='is-size-5'>Pick your favorite art. Can't decide? Pick more than one!</p>
+                        </section>
+                        <section className='column is-flex is-flex-direction-column is-align-items-center'>
+                            <Image src={img2} height='50px' width='50px' />
+                            <p className='mb-6'>Step 2: Purchase Ticket</p>
+                            <p className='is-size-5'>Purchase a lottery ticket for each art piece. Can't decide? Pick more than one.</p>
+                        </section>
+                        <section className='column is-flex is-flex-direction-column is-align-items-center'>
+                            <Image src={img3} height='50px' width='50px' />
+                            <p className='mb-6'>Step 3: Win Art</p>
+                            <p className='is-size-5'>Every round has 3 winners. Get lucky and win the art you choose.</p>
+                        </section>
+                    </section>
+
                 </div>
             </main>
         </div>
