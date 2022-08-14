@@ -85,9 +85,6 @@ export default function Play({ assets }) {
 
                 </div>
             </main>
-            <footer className={styles.footer}>
-                <p>&copy; 2022 BIXCIP</p>
-            </footer>
         </div>
     )
 }
