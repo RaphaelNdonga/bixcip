@@ -27,7 +27,7 @@ export default function Play() {
                     </div>
                 </nav>
                 <div className="container">
-
+                    <p className="is-size-1">SELECT ART TO WIN</p>
                 </div>
             </main>
         </div>
