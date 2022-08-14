@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import styles from '../../styles/Home.module.css';
 import Image from "next/image";
 import bixcipLogo from '../images/bixcip-logo.png';
 import "bulma/css/bulma.css"
+import { PrismaClient } from "@prisma/client"
 
-export default function Play() {
+export async function getStaticProps() {
+    const prisma = new PrismaClient();
+    const posts = await prisma.assets.findMany();
+
+    return {
+        props: {
+            assets: posts
+        },
+    };
+}
+
+export default function Play({ assets }) {
+    const [bixcipData, setBixcipData] = useState(assets);
     return (
         <div>
             <Head>
@@ -28,6 +41,9 @@ export default function Play() {
                 </nav>
                 <div className="container">
                     <p className="is-size-1">SELECT ART TO WIN</p>
+                    <div className="image-container">
+
+                    </div>
                 </div>
             </main>
         </div>
