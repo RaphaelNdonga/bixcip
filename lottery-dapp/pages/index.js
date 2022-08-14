@@ -214,7 +214,7 @@ export default function Home() {
               <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
             <div className="navbar-end mt-4 mb-4">
-              {!connected ? <button class="button is-danger is-outlined mr-3" onClick={() => {
+              {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
 
                 setConnectClicked(true)
 
@@ -316,12 +316,12 @@ export default function Home() {
             <section className='column is-flex is-flex-direction-column is-align-items-center'>
               <Image src={img1} height='50px' width='30px' />
               <p className='mb-6'>Step 1: Select Art</p>
-              <p className='is-size-5'>Pick your favorite art. Can't decide? Pick more than one!</p>
+              <p className='is-size-5'>Pick your favorite art. Cant decide? Pick more than one!</p>
             </section>
             <section className='column is-flex is-flex-direction-column is-align-items-center'>
               <Image src={img2} height='50px' width='50px' />
               <p className='mb-6'>Step 2: Purchase Ticket</p>
-              <p className='is-size-5'>Purchase a lottery ticket for each art piece. Can't decide? Pick more than one.</p>
+              <p className='is-size-5'>Purchase a lottery ticket for each art piece. Cant decide? Pick more than one.</p>
             </section>
             <section className='column is-flex is-flex-direction-column is-align-items-center'>
               <Image src={img3} height='50px' width='50px' />
