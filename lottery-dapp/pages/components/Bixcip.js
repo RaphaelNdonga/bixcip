@@ -8,7 +8,10 @@ export default function Bixcip(props) {
             <div className={styles.bixcip_img_frame}>
                 <Image src={props.url} height="200px" width="200px" />
             </div>
-            <p className="is-size-5">{props.title}</p>
-        </div>
+            <div className={styles.bixcip_title_frame}>
+                <p className="is-size-5">{props.title}</p>
+                <input type="checkbox" />
+            </div>
+        </div >
     )
 }
