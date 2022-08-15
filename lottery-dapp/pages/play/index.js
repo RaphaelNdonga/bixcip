@@ -36,13 +36,15 @@ export default function Play({ assets }) {
     const handleCheck = (event) => {
         if (event.target.checked) {
             console.log("Checked");
+            console.log("id: ", event.target.id);
         } else {
             console.log("unchecked");
+            console.log("id: ", event.target.id);
         }
     }
 
     const bixcipElements = bixcipData.map((data, i) => {
-        return <Bixcip key={i} title={data.title} url={data.url} handleCheck={handleCheck} />
+        return <Bixcip key={i} id={i} title={data.title} url={data.url} handleCheck={handleCheck} />
     });
 
     const [address, setAddress] = useState('');

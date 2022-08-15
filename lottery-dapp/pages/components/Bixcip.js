@@ -10,7 +10,7 @@ export default function Bixcip(props) {
             </div>
             <div className={styles.bixcip_title_frame}>
                 <p className="is-size-5">{props.title}</p>
-                <input type="checkbox" onChange={props.handleCheck} />
+                <input id={props.id} type="checkbox" onChange={props.handleCheck} />
             </div>
         </div >
     )
