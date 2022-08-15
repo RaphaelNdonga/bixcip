@@ -218,7 +218,7 @@ export default function Home() {
 
                 setConnectClicked(true)
 
-              }}>Login</button> : <button className="button is-danger is-outlined mr-3" disabled>Connected</button>}
+              }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
               <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
             </div>
           </div>
