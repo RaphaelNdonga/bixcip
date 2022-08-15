@@ -48,12 +48,18 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter() public payable {
-        require(msg.value >= 0.01 ether, "Insufficient amount");
+    function enter(uint256 _totalTickets) public payable {
+        require(
+            msg.value >= (0.01 ether * _totalTickets),
+            "Insufficient amount"
+        );
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
-        players.push(payable(msg.sender));
+        while (_totalTickets > 0) {
+            players.push(payable(msg.sender));
+            _totalTickets--;
+        }
     }
 
     function getTicketFee() public view returns (uint256) {
