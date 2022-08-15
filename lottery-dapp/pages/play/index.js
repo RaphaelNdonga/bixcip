@@ -111,9 +111,9 @@ export default function Play({ assets }) {
         try {
             console.log("Lottery Address: ", lotteryAddress);
             const ticketFee = await lcContract.methods.getTicketFee().call();
-            const bigTicketFee = BigNumber.from(ticketFee);
+            const bigTicketFee = BigNumber.from(ticketFee).mul(bixcipSelected.length);
             console.log("Ticket fee: ", bigTicketFee);
-            await lcContract.methods.enter().send({
+            await lcContract.methods.enter(bixcipSelected.length).send({
                 from: address,
                 value: bigTicketFee
             });
