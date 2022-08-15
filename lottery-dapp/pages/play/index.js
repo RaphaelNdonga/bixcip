@@ -35,11 +35,7 @@ export default function Play({ assets }) {
 
     const handleCheck = (event) => {
         if (event.target.checked) {
-            console.log("Checked");
-            console.log("id: ", event.target.id);
-        } else {
-            console.log("unchecked");
-            console.log("id: ", event.target.id);
+            console.log("Data: ", bixcipData[event.target.id]);
         }
     }
 
