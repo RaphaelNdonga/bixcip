@@ -33,9 +33,18 @@ export async function getStaticProps() {
 export default function Play({ assets }) {
     const [bixcipData, setBixcipData] = useState(assets);
 
+    const [bixcipSelected, setBixcipSelected] = useState([]);
+
     const handleCheck = (event) => {
         if (event.target.checked) {
             console.log("Data: ", bixcipData[event.target.id]);
+            setBixcipSelected(oldArray => [...oldArray, bixcipData[event.target.id]]);
+            console.log("items selected: ", bixcipSelected);
+        } else {
+            setBixcipSelected(oldArray => oldArray.filter((bixcip) => {
+                return bixcip.id !== (parseInt(event.target.id) + 1);
+            }));
+            console.log("items selected", bixcipSelected);
         }
     }
 
@@ -250,7 +259,7 @@ export default function Play({ assets }) {
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
                     </div><div className="is-flex is-justify-content-center mt-6">
-                        <p>You selected one artwork</p>
+                        <p>You selected {bixcipSelected.length} artwork</p>
                     </div>
                     <div className="is-flex is-justify-content-center mt-5">
                         <p>Your next step is to purchase a ticket</p>
