@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import styles from '../../styles/Home.module.css';
 import Image from "next/image";
@@ -10,6 +10,14 @@ import buyTicketsImg from '../images/buy_tickets.png';
 import img1 from '../images/letter_1.png';
 import img2 from '../images/letter_2.png';
 import img3 from '../images/letter_3.png';
+import Web3 from 'web3';
+import 'bulma/css/bulma.css';
+import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
+import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
+import Modal from '../components/Modal';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import { BigNumber, ethers } from 'ethers';
+import Link from 'next/link';
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -29,6 +37,182 @@ export default function Play({ assets }) {
         return <Bixcip key={i} title={data.title} url={data.url} />
     });
     console.log(bixcipElements)
+
+    const [address, setAddress] = useState('');
+    const [lcContract, setLcContract] = useState();
+    const [lotteryPot, setLotteryPot] = useState();
+    const [lotteryPlayers, setPlayers] = useState([]);
+    const [lotteryHistory, setLotteryHistory] = useState([]);
+    const [lotteryId, setLotteryId] = useState();
+    const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+    const [connected, setConnected] = useState(false);
+    const [connectClicked, setConnectClicked] = useState(false);
+    const [rinkebyId, setRinkebyId] = useState("0x4");
+    const [web3, setWeb3] = useState();
+
+    const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
+        infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
+    }));
+
+    const updateState = () => {
+        if (lcContract) {
+            getPot()
+            getLotteryId()
+            getPlayers()
+        }
+    }
+
+    const getPot = async () => {
+        const pot = await web3.eth.getBalance(lotteryAddress);
+        console.log("Pot is : ", pot);
+        setLotteryPot(ethers.utils.formatEther(pot));
+    }
+
+    const getPlayers = async () => {
+        const players = await lcContract.methods.getPlayers().call()
+        setPlayers(players)
+    }
+
+    const getHistory = async (id) => {
+        setLotteryHistory([])
+        for (let i = parseInt(id); i > 0; i--) {
+            const winnerAddress = await lcContract.methods.lotteryHistory(i).call()
+            const historyObj = {}
+            historyObj.id = i
+            historyObj.address = winnerAddress
+            setLotteryHistory(lotteryHistory => [...lotteryHistory, historyObj])
+        }
+    }
+
+    const getLotteryId = async () => {
+        const lotteryId = await lcContract.methods.lotteryId().call()
+        setLotteryId(lotteryId)
+        await getHistory(lotteryId)
+    }
+
+    const enterLotteryHandler = async () => {
+        setError('')
+        setSuccessMsg('')
+        try {
+            console.log("Lottery Address: ", lotteryAddress);
+            const ticketFee = await lcContract.methods.getTicketFee().call();
+            const bigTicketFee = BigNumber.from(ticketFee);
+            console.log("Ticket fee: ", bigTicketFee);
+            await lcContract.methods.enter().send({
+                from: address,
+                value: bigTicketFee
+            });
+            updateState();
+        } catch (err) {
+            setError(err.message)
+        }
+    }
+
+    const connectMetamask = async () => {
+        setError('');
+        setSuccessMsg('');
+        /* check if MetaMask is installed */
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            /* request wallet connection */
+            const chainId = await window.ethereum.request({ method: "eth_chainId" });
+            console.log("connectMetamask: chainId: ", chainId);
+
+            if (chainId !== rinkebyId) {
+                console.log("connectMetamask: switching chains: ");
+                await switchChain();
+            }
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            /* create web3 instance & set to state */
+            const web3 = new Web3(window.ethereum);
+            /* set web3 instance in React state */
+            setWeb3(web3);
+            setupContractAndAddress(web3);
+
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
+        } else {
+            /* MetaMask is not installed */
+            console.log("Metamask still not installed")
+            alert("Please install MetaMask")
+        }
+    }
+
+    const setupContractAndAddress = async (web3) => {
+        /* get list of accounts */
+        const accounts = await web3.eth.getAccounts();
+
+        checkConnection(accounts);
+
+        setAddress(accounts[0]);
+
+        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+        setLcContract(lc);
+    }
+
+    const checkConnection = (accounts) => {
+        console.log('checking accounts...', accounts);
+        console.log(accounts[0])
+        if (accounts[0] === undefined) {
+            console.log("Setting connected to false");
+            setConnected(false)
+        } else {
+            console.log("Setting connected to true");
+            setConnected(true)
+        }
+        setAddress(accounts[0])
+    }
+
+    useEffect(() => {
+        updateState()
+    }, [lcContract]);
+
+    const switchChain = async () => {
+        console.log("Switching chain...")
+        if (wcProvider.connected) {
+            await wcProvider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{
+                    chainId: rinkebyId
+                }]
+            })
+        } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{
+                    chainId: rinkebyId
+                }]
+            })
+        }
+    }
+
+    const disconnectHandler = () => {
+        console.log("Wallet disconnected")
+        localStorage.clear();
+        setConnected(false);
+    }
+
+    const connectWalletConnect = async () => {
+        await wcProvider.enable();
+        const chainId = await wcProvider.request({ method: "eth_chainId" });
+        console.log("Wallet connect chain id: ", chainId);
+        if (`0x${chainId}` !== rinkebyId) {
+            await switchChain()
+        }
+        const newChainId = await wcProvider.request({ method: "eth_chainId" });
+        console.log("Wallet connect new chain id: ", newChainId);
+        const web3 = new Web3(wcProvider);
+
+        setupContractAndAddress(web3);
+
+        console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
+        wcProvider.on("accountsChanged", checkConnection);
+        wcProvider.on("chainChanged", switchChain);
+        wcProvider.on("disconnect", disconnectHandler);
+    }
     return (
         <div>
             <Head>
@@ -44,12 +228,19 @@ export default function Play({ assets }) {
                             <Image src={bixcipLogo} width="200px" height="100px" />
                         </div>
                         <div className="navbar-end mt-4 mb-4">
-                            <button className="button is-danger is-outlined mr-3">Login</button>
-                            <button className="button is-danger">Play Lottery</button>
+                            {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
+
+                                setConnectClicked(true)
+
+                            }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
+                            <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
                         </div>
                     </div>
                 </nav>
                 <div className="container">
+                    {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
+                        connectWalletConnect();
+                    }} />}
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
