@@ -251,7 +251,7 @@ export default function Play({ assets }) {
                         <p>Your next step is to purchase a ticket</p>
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 mb-6">
-                        <Image src={buyTicketsImg} height="100px" width="200px" />
+                        <Image src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
