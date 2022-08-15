@@ -32,11 +32,18 @@ export async function getStaticProps() {
 
 export default function Play({ assets }) {
     const [bixcipData, setBixcipData] = useState(assets);
-    console.log(bixcipData)
+
+    const handleCheck = (event) => {
+        if (event.target.checked) {
+            console.log("Checked");
+        } else {
+            console.log("unchecked");
+        }
+    }
+
     const bixcipElements = bixcipData.map((data, i) => {
-        return <Bixcip key={i} title={data.title} url={data.url} />
+        return <Bixcip key={i} title={data.title} url={data.url} handleCheck={handleCheck} />
     });
-    console.log(bixcipElements)
 
     const [address, setAddress] = useState('');
     const [lcContract, setLcContract] = useState();
