@@ -189,6 +189,7 @@ export default function Home() {
     const newChainId = await wcProvider.request({ method: "eth_chainId" });
     console.log("Wallet connect new chain id: ", newChainId);
     const web3 = new Web3(wcProvider);
+    setWeb3(web3)
 
     setupContractAndAddress(web3);
 
@@ -218,7 +219,7 @@ export default function Home() {
 
                 setConnectClicked(true)
 
-              }}>Login</button> : <button className="button is-danger is-outlined mr-3" disabled>Connected</button>}
+              }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
               <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
             </div>
           </div>
