@@ -10,10 +10,8 @@ import Image from "next/image";
 import { PrismaClient } from "@prisma/client";
 import Bixcip from "../components/Bixcip";
 
-let prisma;
-
 export async function getStaticProps() {
-    prisma = new PrismaClient();
+    const prisma = new PrismaClient();
     const posts = await prisma.assets.findMany();
 
     return {

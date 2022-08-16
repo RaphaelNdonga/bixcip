@@ -19,10 +19,8 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 
-let prisma;
-
 export async function getStaticProps() {
-    prisma = new PrismaClient();
+    const prisma = new PrismaClient();
     const posts = await prisma.assets.findMany();
 
     return {
