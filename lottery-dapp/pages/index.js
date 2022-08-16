@@ -189,6 +189,7 @@ export default function Home() {
     const newChainId = await wcProvider.request({ method: "eth_chainId" });
     console.log("Wallet connect new chain id: ", newChainId);
     const web3 = new Web3(wcProvider);
+    setWeb3(web3)
 
     setupContractAndAddress(web3);
 
