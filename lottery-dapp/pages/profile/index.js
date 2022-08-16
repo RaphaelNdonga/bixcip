@@ -7,8 +7,30 @@ import "bulma/css/bulma.css"
 import styles from '../../styles/Home.module.css';
 import bixcipLogo from '../images/bixcip-logo.png';
 import Image from "next/image";
+import { PrismaClient } from "@prisma/client";
+import Bixcip from "../components/Bixcip";
 
-export default function Profile() {
+let prisma;
+
+export async function getStaticProps() {
+    prisma = new PrismaClient();
+    const posts = await prisma.assets.findMany();
+
+    return {
+        props: {
+            assets: posts
+        },
+    };
+}
+
+
+export default function Profile({ assets }) {
+
+    const [bixcipData, setBixcipData] = useState(assets);
+
+    const bixcipElements = bixcipData.slice(0, 3).map((data, i) => {
+        return <Bixcip key={i} id={i} title={data.title} url={data.url} />
+    });
 
     let profilePic = useRef();
     const [connectedAccount, setConnectedAccount] = useState("");
@@ -41,6 +63,18 @@ export default function Profile() {
                         </div>
                     </div>
                 </nav>
+                <div className="container">
+                    <section className="mt-5">
+                        <p className="is-size-1">TOTAL WINNINGS</p>
+                        <p className="is-size-3">{Math.random().toFixed(3) * 10}ETH</p>
+                    </section>
+                    <section className="mt-5">
+                        <p className="is-size-1"> ARTWORK WON</p>
+                        <div className={styles.bixcip_list}>
+                            {bixcipElements}
+                        </div>
+                    </section>
+                </div>
             </main>
         </>
     )
