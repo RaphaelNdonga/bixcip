@@ -36,16 +36,20 @@ export default function Profile({ assets }) {
     const [connectedAccount, setConnectedAccount] = useState("");
 
 
-    useEffect(async () => {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" });
-        setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
+    useEffect(() => {
+        async function accountSetup() {
+            const accounts = await window.ethereum.request({ method: "eth_accounts" });
+            setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
 
-        console.log("Profile tab: ", accounts);
-        const element = profilePic.current;
-        if (element.firstChild) {
-            element.removeChild(element.firstChild);
+            console.log("Profile tab: ", accounts);
+            const element = profilePic.current;
+            if (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+            element.appendChild(jazzicon(30, accounts[0]))
         }
-        element.appendChild(jazzicon(30, accounts[0]))
+        accountSetup();
+
     }, [profilePic])
 
 
