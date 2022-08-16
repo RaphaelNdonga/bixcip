@@ -8,8 +8,10 @@ datasource db {
 }
 
 model accounts {
-  id      Int    @id @default(autoincrement())
-  address String @db.VarChar(255)
+  id                Int     @id @default(autoincrement())
+  account_address   String  @db.VarChar(255)
+  connected_address String? @db.VarChar(255)
+  won_asset_id      Int?
 }
 
 model assets {
