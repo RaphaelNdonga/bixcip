@@ -57,9 +57,9 @@ export default function Profile({ assets }) {
                         <div className="navbar-brand">
                             <Image src={bixcipLogo} width="200px" height="100px" />
                         </div>
-                        <div className="navbar-end mt-4 mb-4 is-flex is-align-items-center">
+                        <div className="box navbar-end mt-4 mb-4 is-flex is-align-items-center">
                             <div ref={profilePic}></div>
-                            <p>{connectedAccount}</p>
+                            <p className="m-1">{connectedAccount}</p>
                         </div>
                     </div>
                 </nav>
