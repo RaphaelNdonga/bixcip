@@ -8,10 +8,9 @@ datasource db {
 }
 
 model accounts {
-  id                Int     @id @default(autoincrement())
-  account_address   String  @db.VarChar(255)
-  connected_address String? @db.VarChar(255)
-  won_asset_id      Int?
+  id               Int     @id @default(autoincrement())
+  player_wallet    String  @db.VarChar(255)
+  connected_wallet String? @db.VarChar(255)
 }
 
 model assets {

@@ -13,17 +13,16 @@ async function main() {
         if (i > 10 && i < 100) {
             stringI = `0${i}`;
         }
-        await prisma.assets.create({
+        const asset = await prisma.assets.create({
             data: {
                 url: `https://ipfs.io/ipfs/Qmdg1ZGrHV2HmHBJkfSka2AuGcL3fU8BKidEbJSBCbVvfc/BIXCIP_${stringI}.jpg`,
                 title: `BIXCIP #${i}`,
                 description: `This is BIXCIP #${i}`
             }
         });
+        console.log(asset);
         i++;
     }
-    const assets = await prisma.assets.findMany();
-    console.log(assets);
 }
 
 main().then(async () => {
