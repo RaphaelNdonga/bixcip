@@ -19,8 +19,10 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 
+let prisma;
+
 export async function getStaticProps() {
-    const prisma = new PrismaClient();
+    prisma = new PrismaClient();
     const posts = await prisma.assets.findMany();
 
     return {
@@ -218,6 +220,7 @@ export default function Play({ assets }) {
         const newChainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect new chain id: ", newChainId);
         const web3 = new Web3(wcProvider);
+        setWeb3(web3);
 
         setupContractAndAddress(web3);
 
