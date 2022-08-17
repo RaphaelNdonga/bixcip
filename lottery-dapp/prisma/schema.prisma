@@ -15,15 +15,18 @@ model accounts {
 }
 
 model assets {
-  id          Int    @id @default(autoincrement())
-  url         String @db.VarChar(255)
-  title       String @db.VarChar(255)
-  description String @db.VarChar(255)
+  id            Int     @id @default(autoincrement())
+  url           String  @db.VarChar(255)
+  title         String  @db.VarChar(255)
+  description   String  @db.VarChar(255)
+  available     Boolean @default(true)
+  current_round Boolean @default(true)
 }
 
 model rounds {
-  id          Int    @id @default(autoincrement())
-  date        String @db.VarChar(255)
-  title       String @db.VarChar(255)
-  description String @db.VarChar(255)
+  id          Int     @id @default(autoincrement())
+  date        String  @db.VarChar(255)
+  title       String  @db.VarChar(255)
+  description String  @db.VarChar(255)
+  available   Boolean @default(false)
 }
