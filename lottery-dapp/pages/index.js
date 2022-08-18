@@ -151,7 +151,7 @@ export default function Home() {
   }
 
   const fetchAccounts = async () => {
-    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
     checkConnection(accounts)
   }
 

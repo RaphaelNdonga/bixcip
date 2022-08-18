@@ -146,15 +146,14 @@ export default function Account({ assets }) {
     }
 
     const fetchAccounts = async () => {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        console.log("fetchAccounts (eth_requestAccounts): ", accounts)
-        setAddress(accounts[0]);
-        const allAccounts = await window.ethereum.request({ method: "eth_accounts" });
-        console.log("fetchAccounts (eth_accounts): ", allAccounts);
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        console.log("account fetchAccounts: ", accounts);
+        checkConnection(accounts)
     }
 
     useEffect(() => {
-        updateState()
+        fetchAccounts();
+        updateState();
     }, [lcContract]);
 
     const switchChain = async () => {
