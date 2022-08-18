@@ -150,8 +150,14 @@ export default function Home() {
     setAddress(accounts[0])
   }
 
+  const fetchAccounts = async () => {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    checkConnection(accounts)
+  }
+
   useEffect(() => {
-    updateState()
+    fetchAccounts();
+    updateState();
   }, [lcContract]);
 
   const switchChain = async () => {
