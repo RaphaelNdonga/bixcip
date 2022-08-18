@@ -8,6 +8,8 @@ import Image from "next/image";
 import { PrismaClient } from "@prisma/client";
 import Bixcip from "../components/Bixcip";
 import Link from 'next/link';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+
 
 
 export async function getStaticProps() {
@@ -38,6 +40,43 @@ export default function Profile({ assets }) {
 
     let profilePic = useRef();
     const [connectedAccount, setConnectedAccount] = useState("");
+    const [connected, setConnected] = useState(false);
+    const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
+        infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
+    }));
+
+
+    const checkConnection = (accounts) => {
+        console.log('checking accounts...', accounts);
+        console.log(accounts[0])
+        if (accounts[0] === undefined) {
+            console.log("Setting connected to false");
+            setConnected(false)
+        } else {
+            console.log("Setting connected to true");
+            setConnected(true)
+        }
+        setConnectedAccount(accounts[0])
+    }
+
+    const switchChain = async () => {
+        console.log("Switching chain...")
+        if (wcProvider.connected) {
+            await wcProvider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{
+                    chainId: rinkebyId
+                }]
+            })
+        } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{
+                    chainId: rinkebyId
+                }]
+            })
+        }
+    }
 
 
     useEffect(() => {
