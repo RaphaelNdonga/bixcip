@@ -117,6 +117,7 @@ export default function Play({ assets }) {
         try {
             console.log("Lottery Address: ", lotteryAddress);
             const ticketFee = await lcContract.methods.getTicketFee().call();
+            console.log("ticket fee: ", ticketFee);
             const bigTicketFee = BigNumber.from(ticketFee).mul(bixcipSelected.length);
             console.log("Ticket fee: ", bigTicketFee);
             await lcContract.methods.enter(bixcipSelected.length).send({
@@ -192,8 +193,11 @@ export default function Play({ assets }) {
 
     useEffect(() => {
         fetchAccounts();
-        updateState();
-    }, [lcContract]);
+        const web3 = new Web3(window.ethereum);
+        /* set web3 instance in React state */
+        setWeb3(web3);
+        setupContractAndAddress(web3);
+    }, []);
 
     const switchChain = async () => {
         console.log("Switching chain...")
