@@ -20,7 +20,13 @@ import Link from 'next/link';
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
-    const posts = await prisma.assets.findMany();
+    let posts;
+    try {
+        posts = await prisma.assets.findMany();
+    } catch (error) {
+        console.log("error while fetching prisma assets", error);
+    }
+
 
     return {
         props: {

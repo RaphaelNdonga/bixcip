@@ -21,7 +21,13 @@ import Link from 'next/link';
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
-    const posts = await prisma.assets.findMany();
+    let posts;
+    try {
+        posts = await prisma.assets.findMany();
+    } catch (error) {
+        console.log("error while fetching prisma assets", error);
+    }
+
 
     return {
         props: {
@@ -119,7 +125,7 @@ export default function Play({ assets }) {
             });
             updateState();
         } catch (err) {
-            setError(err.message)
+            console.log("error while entering lottery: ", err.message)
         }
     }
 
