@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import Web3 from "web3";
 import jazzicon from "@metamask/jazzicon";
 import "bulma/css/bulma.css"
 import styles from '../../styles/Home.module.css';
@@ -9,10 +7,18 @@ import bixcipLogo from '../images/bixcip-logo.png';
 import Image from "next/image";
 import { PrismaClient } from "@prisma/client";
 import Bixcip from "../components/Bixcip";
+import Link from 'next/link';
+
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
-    const posts = await prisma.assets.findMany();
+    let posts;
+    try {
+        posts = await prisma.assets.findMany();
+    } catch (error) {
+        console.log("error while fetching prisma assets", error);
+    }
+
 
     return {
         props: {
@@ -37,7 +43,8 @@ export default function Profile({ assets }) {
     useEffect(() => {
         async function accountSetup() {
             const accounts = await window.ethereum.request({ method: "eth_accounts" });
-            setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
+            if (accounts[0] !== undefined)
+                setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
 
             console.log("Profile tab: ", accounts);
             const element = profilePic.current;
@@ -48,6 +55,14 @@ export default function Profile({ assets }) {
         }
         accountSetup();
 
+        window.ethereum.on('accountsChanged', checkConnection);
+        window.ethereum.on('chainChanged', switchChain);
+
+        return () => {
+            window.ethereum.removeListener('accountsChanged', checkConnection);
+            window.ethereum.removeListener('chainChanged', switchChain);
+        }
+
     }, [profilePic])
 
 
@@ -57,9 +72,11 @@ export default function Profile({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Image src={bixcipLogo} width="200px" height="100px" />
+                            <section>
+                                <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
+                            </section>
                         </div>
-                        <div className="box navbar-end mt-4 mb-4 is-flex is-align-items-center">
+                        <div className="box navbar-end is-flex is-align-items-center">
                             <div ref={profilePic}></div>
                             <p className="m-1">{connectedAccount}</p>
                         </div>

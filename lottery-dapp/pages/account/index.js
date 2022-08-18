@@ -6,14 +6,11 @@ import bixcipLogo from '../images/bixcip-logo.png';
 import "bulma/css/bulma.css"
 import { PrismaClient } from "@prisma/client"
 import Bixcip from "../components/Bixcip";
-import buyTicketsImg from '../images/buy_tickets.png';
 import img1 from '../images/letter_1.png';
 import img2 from '../images/letter_2.png';
 import img3 from '../images/letter_3.png';
 import Web3 from 'web3';
 import 'bulma/css/bulma.css';
-import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
-import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
 import Modal from '../components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
@@ -36,54 +33,20 @@ export async function getStaticProps() {
     };
 }
 
-export default function Play({ assets }) {
+export default function Account({ assets }) {
     const [bixcipData, setBixcipData] = useState(assets);
-
-    const [bixcipSelected, setBixcipSelected] = useState([]);
-
-    const handleCheck = (event) => {
-        if (event.target.checked) {
-            console.log("Data: ", bixcipData[event.target.id]);
-            setBixcipSelected(oldArray => [...oldArray, bixcipData[event.target.id]]);
-            console.log("items selected: ", bixcipSelected);
-        } else {
-            setBixcipSelected(oldArray => oldArray.filter((bixcip) => {
-                return bixcip.id !== (parseInt(event.target.id) + 1);
-            }));
-            console.log("items selected", bixcipSelected);
-        }
-    }
-
     const bixcipElements = bixcipData.map((data, i) => {
-        return <Bixcip key={i} id={i} title={data.title} url={data.url} handleCheck={handleCheck} />
+        return <Bixcip key={i} id={i} title={data.title} url={data.url} />
     });
 
     const [address, setAddress] = useState('');
-    const [lcContract, setLcContract] = useState();
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
-    const [web3, setWeb3] = useState();
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
-
-    const enterLotteryHandler = async () => {
-        try {
-            console.log("Lottery Address: ", lotteryAddress);
-            const ticketFee = await lcContract.methods.getTicketFee().call();
-            console.log("ticket fee: ", ticketFee);
-            const bigTicketFee = BigNumber.from(ticketFee).mul(bixcipSelected.length);
-            console.log("Ticket fee: ", bigTicketFee);
-            await lcContract.methods.enter(bixcipSelected.length).send({
-                from: address,
-                value: bigTicketFee
-            });
-        } catch (err) {
-            console.log("error while entering lottery: ", err.message)
-        }
-    }
 
     const connectMetamask = async () => {
         /* check if MetaMask is installed */
@@ -97,11 +60,6 @@ export default function Play({ assets }) {
                 await switchChain();
             }
             await window.ethereum.request({ method: "eth_requestAccounts" });
-            /* create web3 instance & set to state */
-            const web3 = new Web3(window.ethereum);
-            /* set web3 instance in React state */
-            setWeb3(web3);
-            setupContractAndAddress(web3);
 
             window.ethereum.on('accountsChanged', checkConnection);
             window.ethereum.on('chainChanged', switchChain);
@@ -110,20 +68,6 @@ export default function Play({ assets }) {
             console.log("Metamask still not installed")
             alert("Please install MetaMask")
         }
-    }
-
-    const setupContractAndAddress = async (web3) => {
-        /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
-
-        checkConnection(accounts);
-
-        setAddress(accounts[0]);
-
-        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
-
-        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
-        setLcContract(lc);
     }
 
     const checkConnection = (accounts) => {
@@ -141,15 +85,12 @@ export default function Play({ assets }) {
 
     const fetchAccounts = async () => {
         const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        console.log("account fetchAccounts: ", accounts);
         checkConnection(accounts)
     }
 
     useEffect(() => {
         fetchAccounts();
-        const web3 = new Web3(window.ethereum);
-        /* set web3 instance in React state */
-        setWeb3(web3);
-        setupContractAndAddress(web3);
         window.ethereum.on('accountsChanged', checkConnection);
         window.ethereum.on('chainChanged', switchChain);
 
@@ -193,10 +134,6 @@ export default function Play({ assets }) {
         }
         const newChainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect new chain id: ", newChainId);
-        const web3 = new Web3(wcProvider);
-        setWeb3(web3);
-
-        setupContractAndAddress(web3);
 
         console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 
@@ -232,17 +169,24 @@ export default function Play({ assets }) {
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
                     }} />}
-                    <p className="is-size-1">SELECT ART TO WIN</p>
+                    <p className="is-size-1 mb-4">PROFILE</p>
+                    <section className="columns is-mobile">
+                        <section className="column is-two-fifths">
+                            <p>Connected Wallet: </p>
+                            <p>Player Wallet: </p>
+                        </section>
+                        <section className="column">
+                            <p> {address.slice(0, 4)}...{address.slice(-4,)}</p>
+                            <p> {address.slice(0, 4)}...{address.slice(-4,)}</p>
+                        </section>
+                    </section>
+                    <p className="is-size-1 mt-4">Current Bets </p>
                     <div className={styles.bixcip_list}>
-                        {bixcipElements}
-                    </div><div className="is-flex is-justify-content-center mt-6">
-                        <p>You selected {bixcipSelected.length} artwork</p>
+                        {bixcipElements.slice(7, 10)}
                     </div>
-                    <div className="is-flex is-justify-content-center mt-5">
-                        <p>Your next step is to purchase a ticket</p>
-                    </div>
-                    <div className="is-flex is-justify-content-center mt-5 mb-6">
-                        <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
+                    <p className="is-size-1">Past Winnings </p>
+                    <div className={styles.bixcip_list}>
+                        {bixcipElements.slice(23, 29)}
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
