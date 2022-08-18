@@ -11,8 +11,6 @@ import img2 from '../images/letter_2.png';
 import img3 from '../images/letter_3.png';
 import Web3 from 'web3';
 import 'bulma/css/bulma.css';
-import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
-import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
 import Modal from '../components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
@@ -42,61 +40,15 @@ export default function Account({ assets }) {
     });
 
     const [address, setAddress] = useState('');
-    const [lcContract, setLcContract] = useState();
-    const [lotteryPot, setLotteryPot] = useState();
-    const [lotteryPlayers, setPlayers] = useState([]);
-    const [lotteryHistory, setLotteryHistory] = useState([]);
-    const [lotteryId, setLotteryId] = useState();
-    const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
-    const [web3, setWeb3] = useState();
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
-    const updateState = () => {
-        if (lcContract) {
-            getPot()
-            getLotteryId()
-            getPlayers()
-        }
-    }
-
-    const getPot = async () => {
-        const pot = await web3.eth.getBalance(lotteryAddress);
-        console.log("Pot is : ", pot);
-        setLotteryPot(ethers.utils.formatEther(pot));
-    }
-
-    const getPlayers = async () => {
-        const players = await lcContract.methods.getPlayers().call()
-        setPlayers(players)
-    }
-
-    const getHistory = async (id) => {
-        setLotteryHistory([])
-        for (let i = parseInt(id); i > 0; i--) {
-            const winnerAddress = await lcContract.methods.lotteryHistory(i).call()
-            const historyObj = {}
-            historyObj.id = i
-            historyObj.address = winnerAddress
-            setLotteryHistory(lotteryHistory => [...lotteryHistory, historyObj])
-        }
-    }
-
-    const getLotteryId = async () => {
-        const lotteryId = await lcContract.methods.lotteryId().call()
-        setLotteryId(lotteryId)
-        await getHistory(lotteryId)
-    }
-
     const connectMetamask = async () => {
-        setError('');
-        setSuccessMsg('');
         /* check if MetaMask is installed */
         if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
             /* request wallet connection */
@@ -108,11 +60,6 @@ export default function Account({ assets }) {
                 await switchChain();
             }
             await window.ethereum.request({ method: "eth_requestAccounts" });
-            /* create web3 instance & set to state */
-            const web3 = new Web3(window.ethereum);
-            /* set web3 instance in React state */
-            setWeb3(web3);
-            setupContractAndAddress(web3);
 
             window.ethereum.on('accountsChanged', checkConnection);
             window.ethereum.on('chainChanged', switchChain);
@@ -123,24 +70,9 @@ export default function Account({ assets }) {
         }
     }
 
-    const setupContractAndAddress = async (web3) => {
-        /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
-
-        checkConnection(accounts);
-
-        setAddress(accounts[0]);
-
-        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
-
-        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
-        setLcContract(lc);
-    }
-
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        fetchAccounts();
         if (accounts[0] === undefined) {
             console.log("Setting connected to false");
             setConnected(false)
@@ -159,8 +91,7 @@ export default function Account({ assets }) {
 
     useEffect(() => {
         fetchAccounts();
-        updateState();
-    }, [lcContract]);
+    }, []);
 
     const switchChain = async () => {
         console.log("Switching chain...")
@@ -196,10 +127,6 @@ export default function Account({ assets }) {
         }
         const newChainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect new chain id: ", newChainId);
-        const web3 = new Web3(wcProvider);
-        setWeb3(web3);
-
-        setupContractAndAddress(web3);
 
         console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 

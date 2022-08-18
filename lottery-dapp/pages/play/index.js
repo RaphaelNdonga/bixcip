@@ -60,12 +60,6 @@ export default function Play({ assets }) {
 
     const [address, setAddress] = useState('');
     const [lcContract, setLcContract] = useState();
-    const [lotteryPot, setLotteryPot] = useState();
-    const [lotteryPlayers, setPlayers] = useState([]);
-    const [lotteryHistory, setLotteryHistory] = useState([]);
-    const [lotteryId, setLotteryId] = useState();
-    const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
@@ -75,45 +69,7 @@ export default function Play({ assets }) {
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
-    const updateState = () => {
-        if (lcContract) {
-            getPot()
-            getLotteryId()
-            getPlayers()
-        }
-    }
-
-    const getPot = async () => {
-        const pot = await web3.eth.getBalance(lotteryAddress);
-        console.log("Pot is : ", pot);
-        setLotteryPot(ethers.utils.formatEther(pot));
-    }
-
-    const getPlayers = async () => {
-        const players = await lcContract.methods.getPlayers().call()
-        setPlayers(players)
-    }
-
-    const getHistory = async (id) => {
-        setLotteryHistory([])
-        for (let i = parseInt(id); i > 0; i--) {
-            const winnerAddress = await lcContract.methods.lotteryHistory(i).call()
-            const historyObj = {}
-            historyObj.id = i
-            historyObj.address = winnerAddress
-            setLotteryHistory(lotteryHistory => [...lotteryHistory, historyObj])
-        }
-    }
-
-    const getLotteryId = async () => {
-        const lotteryId = await lcContract.methods.lotteryId().call()
-        setLotteryId(lotteryId)
-        await getHistory(lotteryId)
-    }
-
     const enterLotteryHandler = async () => {
-        setError('')
-        setSuccessMsg('')
         try {
             console.log("Lottery Address: ", lotteryAddress);
             const ticketFee = await lcContract.methods.getTicketFee().call();
@@ -124,15 +80,12 @@ export default function Play({ assets }) {
                 from: address,
                 value: bigTicketFee
             });
-            updateState();
         } catch (err) {
             console.log("error while entering lottery: ", err.message)
         }
     }
 
     const connectMetamask = async () => {
-        setError('');
-        setSuccessMsg('');
         /* check if MetaMask is installed */
         if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
             /* request wallet connection */

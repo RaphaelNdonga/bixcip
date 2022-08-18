@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import Web3 from "web3";
 import jazzicon from "@metamask/jazzicon";
 import "bulma/css/bulma.css"
 import styles from '../../styles/Home.module.css';
