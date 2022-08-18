@@ -37,7 +37,8 @@ export default function Profile({ assets }) {
     useEffect(() => {
         async function accountSetup() {
             const accounts = await window.ethereum.request({ method: "eth_accounts" });
-            setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
+            if (accounts[0] !== undefined)
+                setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
 
             console.log("Profile tab: ", accounts);
             const element = profilePic.current;
