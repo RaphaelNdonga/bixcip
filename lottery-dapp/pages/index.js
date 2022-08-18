@@ -226,7 +226,9 @@ export default function Home() {
                 setConnectClicked(true)
 
               }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
-              <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
+              {!connected ? <button onClick={() => {
+                alert("Login to play")
+              }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
             </div>
           </div>
         </nav>
@@ -241,7 +243,9 @@ export default function Home() {
                   <p className='is-size-1'>WIN ART EVERY WEEK!</p>
                   <p className='is-size-5 mb-5'>BIXCIP is a blockchain lottery for artists and art collectors. It uses Chainlink oracle to randomize winner selection for every art piece sold!</p>
                   <button className='button is-danger is-outlined mr-3'>See how it works</button>
-                  <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
+                  {!connected ? <button onClick={() => {
+                    alert("Login to play")
+                  }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
                 </section>
                 <section>
                   <div className="container has-text-danger mt-6">
