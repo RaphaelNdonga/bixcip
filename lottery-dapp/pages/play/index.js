@@ -246,7 +246,7 @@ export default function Play({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Image src={bixcipLogo} width="200px" height="100px" />
+                            <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
                         </div>
                         <div className="navbar-end mt-4 mb-4">
                             {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
@@ -272,7 +272,7 @@ export default function Play({ assets }) {
                         <p>Your next step is to purchase a ticket</p>
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 mb-6">
-                        <Image src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
+                        <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>

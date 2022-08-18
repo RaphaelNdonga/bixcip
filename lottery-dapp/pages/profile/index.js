@@ -9,6 +9,8 @@ import bixcipLogo from '../images/bixcip-logo.png';
 import Image from "next/image";
 import { PrismaClient } from "@prisma/client";
 import Bixcip from "../components/Bixcip";
+import Link from 'next/link';
+
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -58,9 +60,11 @@ export default function Profile({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Image src={bixcipLogo} width="200px" height="100px" />
+                            <section>
+                                <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
+                            </section>
                         </div>
-                        <div className="box navbar-end mt-4 mb-4 is-flex is-align-items-center">
+                        <div className="box navbar-end is-flex is-align-items-center">
                             <div ref={profilePic}></div>
                             <p className="m-1">{connectedAccount}</p>
                         </div>
