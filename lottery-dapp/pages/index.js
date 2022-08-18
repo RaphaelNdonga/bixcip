@@ -71,6 +71,13 @@ export default function Home() {
 
   useEffect(() => {
     fetchAccounts();
+    window.ethereum.on('accountsChanged', checkConnection);
+    window.ethereum.on('chainChanged', switchChain);
+
+    return () => {
+      window.ethereum.removeListener('accountsChanged', checkConnection);
+      window.ethereum.removeListener('chainChanged', switchChain);
+    }
   }, []);
 
   const switchChain = async () => {

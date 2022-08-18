@@ -55,6 +55,14 @@ export default function Profile({ assets }) {
         }
         accountSetup();
 
+        window.ethereum.on('accountsChanged', checkConnection);
+        window.ethereum.on('chainChanged', switchChain);
+
+        return () => {
+            window.ethereum.removeListener('accountsChanged', checkConnection);
+            window.ethereum.removeListener('chainChanged', switchChain);
+        }
+
     }, [profilePic])
 
 

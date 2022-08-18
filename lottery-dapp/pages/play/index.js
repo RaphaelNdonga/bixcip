@@ -150,6 +150,13 @@ export default function Play({ assets }) {
         /* set web3 instance in React state */
         setWeb3(web3);
         setupContractAndAddress(web3);
+        window.ethereum.on('accountsChanged', checkConnection);
+        window.ethereum.on('chainChanged', switchChain);
+
+        return () => {
+            window.ethereum.removeListener('accountsChanged', checkConnection);
+            window.ethereum.removeListener('chainChanged', switchChain);
+        }
     }, []);
 
     const switchChain = async () => {
