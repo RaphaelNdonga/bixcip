@@ -236,8 +236,8 @@ export default function Account({ assets }) {
                         connectWalletConnect();
                     }} />}
                     <p className="is-size-1 mb-4">PROFILE</p>
-                    <section className="columns">
-                        <section className="column is-one-fifth">
+                    <section className="columns is-mobile">
+                        <section className="column is-two-fifths">
                             <p>Connected Wallet: </p>
                             <p>Player Wallet: </p>
                         </section>
