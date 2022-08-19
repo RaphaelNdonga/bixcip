@@ -24,9 +24,10 @@ model assets {
 }
 
 model rounds {
-  id          Int     @id @default(autoincrement())
-  date        String  @db.VarChar(255)
-  title       String  @db.VarChar(255)
-  description String  @db.VarChar(255)
-  available   Boolean @default(false)
+  id                   Int      @id @default(autoincrement())
+  title                String   @db.VarChar(255)
+  description          String   @db.VarChar(255)
+  available            Boolean  @default(false)
+  scheduled_end_date   DateTime
+  scheduled_start_date DateTime
 }
