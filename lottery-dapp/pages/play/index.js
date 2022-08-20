@@ -241,8 +241,9 @@ export default function Play({ assets }) {
                     <div className="is-flex is-justify-content-center mt-5">
                         <p>Your next step is to purchase a ticket</p>
                     </div>
-                    <div className="is-flex is-justify-content-center mt-5 mb-6">
+                    <div className="is-flex is-flex-direction-column is-align-items-center mt-5 mb-6">
                         <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
+                        <button className="button is-danger" onClick={enterLotteryHandler}>Buy Tickets</button>
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
