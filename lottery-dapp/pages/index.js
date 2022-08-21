@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Web3 from 'web3';
 import styles from '../styles/Home.module.css';
@@ -28,6 +28,8 @@ export default function Home() {
   const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
   }));
+
+  const howItWorksRef = useRef(null);
 
   const connectMetamask = async () => {
     /* check if MetaMask is installed */
@@ -157,7 +159,9 @@ export default function Home() {
                 <section className="mt-5">
                   <p className='is-size-1'>WIN ART EVERY WEEK!</p>
                   <p className='is-size-5 mb-5'>BIXCIP is a blockchain lottery for artists and art collectors. It uses Chainlink oracle to randomize winner selection for every art piece sold!</p>
-                  <button className='button is-danger is-outlined mr-3'>See how it works</button>
+                  <button className='button is-danger is-outlined mr-3' onClick={() => {
+                    howItWorksRef.current.scrollIntoView();
+                  }}>See how it works</button>
                   {!connected ? <button onClick={() => {
                     alert("Login to play")
                   }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
@@ -229,7 +233,7 @@ export default function Home() {
             <p className='is-size-3 mt-6 mb-6'>HOW IT WORKS</p>
           </section>
           <section className='columns is-centered'>
-            <section className='column is-flex is-flex-direction-column is-align-items-center'>
+            <section ref={howItWorksRef} className='column is-flex is-flex-direction-column is-align-items-center'>
               <Image src={img1} height='50px' width='30px' />
               <p className='mb-6'>Step 1: Select Art</p>
               <p className='is-size-5'>Pick your favorite art. Cant decide? Pick more than one!</p>
