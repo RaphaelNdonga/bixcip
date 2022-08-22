@@ -58,16 +58,19 @@ export default function Home() {
   const checkConnection = (accounts) => {
     console.log('checking accounts...', accounts);
     console.log(accounts[0])
-    if (accounts[0] === null) {
+    if (accounts[0] === null || accounts[0] === "" || accounts[0] === undefined) {
       console.log(accounts[0]);
       console.log("Setting connected to false");
       setConnected(false)
+      setAddress("");
+      localStorage.setItem('metamask', address);
     } else {
       console.log(accounts[0]);
       console.log("Setting connected to true");
       setConnected(true)
+      setAddress(accounts[0])
+      localStorage.setItem('metamask', address);
     }
-    setAddress(accounts[0])
   }
 
   const fetchAccounts = async () => {
