@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Web3 from 'web3';
@@ -17,6 +18,8 @@ import roundWinnersImg from './images/round_winners.png';
 import img1 from './images/letter_1.png';
 import img2 from './images/letter_2.png';
 import img3 from './images/letter_3.png';
+import profileImg from './images/profile.png';
+import logoutImg from './images/logout.png';
 import Link from 'next/link';
 
 export default function Home() {
@@ -42,7 +45,11 @@ export default function Home() {
         console.log("connectMetamask: switching chains: ");
         await switchChain();
       }
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
+      setAddress(requestedAccount[0]);
+
+      localStorage.setItem('metamask', requestedAccount);
+      setConnected(true);
 
       window.ethereum.on('accountsChanged', checkConnection);
       window.ethereum.on('chainChanged', switchChain);
@@ -56,18 +63,21 @@ export default function Home() {
   const checkConnection = (accounts) => {
     console.log('checking accounts...', accounts);
     console.log(accounts[0])
-    if (accounts[0] === undefined) {
+    if (accounts[0] === null || accounts[0] === "" || accounts[0] === undefined) {
+      console.log(accounts[0]);
       console.log("Setting connected to false");
       setConnected(false)
+      setAddress("");
     } else {
+      console.log(accounts[0]);
       console.log("Setting connected to true");
       setConnected(true)
+      setAddress(accounts[0])
     }
-    setAddress(accounts[0])
   }
 
   const fetchAccounts = async () => {
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    const accounts = [localStorage.getItem('metamask')];
     checkConnection(accounts)
   }
 
@@ -142,7 +152,40 @@ export default function Home() {
 
                 setConnectClicked(true)
 
-              }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
+              }}>Login</button> :
+                <div className='dropdown is-hoverable'>
+                  <div className='dropdown-trigger'>
+                    <button className="button is-danger is-outlined mr-3" aria-haspopup="true" aria-controls="dropdown-menu1">
+                      <span>{address.slice(0, 4)}...{address.slice(-4,)} </span>
+                      <span className="icon is-small">
+                        <i className="fas fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div className='dropdown-menu' id='dropdown-menu1' role="menu">
+                    <div className='dropdown-content'>
+                      <Link href="/profile">
+                        <section className='dropdown-item is-flex is-clickable  mb-2'>
+                          <Image src={profileImg} height='20px' width='20px' />
+                          <p className='ml-2'>
+                            View Profile
+                          </p>
+                        </section>
+                      </Link>
+                      <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
+                        setAddress("");
+                        localStorage.removeItem('metamask', address);
+                        setConnected(false);
+                      }}>
+                        <Image src={logoutImg} height='20px' width='20px' />
+                        <p className='ml-2'>
+                          Logout
+                        </p>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+              }
               {!connected ? <button onClick={() => {
                 alert("Login to play")
               }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}

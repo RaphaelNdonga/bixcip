@@ -15,6 +15,8 @@ import Modal from '../components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
+import logoutImg from "../images/logout.png";
+import profileImg from "../images/profile.png";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -59,7 +61,10 @@ export default function Account({ assets }) {
                 console.log("connectMetamask: switching chains: ");
                 await switchChain();
             }
-            await window.ethereum.request({ method: "eth_requestAccounts" });
+            const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
+            localStorage.setItem('metamask', requestedAccount);
+            setAddress(requestedAccount[0]);
+            setConnected(true);
 
             window.ethereum.on('accountsChanged', checkConnection);
             window.ethereum.on('chainChanged', switchChain);
@@ -73,20 +78,21 @@ export default function Account({ assets }) {
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        if (accounts[0] === undefined) {
+        if (accounts[0] === null || accounts[0] === "" || accounts[0] === undefined) {
             console.log("Setting connected to false");
-            setConnected(false)
+            setConnected(false);
+            setAddress("");
         } else {
             console.log("Setting connected to true");
-            setConnected(true)
+            setConnected(true);
+            setAddress(accounts[0]);
         }
-        setAddress(accounts[0])
     }
 
     const fetchAccounts = async () => {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        const accounts = [localStorage.getItem('metamask')];
         console.log("account fetchAccounts: ", accounts);
-        checkConnection(accounts)
+        checkConnection(accounts);
     }
 
     useEffect(() => {
@@ -153,15 +159,50 @@ export default function Account({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
+                            <Link href="/"><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
                         </div>
                         <div className="navbar-end mt-4 mb-4">
                             {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
 
                                 setConnectClicked(true)
 
-                            }}>Login</button> : <Link href="/profile"><button className="button is-danger is-outlined mr-3" >View Profile</button></Link>}
-                            <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
+                            }}>Login</button> :
+                                <div className='dropdown is-hoverable'>
+                                    <div className='dropdown-trigger'>
+                                        <button className="button is-danger is-outlined mr-3" aria-haspopup="true" aria-controls="dropdown-menu1">
+                                            <span>{address.slice(0, 4)}...{address.slice(-4,)} </span>
+                                            <span className="icon is-small">
+                                                <i className="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div className='dropdown-menu' id='dropdown-menu1' role="menu">
+                                        <div className='dropdown-content'>
+                                            <Link href="/profile">
+                                                <section className='dropdown-item is-flex is-clickable  mb-2'>
+                                                    <Image src={profileImg} height='20px' width='20px' />
+                                                    <p className='ml-2'>
+                                                        View Profile
+                                                    </p>
+                                                </section>
+                                            </Link>
+                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
+                                                setAddress("");
+                                                localStorage.removeItem('metamask', address);
+                                                setConnected(false);
+                                            }}>
+                                                <Image src={logoutImg} height='20px' width='20px' />
+                                                <p className='ml-2'>
+                                                    Logout
+                                                </p>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            {!connected ? <button onClick={() => {
+                                alert("Login to play")
+                            }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
                         </div>
                     </div>
                 </nav>
