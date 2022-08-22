@@ -96,7 +96,8 @@ export default function Play({ assets }) {
                 console.log("connectMetamask: switching chains: ");
                 await switchChain();
             }
-            await window.ethereum.request({ method: "eth_requestAccounts" });
+            const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
+            localStorage.setItem('metamask', requestedAccount);
             /* create web3 instance & set to state */
             const web3 = new Web3(window.ethereum);
             /* set web3 instance in React state */
@@ -129,7 +130,7 @@ export default function Play({ assets }) {
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        if (accounts[0] === undefined) {
+        if (accounts[0] === null) {
             console.log("Setting connected to false");
             setConnected(false)
         } else {
@@ -140,7 +141,7 @@ export default function Play({ assets }) {
     }
 
     const fetchAccounts = async () => {
-        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        const accounts = [localStorage.getItem('metamask')];
         checkConnection(accounts)
     }
 

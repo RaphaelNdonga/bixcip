@@ -49,7 +49,7 @@ export default function Profile({ assets }) {
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        if (accounts[0] === undefined) {
+        if (accounts[0] === null) {
             console.log("Setting connected to false");
             setConnected(false)
         } else {
@@ -81,8 +81,8 @@ export default function Profile({ assets }) {
 
     useEffect(() => {
         async function accountSetup() {
-            const accounts = await window.ethereum.request({ method: "eth_accounts" });
-            if (accounts[0] !== undefined)
+            const accounts = [localStorage.getItem('metamask')];
+            if (accounts[0] !== null)
                 setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
 
             console.log("Profile tab: ", accounts);

@@ -42,7 +42,9 @@ export default function Home() {
         console.log("connectMetamask: switching chains: ");
         await switchChain();
       }
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      localStorage.setItem('metamask', requestedAccount);
 
       window.ethereum.on('accountsChanged', checkConnection);
       window.ethereum.on('chainChanged', switchChain);
@@ -56,10 +58,12 @@ export default function Home() {
   const checkConnection = (accounts) => {
     console.log('checking accounts...', accounts);
     console.log(accounts[0])
-    if (accounts[0] === undefined) {
+    if (accounts[0] === null) {
+      console.log(accounts[0]);
       console.log("Setting connected to false");
       setConnected(false)
     } else {
+      console.log(accounts[0]);
       console.log("Setting connected to true");
       setConnected(true)
     }
@@ -67,7 +71,7 @@ export default function Home() {
   }
 
   const fetchAccounts = async () => {
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    const accounts = [localStorage.getItem('metamask')];
     checkConnection(accounts)
   }
 
