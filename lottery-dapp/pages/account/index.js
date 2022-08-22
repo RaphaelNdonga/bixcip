@@ -15,6 +15,8 @@ import Modal from '../components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
+import logoutImg from "../images/logout.png";
+import profileImg from "../images/profile.png";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -157,7 +159,7 @@ export default function Account({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
+                            <Image src={bixcipLogo} width="200px" height="100px" />
                         </div>
                         <div className="navbar-end mt-4 mb-4">
                             {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
@@ -169,23 +171,31 @@ export default function Account({ assets }) {
                                     <div className='dropdown-trigger'>
                                         <button className="button is-danger is-outlined mr-3" aria-haspopup="true" aria-controls="dropdown-menu1">
                                             <span>{address.slice(0, 4)}...{address.slice(-4,)} </span>
-                                            <span class="icon is-small">
-                                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                            <span className="icon is-small">
+                                                <i className="fas fa-angle-down" aria-hidden="true"></i>
                                             </span>
                                         </button>
                                     </div>
                                     <div className='dropdown-menu' id='dropdown-menu1' role="menu">
                                         <div className='dropdown-content'>
-                                            <a href="/profile" class="dropdown-item">
-                                                View Profile
-                                            </a>
-                                            <a onClick={() => {
+                                            <Link href="/profile">
+                                                <section className='dropdown-item is-flex is-clickable  mb-2'>
+                                                    <Image src={profileImg} height='20px' width='20px' />
+                                                    <p className='ml-2'>
+                                                        View Profile
+                                                    </p>
+                                                </section>
+                                            </Link>
+                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
                                                 setAddress("");
                                                 localStorage.removeItem('metamask', address);
                                                 setConnected(false);
-                                            }} class="dropdown-item">
-                                                logout
-                                            </a>
+                                            }}>
+                                                <Image src={logoutImg} height='20px' width='20px' />
+                                                <p className='ml-2'>
+                                                    Logout
+                                                </p>
+                                            </section>
                                         </div>
                                     </div>
                                 </div>

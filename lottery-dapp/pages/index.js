@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Web3 from 'web3';
