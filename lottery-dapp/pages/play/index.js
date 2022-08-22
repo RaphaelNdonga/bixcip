@@ -222,7 +222,7 @@ export default function Play({ assets }) {
                 <nav className="navbar mt-4 mb-4">
                     <div className="container">
                         <div className="navbar-brand">
-                            <Image src={bixcipLogo} width="200px" height="100px" />
+                            <Link href="/"><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
                         </div>
                         <div className="navbar-end mt-4 mb-4">
                             {!connected ? <button className="button is-danger is-outlined mr-3" onClick={() => {
