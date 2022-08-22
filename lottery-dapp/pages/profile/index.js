@@ -45,18 +45,21 @@ export default function Profile({ assets }) {
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
+    const [address, setAddress] = useState("");
+
 
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        if (accounts[0] === null) {
+        if (accounts[0] === null || accounts[0] === "" || accounts[0] === undefined) {
             console.log("Setting connected to false");
-            setConnected(false)
+            setConnected(false);
+            setAddress("");
         } else {
             console.log("Setting connected to true");
-            setConnected(true)
+            setConnected(true);
+            setAddress(accounts[0])
         }
-        setConnectedAccount(accounts[0])
     }
 
     const switchChain = async () => {
@@ -82,10 +85,11 @@ export default function Profile({ assets }) {
     useEffect(() => {
         async function accountSetup() {
             const accounts = [localStorage.getItem('metamask')];
+            console.log("profile page accounts: ", localStorage.getItem('metamask'));
             if (accounts[0] !== null)
                 setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
 
-            console.log("Profile tab: ", accounts);
+            console.log("Profile tab: ", localStorage.getItem('metamask'));
             const element = profilePic.current;
             if (element.firstChild) {
                 element.removeChild(element.firstChild);

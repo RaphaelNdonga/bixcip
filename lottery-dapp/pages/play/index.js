@@ -130,14 +130,15 @@ export default function Play({ assets }) {
     const checkConnection = (accounts) => {
         console.log('checking accounts...', accounts);
         console.log(accounts[0])
-        if (accounts[0] === null) {
+        if (accounts[0] === null || accounts[0] === "" || accounts[0] === undefined) {
             console.log("Setting connected to false");
-            setConnected(false)
+            setConnected(false);
+            setAddress("");
         } else {
             console.log("Setting connected to true");
-            setConnected(true)
+            setConnected(true);
+            setAddress(accounts[0]);
         }
-        setAddress(accounts[0])
     }
 
     const fetchAccounts = async () => {

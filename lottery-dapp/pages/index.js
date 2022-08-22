@@ -63,13 +63,11 @@ export default function Home() {
       console.log("Setting connected to false");
       setConnected(false)
       setAddress("");
-      localStorage.setItem('metamask', address);
     } else {
       console.log(accounts[0]);
       console.log("Setting connected to true");
       setConnected(true)
       setAddress(accounts[0])
-      localStorage.setItem('metamask', address);
     }
   }
 
