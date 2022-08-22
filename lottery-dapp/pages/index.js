@@ -46,6 +46,7 @@ export default function Home() {
       setAddress(requestedAccount[0]);
 
       localStorage.setItem('metamask', requestedAccount);
+      setConnected(true);
 
       window.ethereum.on('accountsChanged', checkConnection);
       window.ethereum.on('chainChanged', switchChain);
@@ -164,7 +165,9 @@ export default function Home() {
                         View Profile
                       </a>
                       <a onClick={() => {
-                        localStorage.clear();
+                        setAddress("");
+                        localStorage.removeItem('metamask', address);
+                        setConnected(false);
                       }} class="dropdown-item">
                         logout
                       </a>
