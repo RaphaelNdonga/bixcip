@@ -17,6 +17,8 @@ import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 import logoutImg from "../images/logout.png";
 import profileImg from "../images/profile.png";
+import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
+import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -45,6 +47,9 @@ export default function Account({ assets }) {
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
+    const [lcContract, setLcContract] = useState();
+    const [web3, setWeb3] = useState();
+    const [currentBets, setCurrentBets] = useState([]);
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -89,14 +94,50 @@ export default function Account({ assets }) {
         }
     }
 
+    const setupContractAndAddress = async (web3) => {
+        /* get list of accounts */
+        const accounts = await web3.eth.getAccounts();
+        console.log("setupcontractandaddressaccounts: ", accounts);
+
+        if (accounts[0] === undefined) {
+            connectMetamask();
+        }
+
+        checkConnection(accounts);
+
+        setAddress(accounts[0]);
+
+        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+        console.log("lc contract: ", lc);
+        setLcContract(lc);
+    }
+
     const fetchAccounts = async () => {
         const accounts = [localStorage.getItem('metamask')];
         console.log("account fetchAccounts: ", accounts);
         checkConnection(accounts);
     }
 
+    const getPlayerBets = async () => {
+        try {
+            const playerBets = await lcContract.methods.getPlayerBets(address).call();
+            playerBets = playerBets.map(value => parseInt(value));
+            setCurrentBets(playerBets);
+            console.log("Player bets: ", playerBets);
+        } catch (error) {
+            console.log("getPlayerBets error: ", error);
+        }
+    }
+
     useEffect(() => {
         fetchAccounts();
+        const web3 = new Web3(window.ethereum);
+        /* set web3 instance in React state */
+        setWeb3(web3);
+        setupContractAndAddress(web3);
+        getPlayerBets();
         window.ethereum.on('accountsChanged', checkConnection);
         window.ethereum.on('chainChanged', switchChain);
 
@@ -223,7 +264,7 @@ export default function Account({ assets }) {
                     </section>
                     <p className="is-size-1 mt-4">Current Bets </p>
                     <div className={styles.bixcip_list}>
-                        {bixcipElements.slice(7, 10)}
+                        {bixcipElements.slice(currentBets[0], currentBets[currentBets.length - 1] + 1)}
                     </div>
                     <p className="is-size-1">Past Winnings </p>
                     <div className={styles.bixcip_list}>
