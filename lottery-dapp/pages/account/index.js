@@ -123,7 +123,7 @@ export default function Account({ assets }) {
     const getPlayerBets = async () => {
         try {
             const playerBets = await lcContract.methods.getPlayerBets(address).call();
-            playerBets = playerBets.map(value => parseInt(value));
+            playerBets = playerBets.map(value => bixcipElements[parseInt(value)]);
             setCurrentBets(playerBets);
             console.log("Player bets: ", playerBets);
         } catch (error) {
@@ -137,7 +137,6 @@ export default function Account({ assets }) {
         /* set web3 instance in React state */
         setWeb3(web3);
         setupContractAndAddress(web3);
-        getPlayerBets();
         window.ethereum.on('accountsChanged', checkConnection);
         window.ethereum.on('chainChanged', switchChain);
 
@@ -146,6 +145,10 @@ export default function Account({ assets }) {
             window.ethereum.removeListener('chainChanged', switchChain);
         }
     }, []);
+
+    useEffect(() => {
+        getPlayerBets();
+    }, [lcContract]);
 
     const switchChain = async () => {
         console.log("Switching chain...")
@@ -264,7 +267,7 @@ export default function Account({ assets }) {
                     </section>
                     <p className="is-size-1 mt-4">Current Bets </p>
                     <div className={styles.bixcip_list}>
-                        {bixcipElements.slice(currentBets[0], currentBets[currentBets.length - 1] + 1)}
+                        {currentBets}
                     </div>
                     <p className="is-size-1">Past Winnings </p>
                     <div className={styles.bixcip_list}>

@@ -123,6 +123,21 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(present).to.equal(true);
     })
 
+    it("should append new bets after previous ones have been made", async () => {
+        const currentBets = await Lottery.getPlayerBets(acc1.address);
+        console.log("current bets: ", currentBets);
+        const ticketFee = new BigNumber.from(await Lottery.getTicketFee());
+        const finalFee = ticketFee.mul(3);
+        const txn = await Lottery.enter([4, 5, 6], {
+            value: finalFee
+        });
+        await txn.wait();
+        const newBets = await Lottery.getPlayerBets(acc1.address);
+        console.log("new bets", newBets);
+        expect(currentBets.length < newBets.length);
+
+    })
+
     it("Should get 3 random numbers when picking a winner", async () => {
         const txn = await Lottery.pickWinners();
         await txn.wait();

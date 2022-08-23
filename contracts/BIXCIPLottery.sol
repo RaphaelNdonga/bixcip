@@ -59,12 +59,15 @@ contract BIXCIPLottery {
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
-        playerBets[msg.sender] = _bets;
+        uint256[] storage previousBets = playerBets[msg.sender];
 
         while (totalTickets > 0) {
+            uint256 value = _bets[totalTickets - 1];
+            previousBets.push(value);
             players.push(payable(msg.sender));
             totalTickets--;
         }
+        playerBets[msg.sender] = previousBets;
     }
 
     function getPlayerBets(address _player)
@@ -103,6 +106,17 @@ contract BIXCIPLottery {
             uint256 index = randomResult % players.length;
             winners.push(players[index]);
         }
+
+        for (uint96 i = 0; i < winners.length; i++) {
+            uint256[] storage currentWins = playerBets[winners[i]];
+            uint256[] storage previousWins = playerWins[winners[i]];
+            uint256 j = previousWins.length;
+
+            while (j > 0) {
+                currentWins.push(previousWins[j]);
+                j--;
+            }
+        }
     }
 
     function payWinners() public onlyOwner {
@@ -116,11 +130,14 @@ contract BIXCIPLottery {
             winners[i].transfer(amount);
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
-            playerWins[winners[i]] = playerBets[winners[i]];
         }
 
         // reset the state of the contract
+        for (uint96 i = 0; i < players.length; i++) {
+            delete playerBets[players[i]];
+        }
         players = new address payable[](0);
+        winners = new address payable[](0);
         s_randomWords = new uint256[](0);
         closeLottery();
     }
