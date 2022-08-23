@@ -98,12 +98,12 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(randomNumberArray.length).to.be.greaterThan(0);
     })
     it("should allow entrance after ether ticket fee has been deposited", async () => {
-        let ticketNumber = 2;
+        let bets = [1, 2, 3];
         let ticketFee = new BigNumber.from(await Lottery.getTicketFee());
         console.log("ticket fee: ", ticketFee);
-        let finalFee = ticketFee.mul(ticketNumber);
+        let finalFee = ticketFee.mul(bets.length);
         console.log("final fee", finalFee);
-        const txn = await Lottery.enter(ticketNumber, {
+        const txn = await Lottery.enter(bets, {
             value: finalFee
         });
         await txn.wait();
