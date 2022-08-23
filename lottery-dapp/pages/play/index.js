@@ -45,12 +45,12 @@ export default function Play({ assets }) {
 
     const handleCheck = (event) => {
         if (event.target.checked) {
-            console.log("Data: ", bixcipData[event.target.id]);
-            setBixcipSelected(oldArray => [...oldArray, bixcipData[event.target.id]]);
+            console.log("Data: ", event.target.id);
+            setBixcipSelected(oldArray => [...oldArray, parseInt(event.target.id)]);
             console.log("items selected: ", bixcipSelected);
         } else {
             setBixcipSelected(oldArray => oldArray.filter((bixcip) => {
-                return bixcip.id !== (parseInt(event.target.id) + 1);
+                return bixcip !== parseInt(event.target.id);
             }));
             console.log("items selected", bixcipSelected);
         }
@@ -78,7 +78,7 @@ export default function Play({ assets }) {
             console.log("ticket fee: ", ticketFee);
             const bigTicketFee = BigNumber.from(ticketFee).mul(bixcipSelected.length);
             console.log("Ticket fee: ", bigTicketFee);
-            await lcContract.methods.enter(bixcipSelected.length).send({
+            await lcContract.methods.enter(bixcipSelected).send({
                 from: address,
                 value: bigTicketFee
             });
@@ -120,6 +120,11 @@ export default function Play({ assets }) {
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
         const accounts = await web3.eth.getAccounts();
+        console.log("setupcontractandaddressaccounts: ", accounts);
+
+        if (accounts[0] === undefined) {
+            connectMetamask();
+        }
 
         checkConnection(accounts);
 
