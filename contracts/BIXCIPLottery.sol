@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract BIXCIPLottery {
     address payable[] public players;
+    mapping(address => uint256[]) playerBets;
+    mapping(address => uint256[]) playerWins;
     uint256 public lotteryId;
     mapping(uint256 => address) public lotteryHistory;
     IRandomNumberGenerator randomNumberGenerator;
@@ -48,18 +50,37 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter(uint256 _totalTickets) public payable {
+    function enter(uint256[] memory _bets) public payable {
+        uint256 totalTickets = _bets.length;
         require(
-            msg.value >= (0.01 ether * _totalTickets),
+            msg.value >= (0.01 ether * totalTickets),
             "Insufficient amount"
         );
 
         require(lotteryState == LotteryState.OPEN, "The lottery is closed");
 
-        while (_totalTickets > 0) {
+        playerBets[msg.sender] = _bets;
+
+        while (totalTickets > 0) {
             players.push(payable(msg.sender));
-            _totalTickets--;
+            totalTickets--;
         }
+    }
+
+    function getPlayerBets(address _player)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return playerBets[_player];
+    }
+
+    function getPlayerWins(address _player)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return playerWins[_player];
     }
 
     function getTicketFee() public view returns (uint256) {
@@ -95,6 +116,7 @@ contract BIXCIPLottery {
             winners[i].transfer(amount);
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
+            playerWins[winners[i]] = playerBets[winners[i]];
         }
 
         // reset the state of the contract
