@@ -105,17 +105,7 @@ contract BIXCIPLottery {
             );
             uint256 index = randomResult % players.length;
             winners.push(players[index]);
-        }
-
-        for (uint96 i = 0; i < winners.length; i++) {
-            uint256[] storage currentWins = playerBets[winners[i]];
-            uint256[] storage previousWins = playerWins[winners[i]];
-            uint256 j = previousWins.length;
-
-            while (j > 0) {
-                currentWins.push(previousWins[j]);
-                j--;
-            }
+            playerWins[players[index]] = playerBets[players[index]];
         }
     }
 

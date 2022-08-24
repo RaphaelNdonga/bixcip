@@ -32,7 +32,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
                 3
             );
             await RandomNumberGenerator.deployed();
-            let amount = ethers.utils.parseUnits("1", "ether");
+            let amount = ethers.utils.parseUnits("10", "ether");
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         } else {
@@ -67,7 +67,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(exists).to.equal(true)
 
     })
-    it("Should send 1 link to the VRF Coordinator", async () => {
+    it("Should send 10 link to the VRF Coordinator", async () => {
         let amount = ethers.utils.parseUnits("10", "ether");
         let txn = await RandomNumberGenerator.topupSubscription(amount);
         await txn.wait();
@@ -157,6 +157,12 @@ describe("End to End Lottery Smart Contracts Test", function () {
         const isGreater = finalBalance.gt(initialBalance)
 
         expect(isGreater).to.equal(true);
+    })
+
+    it("should append new wins", async () => {
+        const playerWins = await Lottery.getPlayerWins(acc1.address);
+        console.log("previous wins: ", playerWins);
+        expect(playerWins.length).to.be.greaterThan(0);
     })
 
     it("Should set the correct enum state", async () => {
