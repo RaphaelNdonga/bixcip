@@ -13,9 +13,10 @@ module.exports = async (deployer, network, accounts) => {
     networks[network].linkToken,
     3
   )
+  const randomNumberGeneratorInstance = await RandomNumberGenerator.deployed();
   randomNumberGeneratorAddress = RandomNumberGenerator.address;
   console.log("Random generator address: ", randomNumberGeneratorAddress);
-
   console.log("Link Token Address: ", LinkToken.address)
-  await LinkToken.transfer(randomNumberGeneratorAddress, web3.utils.toWei("1", "ether"));
+  await LinkToken.transfer(randomNumberGeneratorAddress, web3.utils.toWei("10", "ether"));
+  await randomNumberGeneratorInstance.topupSubscription(web3.utils.toWei("10", "ether"));
 };

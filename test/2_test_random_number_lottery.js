@@ -45,7 +45,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
             await RandomNumberGenerator.deployed();
             console.log("Random Number Generator address: ", RandomNumberGenerator.address);
             LinkToken = await ethers.getContractAt("ILinkToken", networks[networkName].linkToken);
-            let amount = ethers.utils.parseUnits("1", "ether");
+            let amount = ethers.utils.parseUnits("10", "ether");
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         }
@@ -68,7 +68,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
 
     })
     it("Should send 1 link to the VRF Coordinator", async () => {
-        let amount = ethers.utils.parseUnits("1", "ether");
+        let amount = ethers.utils.parseUnits("10", "ether");
         let txn = await RandomNumberGenerator.topupSubscription(amount);
         await txn.wait();
         let subscriptionBalance = await RandomNumberGenerator.getSubscriptionBalance();
