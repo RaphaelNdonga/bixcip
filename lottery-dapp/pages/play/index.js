@@ -126,10 +126,6 @@ export default function Play({ assets }) {
             connectMetamask();
         }
 
-        checkConnection(accounts);
-
-        setAddress(accounts[0]);
-
         console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
         const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
