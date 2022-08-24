@@ -32,7 +32,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
                 3
             );
             await RandomNumberGenerator.deployed();
-            let amount = ethers.utils.parseUnits("1", "ether");
+            let amount = ethers.utils.parseUnits("10", "ether");
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         } else {
@@ -45,7 +45,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
             await RandomNumberGenerator.deployed();
             console.log("Random Number Generator address: ", RandomNumberGenerator.address);
             LinkToken = await ethers.getContractAt("ILinkToken", networks[networkName].linkToken);
-            let amount = ethers.utils.parseUnits("1", "ether");
+            let amount = ethers.utils.parseUnits("10", "ether");
             let txn = await LinkToken.transfer(RandomNumberGenerator.address, amount);
             await txn.wait();
         }
@@ -67,8 +67,8 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(exists).to.equal(true)
 
     })
-    it("Should send 1 link to the VRF Coordinator", async () => {
-        let amount = ethers.utils.parseUnits("1", "ether");
+    it("Should send 10 link to the VRF Coordinator", async () => {
+        let amount = ethers.utils.parseUnits("10", "ether");
         let txn = await RandomNumberGenerator.topupSubscription(amount);
         await txn.wait();
         let subscriptionBalance = await RandomNumberGenerator.getSubscriptionBalance();
@@ -98,12 +98,12 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(randomNumberArray.length).to.be.greaterThan(0);
     })
     it("should allow entrance after ether ticket fee has been deposited", async () => {
-        let ticketNumber = 2;
+        let bets = [1, 2, 3];
         let ticketFee = new BigNumber.from(await Lottery.getTicketFee());
         console.log("ticket fee: ", ticketFee);
-        let finalFee = ticketFee.mul(ticketNumber);
+        let finalFee = ticketFee.mul(bets.length);
         console.log("final fee", finalFee);
-        const txn = await Lottery.enter(ticketNumber, {
+        const txn = await Lottery.enter(bets, {
             value: finalFee
         });
         await txn.wait();
@@ -123,18 +123,26 @@ describe("End to End Lottery Smart Contracts Test", function () {
         expect(present).to.equal(true);
     })
 
-    it("Should get 3 random numbers when picking a winner", async () => {
-        const txn = await Lottery.pickWinners();
+    it("should append new bets after previous ones have been made", async () => {
+        const currentBets = await Lottery.getPlayerBets(acc1.address);
+        console.log("current bets: ", currentBets);
+        const ticketFee = new BigNumber.from(await Lottery.getTicketFee());
+        const finalFee = ticketFee.mul(3);
+        const txn = await Lottery.enter([4, 5, 6], {
+            value: finalFee
+        });
         await txn.wait();
-        const randomNumberArray = await Lottery.getRandomNumbers();
-        console.log("Random number array: ", randomNumberArray);
-        expect(randomNumberArray.length).to.equal(3);
+        const newBets = await Lottery.getPlayerBets(acc1.address);
+        console.log("new bets", newBets);
+        expect(currentBets.length < newBets.length);
+
     })
 
     it("Should pay the winners accordingly", async () => {
+
         const initialBalance = await waffle.provider.getBalance(acc1.address);
         console.log("initial balance", initialBalance);
-        const txn = await Lottery.payWinners();
+        const txn = await Lottery.pickWinners();
         await txn.wait();
         const finalBalance = await waffle.provider.getBalance(acc1.address);
         console.log("final balance", finalBalance);
@@ -142,6 +150,12 @@ describe("End to End Lottery Smart Contracts Test", function () {
         const isGreater = finalBalance.gt(initialBalance)
 
         expect(isGreater).to.equal(true);
+    })
+
+    it("should append new wins", async () => {
+        const playerWins = await Lottery.getPlayerWins(acc1.address);
+        console.log("previous wins: ", playerWins);
+        expect(playerWins.length).to.be.greaterThan(0);
     })
 
     it("Should set the correct enum state", async () => {

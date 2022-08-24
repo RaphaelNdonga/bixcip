@@ -17,6 +17,8 @@ import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 import logoutImg from "../images/logout.png";
 import profileImg from "../images/profile.png";
+import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
+import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -45,6 +47,10 @@ export default function Account({ assets }) {
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
+    const [lcContract, setLcContract] = useState();
+    const [web3, setWeb3] = useState();
+    const [currentBets, setCurrentBets] = useState([]);
+    const [wins, setWins] = useState([]);
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -89,14 +95,60 @@ export default function Account({ assets }) {
         }
     }
 
+    const setupContractAndAddress = async (web3) => {
+        /* get list of accounts */
+        const accounts = await web3.eth.getAccounts();
+        console.log("setupcontractandaddressaccounts: ", accounts);
+
+        if (accounts[0] === undefined) {
+            connectMetamask();
+        }
+
+        checkConnection(accounts);
+
+        setAddress(accounts[0]);
+
+        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+        console.log("lc contract: ", lc);
+        setLcContract(lc);
+    }
+
     const fetchAccounts = async () => {
         const accounts = [localStorage.getItem('metamask')];
         console.log("account fetchAccounts: ", accounts);
         checkConnection(accounts);
     }
 
+    const getPlayerBets = async () => {
+        try {
+            const playerBets = await lcContract.methods.getPlayerBets(address).call();
+            playerBets = playerBets.map(value => bixcipElements[parseInt(value)]);
+            setCurrentBets(playerBets);
+            console.log("Player bets: ", playerBets);
+        } catch (error) {
+            console.log("getPlayerBets error: ", error);
+        }
+    }
+
+    const getPlayerWins = async () => {
+        try {
+            const playerWins = await lcContract.methods.getPlayerWins(address).call();
+            playerWins = playerWins.map(value => bixcipElements[parseInt(value)]);
+            setWins(playerWins);
+            console.log("PlayerWins: ", playerWins);
+        } catch (error) {
+            console.log("getPlayerWins error: ", error);
+        }
+    }
+
     useEffect(() => {
         fetchAccounts();
+        const web3 = new Web3(window.ethereum);
+        /* set web3 instance in React state */
+        setWeb3(web3);
+        setupContractAndAddress(web3);
         window.ethereum.on('accountsChanged', checkConnection);
         window.ethereum.on('chainChanged', switchChain);
 
@@ -105,6 +157,13 @@ export default function Account({ assets }) {
             window.ethereum.removeListener('chainChanged', switchChain);
         }
     }, []);
+
+    useEffect(() => {
+        if (lcContract != undefined) {
+            getPlayerBets();
+            getPlayerWins();
+        }
+    }, [lcContract]);
 
     const switchChain = async () => {
         console.log("Switching chain...")
@@ -223,12 +282,23 @@ export default function Account({ assets }) {
                     </section>
                     <p className="is-size-1 mt-4">Current Bets </p>
                     <div className={styles.bixcip_list}>
-                        {bixcipElements.slice(7, 10)}
+                        {currentBets}
                     </div>
-                    <p className="is-size-1">Past Winnings </p>
-                    <div className={styles.bixcip_list}>
-                        {bixcipElements.slice(23, 29)}
-                    </div>
+                    {wins.length > 0 && <section>
+                        <p className="is-size-1">Past Winnings </p>
+                        <div className={styles.bixcip_list}>
+                            {wins}
+                        </div>
+                    </section>
+                    }
+                    {wins.length === 0 &&
+                        <section>
+                            <p className="is-size-3 mb-3">Are you ready to Win the lottery?</p>
+                            {!connected ? <button onClick={() => {
+                                alert("Login to play")
+                            }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
+                        </section>
+                    }
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
                     </div>
