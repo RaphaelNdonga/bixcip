@@ -138,18 +138,11 @@ describe("End to End Lottery Smart Contracts Test", function () {
 
     })
 
-    it("Should get 3 random numbers when picking a winner", async () => {
-        const txn = await Lottery.pickWinners();
-        await txn.wait();
-        const randomNumberArray = await Lottery.getRandomNumbers();
-        console.log("Random number array: ", randomNumberArray);
-        expect(randomNumberArray.length).to.equal(3);
-    })
-
     it("Should pay the winners accordingly", async () => {
+
         const initialBalance = await waffle.provider.getBalance(acc1.address);
         console.log("initial balance", initialBalance);
-        const txn = await Lottery.payWinners();
+        const txn = await Lottery.pickWinners();
         await txn.wait();
         const finalBalance = await waffle.provider.getBalance(acc1.address);
         console.log("final balance", finalBalance);

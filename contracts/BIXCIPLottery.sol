@@ -31,6 +31,7 @@ contract BIXCIPLottery {
         randomNumberGenerator = IRandomNumberGenerator(
             _randomNumberGeneratorAddress
         );
+        randomNumberGenerator.requestRandomWords();
         startLottery();
     }
 
@@ -95,14 +96,13 @@ contract BIXCIPLottery {
     }
 
     function pickWinners() public onlyOwner {
-        randomNumberGenerator.requestRandomWords();
         s_randomWords = randomNumberGenerator.getRandomWords();
+        require(
+            s_randomWords.length > 0,
+            "Random numbers have not yet been generated"
+        );
         for (uint96 i = 0; i < s_randomWords.length; i++) {
             uint256 randomResult = s_randomWords[i];
-            require(
-                randomResult > 0,
-                "BIXCIPLottery: Must have a source of randomness before choosing winner"
-            );
             uint256 index = randomResult % players.length;
             winners.push(players[index]);
 
@@ -114,9 +114,10 @@ contract BIXCIPLottery {
             }
             playerWins[players[index]] = newWins;
         }
+        payWinners();
     }
 
-    function payWinners() public onlyOwner {
+    function payWinners() internal {
         require(
             s_randomWords.length > 0,
             "BIXCIPLottery: The random number has not yet been generated"
