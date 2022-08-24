@@ -147,7 +147,9 @@ export default function Account({ assets }) {
     }, []);
 
     useEffect(() => {
-        getPlayerBets();
+        if (lcContract != undefined) {
+            getPlayerBets();
+        }
     }, [lcContract]);
 
     const switchChain = async () => {
