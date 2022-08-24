@@ -50,6 +50,7 @@ export default function Account({ assets }) {
     const [lcContract, setLcContract] = useState();
     const [web3, setWeb3] = useState();
     const [currentBets, setCurrentBets] = useState([]);
+    const [wins, setWins] = useState([]);
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -131,6 +132,17 @@ export default function Account({ assets }) {
         }
     }
 
+    const getPlayerWins = async () => {
+        try {
+            const playerWins = await lcContract.methods.getPlayerWins(address).call();
+            playerWins = playerWins.map(value => bixcipElements[parseInt(value)]);
+            setWins(playerWins);
+            console.log("PlayerWins: ", playerWins);
+        } catch (error) {
+            console.log("getPlayerWins error: ", error);
+        }
+    }
+
     useEffect(() => {
         fetchAccounts();
         const web3 = new Web3(window.ethereum);
@@ -149,6 +161,7 @@ export default function Account({ assets }) {
     useEffect(() => {
         if (lcContract != undefined) {
             getPlayerBets();
+            getPlayerWins();
         }
     }, [lcContract]);
 
@@ -271,10 +284,21 @@ export default function Account({ assets }) {
                     <div className={styles.bixcip_list}>
                         {currentBets}
                     </div>
-                    <p className="is-size-1">Past Winnings </p>
-                    <div className={styles.bixcip_list}>
-                        {bixcipElements.slice(23, 29)}
-                    </div>
+                    {wins.length > 0 && <section>
+                        <p className="is-size-1">Past Winnings </p>
+                        <div className={styles.bixcip_list}>
+                            {wins}
+                        </div>
+                    </section>
+                    }
+                    {wins.length === 0 &&
+                        <section>
+                            <p className="is-size-3 mb-3">Are you ready to Win the lottery?</p>
+                            {!connected ? <button onClick={() => {
+                                alert("Login to play")
+                            }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
+                        </section>
+                    }
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
                     </div>
