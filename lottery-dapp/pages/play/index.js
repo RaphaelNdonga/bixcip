@@ -20,6 +20,7 @@ import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 import logoutImg from "../images/logout.png";
 import profileImg from "../images/profile.png";
+import { convertCompilerOptionsFromJson } from "typescript";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -69,6 +70,7 @@ export default function Play({ assets }) {
     const [totalArt, setTotalArt] = useState(0);
     const [totalArtPlayed, setTotalArtPlayed] = useState(0);
     const [totalEthPlayed, setTotalEthPlayed] = useState();
+    const [endTime, setEndTime] = useState(0);
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -164,14 +166,22 @@ export default function Play({ assets }) {
             let currentPlayerWins = await lcContract.methods.getPlayerWins(currentPlayer).call();
             _totalArtPlayed.push(currentPlayerWins);
         }
-        const totalNumberOfArtPlayed = _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
+        const totalNumberOfArtPlayed = _totalArtPlayed.length > 0 ? _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
             previousArrayValue.length +
-            currentArrayValue.length);
+            currentArrayValue.length) : 0;
 
         setTotalArtPlayed(totalNumberOfArtPlayed);
 
         const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
         setTotalEthPlayed(_totalEthPlayed);
+
+        const _timeFrame = await lcContract.methods.timeFrame().call();
+        console.log("timeframe: ", _timeFrame);
+        const javascriptTime = Date.now() / 1000;
+        console.log("javascript time: ", javascriptTime);
+        const _startTime = await lcContract.methods.startTime().call();
+        setEndTime(parseInt(_startTime) + parseInt(_timeFrame));
+        console.log("start time: ", _startTime);
     }
 
     useEffect(() => {

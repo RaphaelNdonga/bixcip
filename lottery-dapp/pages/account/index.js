@@ -280,10 +280,10 @@ export default function Account({ assets }) {
                             <p> {address.slice(0, 4)}...{address.slice(-4,)}</p>
                         </section>
                     </section>
-                    <p className="is-size-1 mt-4">Current Bets </p>
-                    <div className={styles.bixcip_list}>
-                        {currentBets}
-                    </div>
+                    {currentBets.length > 0 && <section><p className="is-size-1 mt-4">Current Bets </p>
+                        <div className={styles.bixcip_list}>
+                            {currentBets}
+                        </div></section>}
                     {wins.length > 0 && <section>
                         <p className="is-size-1">Past Winnings </p>
                         <div className={styles.bixcip_list}>
