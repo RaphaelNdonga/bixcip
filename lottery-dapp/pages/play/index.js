@@ -172,12 +172,6 @@ export default function Play({ assets }) {
 
         const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
         setTotalEthPlayed(_totalEthPlayed);
-        console.log("lc: ", lcContract);
-        console.log("total art: ", totalArt);
-        console.log("total players: ", totalPlayers);
-        console.log("total art played: ", _totalArtPlayed);
-        console.log(("total number of art played: ", totalNumberOfArtPlayed));
-        console.log("total eth played: ", _totalEthPlayed);
     }
 
     useEffect(() => {
