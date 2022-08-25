@@ -112,13 +112,7 @@ export default function Profile({ assets }) {
     const getPlayerWins = async () => {
         let currentWins = await lcContract.methods.getPlayerWins(address).call();
         console.log("current wins: ", currentWins);
-        currentWins = currentWins.map(value => bixcipElements[parseInt(value)]);
-        console.log("current wins: ", currentWins);
-        let prizeFee = await lcContract.methods.prizeMoney().call()
-        console.log("prize fee: ", prizeFee);
-        let prizesWon = (prizeFee / 3) * currentWins.length;
-        prizesWon = prizesWon / 10 ** 18;
-        console.log("prizes won: ", prizesWon);
+        let prizesWon = await lcContract.methods.getPlayerEthWins(address).call();
         setTotalWinnings(prizesWon);
         setPlayerWins(currentWins);
     }

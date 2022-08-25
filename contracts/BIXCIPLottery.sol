@@ -9,6 +9,7 @@ contract BIXCIPLottery {
     address payable[] public players;
     mapping(address => uint256[]) playerBets;
     mapping(address => uint256[]) playerWins;
+    mapping(address => uint256) public playerEthWins;
     uint256 public lotteryId;
     mapping(uint256 => address) public lotteryHistory;
     IRandomNumberGenerator randomNumberGenerator;
@@ -16,17 +17,24 @@ contract BIXCIPLottery {
     address s_owner;
     uint256 public ticketFee = 0.01 ether;
     address payable[] public winners;
+    address payable public bixcipTreasury;
     enum LotteryState {
         OPEN,
         CLOSED
     }
-    uint256 public prizeMoney;
 
     LotteryState lotteryState;
 
-    constructor(address _randomNumberGeneratorAddress, uint256 _prizeMoney) {
+    uint256 public startTime;
+
+    uint256 public timeFrame;
+
+    constructor(address _randomNumberGeneratorAddress, address _bixcipTreasury)
+    {
+        startTime = block.timestamp;
+        timeFrame = 30 days;
         s_owner = msg.sender;
-        prizeMoney = _prizeMoney;
+        bixcipTreasury = payable(_bixcipTreasury);
         lotteryId = 1;
         randomNumberGenerator = IRandomNumberGenerator(
             _randomNumberGeneratorAddress
@@ -51,7 +59,7 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter(uint256[] memory _bets) public payable {
+    function enter(uint256[] memory _bets) public payable withinTime {
         uint256 totalTickets = _bets.length;
         require(
             msg.value >= (0.01 ether * totalTickets),
@@ -95,6 +103,14 @@ contract BIXCIPLottery {
         ticketFee = _ticketFee;
     }
 
+    function setBixcipTreasury(address _bixcipTreasury) public onlyOwner {
+        bixcipTreasury = payable(_bixcipTreasury);
+    }
+
+    function setTimeFrame(uint256 _timeFrame) public onlyOwner {
+        timeFrame = _timeFrame;
+    }
+
     function pickWinners() public onlyOwner {
         s_randomWords = randomNumberGenerator.getRandomWords();
         require(
@@ -124,11 +140,14 @@ contract BIXCIPLottery {
         );
 
         for (uint96 i = 0; i < winners.length; i++) {
-            uint256 amount = prizeMoney / winners.length;
+            uint256 amount = address(this).balance / 10;
             winners[i].transfer(amount);
+            playerEthWins[winners[i]] += amount;
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
         }
+
+        bixcipTreasury.transfer(address(this).balance);
 
         // reset the state of the contract
         for (uint96 i = 0; i < players.length; i++) {
@@ -152,8 +171,22 @@ contract BIXCIPLottery {
         return lotteryState;
     }
 
+    function getPlayerEthWins(address _player) public view returns (uint256) {
+        return playerEthWins[_player];
+    }
+
     modifier onlyOwner() {
-        require(msg.sender == s_owner);
+        require(
+            msg.sender == s_owner || msg.sender == bixcipTreasury,
+            "You are not authorized to perform this operation"
+        );
+        _;
+    }
+    modifier withinTime() {
+        require(
+            (startTime + timeFrame) > block.timestamp,
+            "The Lottery has expired"
+        );
         _;
     }
 }

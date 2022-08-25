@@ -53,9 +53,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
         const investors = [acc1.address, acc2.address];
         console.log("Investors: ", investors);
         const LotteryFactory = await ethers.getContractFactory("BIXCIPLottery");
-        const prizeMoney = ethers.utils.parseEther("0.01");
-        console.log("The prize money is: ", prizeMoney);
-        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, prizeMoney);
+        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, "0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206");
         await Lottery.deployed();
     })
     it("Should have 1 link", async () => {
@@ -138,18 +136,32 @@ describe("End to End Lottery Smart Contracts Test", function () {
 
     })
 
-    it("Should pay the winners accordingly", async () => {
+    it("should have a time frame", async () => {
+        const startTime = await Lottery.startTime();
+        const timeFrame = await Lottery.timeFrame();
+        console.log("timestamp: ", startTime);
+        console.log("timeframe: ", timeFrame);
+    })
 
-        const initialBalance = await waffle.provider.getBalance(acc1.address);
-        console.log("initial balance", initialBalance);
+    it("Should pay the winners 30% and the bixcip treasury 70% as well", async () => {
+        const initialLotteryBalance = await waffle.provider.getBalance(Lottery.address);
+        console.log("initial lottery balance: ", initialLotteryBalance);
+        const bixcipTreasuryAddress = await Lottery.bixcipTreasury()
+        const initialTreasuryBalance = await waffle.provider.getBalance(bixcipTreasuryAddress);
         const txn = await Lottery.pickWinners();
         await txn.wait();
-        const finalBalance = await waffle.provider.getBalance(acc1.address);
-        console.log("final balance", finalBalance);
+        const finalTreasuryBalance = await waffle.provider.getBalance(bixcipTreasuryAddress);
 
-        const isGreater = finalBalance.gt(initialBalance)
+        const treasuryBalance = finalTreasuryBalance.sub(initialTreasuryBalance);
+        console.log("treasury balance: ", treasuryBalance);
 
-        expect(isGreater).to.equal(true);
+        const playerEthWins = await Lottery.getPlayerEthWins(acc1.address);
+        console.log("player eth wins: ", playerEthWins);
+        console.log(playerEthWins);
+
+        expect(playerEthWins.gt(initialLotteryBalance.mul(2.0).div(10))).to.be.true;
+
+        expect(treasuryBalance.gt(initialLotteryBalance.mul(6.0).div(10))).to.be.true;
     })
 
     it("should append new wins", async () => {

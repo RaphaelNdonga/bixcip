@@ -69,6 +69,9 @@ export default function Play({ assets }) {
     const [totalArt, setTotalArt] = useState(0);
     const [totalArtPlayed, setTotalArtPlayed] = useState(0);
     const [totalEthPlayed, setTotalEthPlayed] = useState();
+    const [endTime, setEndTime] = useState(0);
+    const [timeLeft, setTimeLeft] = useState("");
+    const [startDate, setStartDate] = useState("");
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -164,15 +167,42 @@ export default function Play({ assets }) {
             let currentPlayerWins = await lcContract.methods.getPlayerWins(currentPlayer).call();
             _totalArtPlayed.push(currentPlayerWins);
         }
-        const totalNumberOfArtPlayed = _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
+        const totalNumberOfArtPlayed = _totalArtPlayed.length > 0 ? _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
             previousArrayValue.length +
-            currentArrayValue.length);
+            currentArrayValue.length) : 0;
 
         setTotalArtPlayed(totalNumberOfArtPlayed);
 
         const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
         setTotalEthPlayed(_totalEthPlayed);
+
+        const _timeFrame = await lcContract.methods.timeFrame().call();
+        console.log("timeframe: ", _timeFrame);
+        const javascriptTime = Date.now() / 1000;
+        console.log("javascript time: ", javascriptTime);
+        const _startTime = await lcContract.methods.startTime().call();
+        const _startDate = new Date(_startTime * 1000);
+        setStartDate(_startDate.toString());
+        setEndTime(parseInt(_startTime) + parseInt(_timeFrame));
+        console.log("start time: ", _startTime);
     }
+
+    const calculateTimeLeft = () => {
+        let timeRemaining = Math.floor(endTime - (Date.now() / 1000));
+        let daysRemaining = Math.floor(timeRemaining / (24 * 60 * 60));
+        let hours = Math.floor((timeRemaining / (60 * 60)) % 24);
+        let minutes = Math.floor((timeRemaining / (60)) % 60);
+        let seconds = Math.floor((timeRemaining) % 60);
+        let timeSentence = `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
+        console.log("Time sentence: ", timeSentence);
+        return timeSentence;
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTimeLeft(calculateTimeLeft());
+        }, 1000);
+    })
 
     useEffect(() => {
         fetchAccounts();
@@ -303,6 +333,10 @@ export default function Play({ assets }) {
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
                     }} />}
+                    <p className="is-size-3">Lottery Start Date: </p>
+                    <p className="is-size-5">{startDate}</p>
+                    <p className="is-size-3">Time Remaining: </p>
+                    <p className="is-size-5">{timeLeft}</p>
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
