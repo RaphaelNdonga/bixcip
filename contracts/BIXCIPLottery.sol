@@ -9,6 +9,7 @@ contract BIXCIPLottery {
     address payable[] public players;
     mapping(address => uint256[]) playerBets;
     mapping(address => uint256[]) playerWins;
+    mapping(address => uint256) public playerEthWins;
     uint256 public lotteryId;
     mapping(uint256 => address) public lotteryHistory;
     IRandomNumberGenerator randomNumberGenerator;
@@ -16,6 +17,7 @@ contract BIXCIPLottery {
     address s_owner;
     uint256 public ticketFee = 0.01 ether;
     address payable[] public winners;
+    address payable public bixcipTreasury;
     enum LotteryState {
         OPEN,
         CLOSED
@@ -26,6 +28,9 @@ contract BIXCIPLottery {
 
     constructor(address _randomNumberGeneratorAddress, uint256 _prizeMoney) {
         s_owner = msg.sender;
+        bixcipTreasury = payable(
+            address(0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206)
+        );
         prizeMoney = _prizeMoney;
         lotteryId = 1;
         randomNumberGenerator = IRandomNumberGenerator(
@@ -124,11 +129,14 @@ contract BIXCIPLottery {
         );
 
         for (uint96 i = 0; i < winners.length; i++) {
-            uint256 amount = prizeMoney / winners.length;
+            uint256 amount = address(this).balance / 10;
             winners[i].transfer(amount);
+            playerEthWins[winners[i]] = amount;
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
         }
+
+        bixcipTreasury.transfer(address(this).balance);
 
         // reset the state of the contract
         for (uint96 i = 0; i < players.length; i++) {
