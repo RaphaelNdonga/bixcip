@@ -176,16 +176,26 @@ export default function Profile({ assets }) {
                     </div>
                 </nav>
                 <div className="container">
-                    <section className="mt-5">
-                        <p className="is-size-1">TOTAL WINNINGS</p>
-                        <p className="is-size-3">{totalWinnings}ETH</p>
-                    </section>
-                    <section className="mt-5">
-                        <p className="is-size-1"> ARTWORK WON</p>
-                        <div className={styles.bixcip_list}>
-                            {playerWins}
-                        </div>
-                    </section>
+                    {playerWins.length > 0 && <section>
+                        <section className="mt-5">
+                            <p className="is-size-1">TOTAL WINNINGS</p>
+                            <p className="is-size-3">{totalWinnings}ETH</p>
+                        </section>
+                        <section className="mt-5">
+                            <p className="is-size-1"> ARTWORK WON</p>
+                            <div className={styles.bixcip_list}>
+                                {playerWins}
+                            </div>
+                        </section>
+                    </section>}
+                    {playerWins.length === 0 &&
+                        <section>
+                            <p className="is-size-3 mb-3">Are you ready to Win the lottery?</p>
+                            {!connected ? <button onClick={() => {
+                                alert("Login to play")
+                            }} className="button is-danger">Play Lottery</button> : <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>}
+                        </section>
+                    }
                 </div>
             </main>
         </>
