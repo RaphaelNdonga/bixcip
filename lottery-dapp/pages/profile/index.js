@@ -157,7 +157,7 @@ export default function Profile({ assets }) {
         <>
             <main className={styles.main}>
                 <nav className="navbar mt-4 mb-4">
-                    <div className="container">
+                    <div className="container is-fluid">
                         <div className="navbar-brand">
                             <section>
                                 <Link href={"/"}><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
@@ -169,7 +169,7 @@ export default function Profile({ assets }) {
                         </div>
                     </div>
                 </nav>
-                <div className="container">
+                <div className="container is-fluid">
                     {playerWins.length > 0 && <section>
                         <section className="mt-5">
                             <p className="is-size-1">TOTAL WINNINGS</p>
