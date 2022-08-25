@@ -216,7 +216,7 @@ export default function Account({ assets }) {
 
             <main className={styles.main}>
                 <nav className="navbar mt-4 mb-4">
-                    <div className="container">
+                    <div className="container is-fluid">
                         <div className="navbar-brand">
                             <Link href="/"><Image className="is-clickable" src={bixcipLogo} width="200px" height="100px" /></Link>
                         </div>
@@ -265,7 +265,7 @@ export default function Account({ assets }) {
                         </div>
                     </div>
                 </nav>
-                <div className="container">
+                <div className="container is-fluid">
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
                     }} />}

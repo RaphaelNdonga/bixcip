@@ -147,7 +147,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <nav className="navbar mt-4 mb-4">
-          <div className="container">
+          <div className="container is-fluid">
             <div className="navbar-brand">
               <Image src={bixcipLogo} width="200px" height="100px" />
             </div>
@@ -196,7 +196,7 @@ export default function Home() {
             </div>
           </div>
         </nav>
-        <div className="container">
+        <div className="container is-fluid">
           {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
             connectWalletConnect();
           }} />}
