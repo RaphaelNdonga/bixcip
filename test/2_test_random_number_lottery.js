@@ -139,23 +139,21 @@ describe("End to End Lottery Smart Contracts Test", function () {
     })
 
     it("Should pay the winners 30% and the bixcip treasury 70% as well", async () => {
-        const winners = await Lottery.getRandomNumbers();
-        console.log("winners: ", winners);
         const initialLotteryBalance = await waffle.provider.getBalance(Lottery.address);
         console.log("initial lottery balance: ", initialLotteryBalance);
-        const initialAccountBalance = await waffle.provider.getBalance(acc1.address);
         const initialTreasuryBalance = await waffle.provider.getBalance("0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206");
         const txn = await Lottery.pickWinners();
         await txn.wait();
-        const finalAccountBalance = await waffle.provider.getBalance(acc1.address);
         const finalTreasuryBalance = await waffle.provider.getBalance("0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206")
 
-        const winnings = finalAccountBalance.sub(initialAccountBalance);
-        console.log("winnings: ", winnings);
         const treasuryBalance = finalTreasuryBalance.sub(initialTreasuryBalance);
         console.log("treasury balance: ", treasuryBalance);
 
-        expect(winnings.gt(initialLotteryBalance.mul(2.0).div(10))).to.be.true;
+        const playerEthWins = await Lottery.getPlayerEthWins(acc1.address);
+        console.log("player eth wins: ", playerEthWins);
+        console.log(playerEthWins);
+
+        expect(playerEthWins.gt(initialLotteryBalance.mul(2.0).div(10))).to.be.true;
 
         expect(treasuryBalance.gt(initialLotteryBalance.mul(6.0).div(10))).to.be.true;
     })

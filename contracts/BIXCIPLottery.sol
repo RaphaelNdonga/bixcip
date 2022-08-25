@@ -131,7 +131,7 @@ contract BIXCIPLottery {
         for (uint96 i = 0; i < winners.length; i++) {
             uint256 amount = address(this).balance / 10;
             winners[i].transfer(amount);
-            playerEthWins[winners[i]] = amount;
+            playerEthWins[winners[i]] += amount;
             lotteryHistory[lotteryId] = winners[i];
             lotteryId++;
         }
@@ -158,6 +158,10 @@ contract BIXCIPLottery {
 
     function getLotteryState() public view returns (LotteryState) {
         return lotteryState;
+    }
+
+    function getPlayerEthWins(address _player) public view returns (uint256) {
+        return playerEthWins[_player];
     }
 
     modifier onlyOwner() {
