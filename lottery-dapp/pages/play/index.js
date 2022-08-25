@@ -66,6 +66,9 @@ export default function Play({ assets }) {
     const [connectClicked, setConnectClicked] = useState(false);
     const [rinkebyId, setRinkebyId] = useState("0x4");
     const [web3, setWeb3] = useState();
+    const [totalArt, setTotalArt] = useState(0);
+    const [totalArtPlayed, setTotalArtPlayed] = useState(0);
+    const [totalEthPlayed, setTotalEthPlayed] = useState();
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -151,6 +154,32 @@ export default function Play({ assets }) {
         checkConnection(accounts)
     }
 
+    const getLotteryStats = async () => {
+        const _totalArt = bixcipData.length;
+        setTotalArt(_totalArt)
+        const totalPlayers = await lcContract.methods.getPlayers().call();
+        const _totalArtPlayed = [];
+        for (let i = 0; i < totalPlayers.length; i++) {
+            let currentPlayer = totalPlayers[i];
+            let currentPlayerWins = await lcContract.methods.getPlayerWins(currentPlayer).call();
+            _totalArtPlayed.push(currentPlayerWins);
+        }
+        const totalNumberOfArtPlayed = _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
+            previousArrayValue.length +
+            currentArrayValue.length);
+
+        setTotalArtPlayed(totalNumberOfArtPlayed);
+
+        const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
+        setTotalEthPlayed(_totalEthPlayed);
+        console.log("lc: ", lcContract);
+        console.log("total art: ", totalArt);
+        console.log("total players: ", totalPlayers);
+        console.log("total art played: ", _totalArtPlayed);
+        console.log(("total number of art played: ", totalNumberOfArtPlayed));
+        console.log("total eth played: ", _totalEthPlayed);
+    }
+
     useEffect(() => {
         fetchAccounts();
         const web3 = new Web3(window.ethereum);
@@ -165,6 +194,12 @@ export default function Play({ assets }) {
             window.ethereum.removeListener('chainChanged', switchChain);
         }
     }, []);
+
+    useEffect(() => {
+        if (lcContract != undefined) {
+            getLotteryStats();
+        }
+    }, [lcContract]);
 
     const switchChain = async () => {
         console.log("Switching chain...")
@@ -286,6 +321,20 @@ export default function Play({ assets }) {
                     <div className="is-flex is-flex-direction-column is-align-items-center mt-5 mb-6">
                         <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
                     </div>
+                    <section className="columns is-centered mt-5 mb-5">
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Art Available</p>
+                            <p className="is-size-3">{totalArt}</p>
+                        </section>
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Art Played</p>
+                            <p className="is-size-3">{totalArtPlayed}</p>
+                        </section>
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Eth Played</p>
+                            <p className="is-size-3">{totalEthPlayed}</p>
+                        </section>
+                    </section>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
                     </div>
