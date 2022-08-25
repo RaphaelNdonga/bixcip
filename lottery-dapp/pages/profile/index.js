@@ -9,7 +9,11 @@ import { PrismaClient } from "@prisma/client";
 import Bixcip from "../components/Bixcip";
 import Link from 'next/link';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-
+import Web3 from "web3";
+import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
+import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
 
 
 export async function getStaticProps() {
@@ -34,7 +38,7 @@ export default function Profile({ assets }) {
 
     const [bixcipData, setBixcipData] = useState(assets);
 
-    const bixcipElements = bixcipData.slice(0, 3).map((data, i) => {
+    const bixcipElements = bixcipData.map((data, i) => {
         return <Bixcip key={i} id={i} title={data.title} url={data.url} />
     });
 
@@ -46,7 +50,8 @@ export default function Profile({ assets }) {
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
-    const [playerWins, setPlayerWins] = useState();
+    const [playerWins, setPlayerWins] = useState([]);
+    const [totalWinnings, setTotalWinnings] = useState();
 
     const [address, setAddress] = useState("");
 
@@ -63,6 +68,26 @@ export default function Profile({ assets }) {
             setConnected(true);
             setAddress(accounts[0])
         }
+    }
+
+    const setupContractAndAddress = async (web3) => {
+        /* get list of accounts */
+        const accounts = await web3.eth.getAccounts();
+        console.log("setupcontractandaddressaccounts: ", accounts);
+
+        if (accounts[0] === undefined) {
+            connectMetamask();
+        }
+
+        checkConnection(accounts);
+
+        setAddress(accounts[0]);
+
+        console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
+
+        const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
+        console.log("lc contract: ", lc);
+        setLcContract(lc);
     }
 
     const switchChain = async () => {
@@ -85,13 +110,17 @@ export default function Profile({ assets }) {
     }
 
     const getPlayerWins = async () => {
-        let currentWins = await lcContract.methods.getPlayerWins().call();
+        let currentWins = await lcContract.methods.getPlayerWins(address).call();
+        console.log("current wins: ", currentWins);
         currentWins = currentWins.map(value => bixcipElements[parseInt(value)]);
+        console.log("current wins: ", currentWins);
+        let prizeFee = await lcContract.methods.prizeMoney().call()
+        console.log("prize fee: ", prizeFee);
+        let prizesWon = (prizeFee / 3) * currentWins.length;
+        prizesWon = prizesWon / 10 ** 18;
+        console.log("prizes won: ", prizesWon);
+        setTotalWinnings(prizesWon);
         setPlayerWins(currentWins);
-    }
-
-    const getTotalWinnings = async () => {
-
     }
 
 
@@ -110,6 +139,8 @@ export default function Profile({ assets }) {
             element.appendChild(jazzicon(30, accounts[0]))
         }
         accountSetup();
+        const web3 = new Web3(window.ethereum);
+        setupContractAndAddress(web3);
 
         window.ethereum.on('accountsChanged', checkConnection);
         window.ethereum.on('chainChanged', switchChain);
@@ -119,7 +150,7 @@ export default function Profile({ assets }) {
             window.ethereum.removeListener('chainChanged', switchChain);
         }
 
-    }, [profilePic])
+    }, [])
 
     useEffect(() => {
         if (lcContract != undefined) {
@@ -147,12 +178,12 @@ export default function Profile({ assets }) {
                 <div className="container">
                     <section className="mt-5">
                         <p className="is-size-1">TOTAL WINNINGS</p>
-                        <p className="is-size-3">{Math.random().toFixed(3) * 10}ETH</p>
+                        <p className="is-size-3">{totalWinnings}ETH</p>
                     </section>
                     <section className="mt-5">
                         <p className="is-size-1"> ARTWORK WON</p>
                         <div className={styles.bixcip_list}>
-                            {bixcipElements}
+                            {playerWins}
                         </div>
                     </section>
                 </div>

@@ -18,7 +18,7 @@ import Link from 'next/link';
 import logoutImg from "../images/logout.png";
 import profileImg from "../images/profile.png";
 import lotteryAddress from "../blockchain/BIXCIPLotteryAddress.json";
-import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json"
+import lotteryAbi from "../blockchain/BIXCIPLotteryAbi.json";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
