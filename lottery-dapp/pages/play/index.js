@@ -71,6 +71,7 @@ export default function Play({ assets }) {
     const [totalEthPlayed, setTotalEthPlayed] = useState();
     const [endTime, setEndTime] = useState(0);
     const [timeLeft, setTimeLeft] = useState("");
+    const [startDate, setStartDate] = useState("");
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -180,6 +181,8 @@ export default function Play({ assets }) {
         const javascriptTime = Date.now() / 1000;
         console.log("javascript time: ", javascriptTime);
         const _startTime = await lcContract.methods.startTime().call();
+        const _startDate = new Date(_startTime * 1000);
+        setStartDate(_startDate.toString());
         setEndTime(parseInt(_startTime) + parseInt(_timeFrame));
         console.log("start time: ", _startTime);
     }
@@ -330,8 +333,10 @@ export default function Play({ assets }) {
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
                     }} />}
-                    <p className="is-size-1">Time Remaining: </p>
-                    <p className="is-size-3">{timeLeft}</p>
+                    <p className="is-size-3">Lottery Start Date: </p>
+                    <p className="is-size-5">{startDate}</p>
+                    <p className="is-size-3">Time Remaining: </p>
+                    <p className="is-size-5">{timeLeft}</p>
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
