@@ -25,8 +25,14 @@ contract BIXCIPLottery {
 
     LotteryState lotteryState;
 
+    uint256 public startTime;
+
+    uint256 public timeFrame;
+
     constructor(address _randomNumberGeneratorAddress, address _bixcipTreasury)
     {
+        startTime = block.timestamp;
+        timeFrame = 30 days;
         s_owner = msg.sender;
         bixcipTreasury = payable(_bixcipTreasury);
         lotteryId = 1;
@@ -53,7 +59,7 @@ contract BIXCIPLottery {
         return s_randomWords;
     }
 
-    function enter(uint256[] memory _bets) public payable {
+    function enter(uint256[] memory _bets) public payable withinTime {
         uint256 totalTickets = _bets.length;
         require(
             msg.value >= (0.01 ether * totalTickets),
@@ -95,6 +101,14 @@ contract BIXCIPLottery {
 
     function setTicketFee(uint256 _ticketFee) public onlyOwner {
         ticketFee = _ticketFee;
+    }
+
+    function setBixcipTreasury(address _bixcipTreasury) public onlyOwner {
+        bixcipTreasury = payable(_bixcipTreasury);
+    }
+
+    function setTimeFrame(uint256 _timeFrame) public onlyOwner {
+        timeFrame = _timeFrame;
     }
 
     function pickWinners() public onlyOwner {
@@ -162,7 +176,17 @@ contract BIXCIPLottery {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == s_owner);
+        require(
+            msg.sender == s_owner || msg.sender == bixcipTreasury,
+            "You are not authorized to perform this operation"
+        );
+        _;
+    }
+    modifier withinTime() {
+        require(
+            (startTime + timeFrame) > block.timestamp,
+            "The Lottery has expired"
+        );
         _;
     }
 }

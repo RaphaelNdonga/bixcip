@@ -136,6 +136,13 @@ describe("End to End Lottery Smart Contracts Test", function () {
 
     })
 
+    it("should have a time frame", async () => {
+        const startTime = await Lottery.startTime();
+        const timeFrame = await Lottery.timeFrame();
+        console.log("timestamp: ", startTime);
+        console.log("timeframe: ", timeFrame);
+    })
+
     it("Should pay the winners 30% and the bixcip treasury 70% as well", async () => {
         const initialLotteryBalance = await waffle.provider.getBalance(Lottery.address);
         console.log("initial lottery balance: ", initialLotteryBalance);
