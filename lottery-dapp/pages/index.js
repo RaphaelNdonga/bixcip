@@ -83,12 +83,16 @@ export default function Home() {
 
   useEffect(() => {
     fetchAccounts();
-    window.ethereum.on('accountsChanged', checkConnection);
-    window.ethereum.on('chainChanged', switchChain);
+    if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+      window.ethereum.on('accountsChanged', checkConnection);
+      window.ethereum.on('chainChanged', switchChain);
+    }
 
     return () => {
-      window.ethereum.removeListener('accountsChanged', checkConnection);
-      window.ethereum.removeListener('chainChanged', switchChain);
+      if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+        window.ethereum.removeListener('accountsChanged', checkConnection);
+        window.ethereum.removeListener('chainChanged', switchChain);
+      }
     }
   }, []);
 

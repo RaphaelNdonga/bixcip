@@ -1,8 +1,8 @@
 import React from "react";
 import 'bulma/css/bulma.css';
 import WalletCard from "./WalletCard";
-import walletconnectImage from "../images/walletconnect.svg";
-import metamaskImage from "../images/metamask.svg";
+import walletconnectImage from "../images/walletConnect.png";
+import metamaskImage from "../images/metamask.png";
 import Image from "next/image";
 
 

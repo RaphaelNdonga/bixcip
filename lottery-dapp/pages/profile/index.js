@@ -41,9 +41,12 @@ export default function Profile({ assets }) {
     let profilePic = useRef();
     const [connectedAccount, setConnectedAccount] = useState("");
     const [connected, setConnected] = useState(false);
+    const [lcContract, setLcContract] = useState();
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
+
+    const [playerWins, setPlayerWins] = useState();
 
     const [address, setAddress] = useState("");
 
@@ -81,6 +84,16 @@ export default function Profile({ assets }) {
         }
     }
 
+    const getPlayerWins = async () => {
+        let currentWins = await lcContract.methods.getPlayerWins().call();
+        currentWins = currentWins.map(value => bixcipElements[parseInt(value)]);
+        setPlayerWins(currentWins);
+    }
+
+    const getTotalWinnings = async () => {
+
+    }
+
 
     useEffect(() => {
         async function accountSetup() {
@@ -107,6 +120,12 @@ export default function Profile({ assets }) {
         }
 
     }, [profilePic])
+
+    useEffect(() => {
+        if (lcContract != undefined) {
+            getPlayerWins();
+        }
+    }, [lcContract])
 
 
     return (
