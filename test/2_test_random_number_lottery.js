@@ -53,9 +53,7 @@ describe("End to End Lottery Smart Contracts Test", function () {
         const investors = [acc1.address, acc2.address];
         console.log("Investors: ", investors);
         const LotteryFactory = await ethers.getContractFactory("BIXCIPLottery");
-        const prizeMoney = ethers.utils.parseEther("0.01");
-        console.log("The prize money is: ", prizeMoney);
-        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, prizeMoney);
+        Lottery = await LotteryFactory.deploy(RandomNumberGenerator.address, "0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206");
         await Lottery.deployed();
     })
     it("Should have 1 link", async () => {
@@ -141,10 +139,11 @@ describe("End to End Lottery Smart Contracts Test", function () {
     it("Should pay the winners 30% and the bixcip treasury 70% as well", async () => {
         const initialLotteryBalance = await waffle.provider.getBalance(Lottery.address);
         console.log("initial lottery balance: ", initialLotteryBalance);
-        const initialTreasuryBalance = await waffle.provider.getBalance("0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206");
+        const bixcipTreasuryAddress = await Lottery.bixcipTreasury()
+        const initialTreasuryBalance = await waffle.provider.getBalance(bixcipTreasuryAddress);
         const txn = await Lottery.pickWinners();
         await txn.wait();
-        const finalTreasuryBalance = await waffle.provider.getBalance("0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206")
+        const finalTreasuryBalance = await waffle.provider.getBalance(bixcipTreasuryAddress);
 
         const treasuryBalance = finalTreasuryBalance.sub(initialTreasuryBalance);
         console.log("treasury balance: ", treasuryBalance);

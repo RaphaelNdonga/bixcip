@@ -22,16 +22,13 @@ contract BIXCIPLottery {
         OPEN,
         CLOSED
     }
-    uint256 public prizeMoney;
 
     LotteryState lotteryState;
 
-    constructor(address _randomNumberGeneratorAddress, uint256 _prizeMoney) {
+    constructor(address _randomNumberGeneratorAddress, address _bixcipTreasury)
+    {
         s_owner = msg.sender;
-        bixcipTreasury = payable(
-            address(0x0Db28FC3d9Cd8AA96C932a9fA30940F90Eac2206)
-        );
-        prizeMoney = _prizeMoney;
+        bixcipTreasury = payable(_bixcipTreasury);
         lotteryId = 1;
         randomNumberGenerator = IRandomNumberGenerator(
             _randomNumberGeneratorAddress
