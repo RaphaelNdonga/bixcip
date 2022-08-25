@@ -20,7 +20,6 @@ import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 import logoutImg from "../images/logout.png";
 import profileImg from "../images/profile.png";
-import { convertCompilerOptionsFromJson } from "typescript";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
@@ -71,6 +70,7 @@ export default function Play({ assets }) {
     const [totalArtPlayed, setTotalArtPlayed] = useState(0);
     const [totalEthPlayed, setTotalEthPlayed] = useState();
     const [endTime, setEndTime] = useState(0);
+    const [timeLeft, setTimeLeft] = useState("");
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -183,6 +183,23 @@ export default function Play({ assets }) {
         setEndTime(parseInt(_startTime) + parseInt(_timeFrame));
         console.log("start time: ", _startTime);
     }
+
+    const calculateTimeLeft = () => {
+        let timeRemaining = Math.floor(endTime - (Date.now() / 1000));
+        let daysRemaining = Math.floor(timeRemaining / (24 * 60 * 60));
+        let hours = Math.floor((timeRemaining / (60 * 60)) % 24);
+        let minutes = Math.floor((timeRemaining / (60)) % 60);
+        let seconds = Math.floor((timeRemaining) % 60);
+        let timeSentence = `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
+        console.log("Time sentence: ", timeSentence);
+        return timeSentence;
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            setTimeLeft(calculateTimeLeft());
+        }, 1000);
+    })
 
     useEffect(() => {
         fetchAccounts();
@@ -313,6 +330,8 @@ export default function Play({ assets }) {
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
                     }} />}
+                    <p className="is-size-1">Time Remaining: </p>
+                    <p className="is-size-3">{timeLeft}</p>
                     <p className="is-size-1">SELECT ART TO WIN</p>
                     <div className={styles.bixcip_list}>
                         {bixcipElements}
