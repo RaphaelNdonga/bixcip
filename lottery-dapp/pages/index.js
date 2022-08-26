@@ -77,7 +77,14 @@ export default function Home() {
   }
 
   const fetchAccounts = async () => {
-    const accounts = [localStorage.getItem('metamask')];
+    let accounts;
+    if (wcProvider.wc.session.connected) {
+      console.log("fetching accounts from wc provider");
+      accounts = wcProvider.wc.session.accounts;
+    } else {
+      console.log("fetching accounts from metamask");
+      accounts = [localStorage.getItem('metamask')];
+    }
     checkConnection(accounts)
   }
 
@@ -88,10 +95,21 @@ export default function Home() {
       window.ethereum.on('chainChanged', switchChain);
     }
 
+    if (wcProvider.wc.session.connected) {
+      wcProvider.on("accountsChanged", checkConnection);
+      wcProvider.on("chainChanged", switchChain);
+      wcProvider.on("disconnect", disconnectHandler);
+    }
+
     return () => {
       if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
         window.ethereum.removeListener('accountsChanged', checkConnection);
         window.ethereum.removeListener('chainChanged', switchChain);
+      }
+      if (wcProvider.wc.session.connected) {
+        wcProvider.removeListener("accountsChanged", checkConnection);
+        wcProvider.removeListener("chainChanged", switchChain);
+        wcProvider.removeListener("disconnect", disconnectHandler);
       }
     }
   }, []);
@@ -115,10 +133,12 @@ export default function Home() {
     }
   }
 
-  const disconnectHandler = () => {
-    console.log("Wallet disconnected")
-    localStorage.clear();
+  const disconnectHandler = async () => {
+    setAddress("");
+    localStorage.removeItem('walletConnect');
+    localStorage.removeItem('metamask');
     setConnected(false);
+    wcProvider.wc.killSession();
   }
 
   const connectWalletConnect = async () => {
@@ -140,7 +160,6 @@ export default function Home() {
     const accounts = await _web3.eth.getAccounts();
     console.log("Accounts obtained: ", accounts);
     setAddress(accounts[0]);
-    localStorage.setItem('metamask', accounts[0]);
     setConnected(true);
 
 
@@ -188,14 +207,7 @@ export default function Home() {
                           </p>
                         </section>
                       </Link>
-                      <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
-                        setAddress("");
-                        localStorage.removeItem('metamask', address);
-                        setConnected(false);
-                        if (wcProvider.connected) {
-                          wcProvider.disconnect();
-                        }
-                      }}>
+                      <section className='dropdown-item is-flex is-clickable mb-2' onClick={disconnectHandler}>
                         <Image src={logoutImg} height='20px' width='20px' />
                         <p className='ml-2'>
                           Logout
