@@ -69,13 +69,81 @@ export default function Profile({ assets }) {
             setAddress(accounts[0])
         }
     }
+    const connectWalletConnect = async () => {
+        await wcProvider.enable();
+        const chainId = await wcProvider.request({ method: "eth_chainId" });
+        console.log("Wallet connect chain id: ", chainId);
+        if (`0x${chainId}` !== rinkebyId) {
+            await switchChain()
+        }
+        const newChainId = await wcProvider.request({ method: "eth_chainId" });
+        console.log("Wallet connect new chain id: ", newChainId);
+        console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
+        if (!wcProvider.connected) {
+            return;
+        }
+
+        const _web3 = new Web3(wcProvider);
+        const accounts = await _web3.eth.getAccounts();
+        console.log("Accounts obtained: ", accounts);
+        setAddress(accounts[0]);
+        localStorage.setItem('metamask', accounts[0]);
+        setConnected(true);
+
+
+        wcProvider.on("accountsChanged", checkConnection);
+        wcProvider.on("chainChanged", switchChain);
+        wcProvider.on("disconnect", disconnectHandler);
+    }
+
+    const connectMetamask = async () => {
+        /* check if MetaMask is installed */
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            /* request wallet connection */
+            const chainId = await window.ethereum.request({ method: "eth_chainId" });
+            console.log("connectMetamask: chainId: ", chainId);
+
+            if (chainId !== rinkebyId) {
+                console.log("connectMetamask: switching chains: ");
+                await switchChain();
+            }
+            const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
+            localStorage.setItem('metamask', requestedAccount);
+            setAddress(requestedAccount[0]);
+            setConnected(true);
+            /* create web3 instance & set to state */
+            const web3 = new Web3(window.ethereum);
+            /* set web3 instance in React state */
+            setWeb3(web3);
+            setupContractAndAddress(web3);
+
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
+        } else {
+            /* MetaMask is not installed */
+            console.log("Metamask still not installed")
+            alert("Please install MetaMask")
+        }
+    }
+
+    const disconnectHandler = () => {
+        setAddress("");
+        localStorage.removeItem('walletConnect');
+        localStorage.removeItem('metamask');
+        setConnected(false);
+        if (wcProvider.wc.session.connected) {
+            wcProvider.wc.killSession();
+        }
+    }
 
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
         const accounts = await web3.eth.getAccounts();
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (accounts[0] === undefined) {
+        if (accounts[0] === undefined && !wcProvider.wc.connected) {
+            console.log("connecting to metamask");
             connectMetamask();
         }
 
@@ -92,7 +160,7 @@ export default function Profile({ assets }) {
 
     const switchChain = async () => {
         console.log("Switching chain...")
-        if (wcProvider.connected) {
+        if (wcProvider.wc.session.connected) {
             await wcProvider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{
@@ -110,6 +178,7 @@ export default function Profile({ assets }) {
     }
 
     const getPlayerWins = async () => {
+        console.log("getPlayerWins reads the address as: ", address);
         let currentWins = await lcContract.methods.getPlayerWins(address).call();
         console.log("current wins: ", currentWins);
         let prizesWon = await lcContract.methods.getPlayerEthWins(address).call();
@@ -120,12 +189,18 @@ export default function Profile({ assets }) {
 
     useEffect(() => {
         async function accountSetup() {
-            const accounts = [localStorage.getItem('metamask')];
-            console.log("profile page accounts: ", localStorage.getItem('metamask'));
-            if (accounts[0] !== null)
-                setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
+            let accounts;
 
-            console.log("Profile tab: ", localStorage.getItem('metamask'));
+            if (wcProvider.wc.session.connected) {
+                accounts = wcProvider.wc.session.accounts;
+            } else {
+                accounts = [localStorage.getItem('metamask')];
+            }
+            if (accounts[0] !== null) {
+                setAddress(accounts[0]);
+                setConnectedAccount(`${accounts[0].slice(0, 4)}...${accounts[0].slice(-4,)}`);
+            }
+
             const element = profilePic.current;
             if (element.firstChild) {
                 element.removeChild(element.firstChild);
@@ -133,18 +208,37 @@ export default function Profile({ assets }) {
             element.appendChild(jazzicon(30, accounts[0]))
         }
         accountSetup();
-        const web3 = new Web3(window.ethereum);
+        let web3;
+        if (wcProvider.wc.session.connected) {
+            web3 = new Web3(wcProvider);
+        } else {
+            web3 = new Web3(window.ethereum);
+        }
         setupContractAndAddress(web3);
 
-        window.ethereum.on('accountsChanged', checkConnection);
-        window.ethereum.on('chainChanged', switchChain);
-
-        return () => {
-            window.ethereum.removeListener('accountsChanged', checkConnection);
-            window.ethereum.removeListener('chainChanged', switchChain);
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
         }
 
-    }, [])
+        if (wcProvider.wc.session.connected) {
+            wcProvider.on("accountsChanged", checkConnection);
+            wcProvider.on("chainChanged", switchChain);
+            wcProvider.on("disconnect", disconnectHandler);
+        }
+
+        return () => {
+            if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+                window.ethereum.removeListener('accountsChanged', checkConnection);
+                window.ethereum.removeListener('chainChanged', switchChain);
+            }
+            if (wcProvider.wc.session.connected) {
+                wcProvider.removeListener("accountsChanged", checkConnection);
+                wcProvider.removeListener("chainChanged", switchChain);
+                wcProvider.removeListener("disconnect", disconnectHandler);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (lcContract != undefined) {
