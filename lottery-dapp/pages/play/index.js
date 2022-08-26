@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import styles from '../../styles/Home.module.css';
 import Image from "next/image";
@@ -77,6 +77,8 @@ export default function Play({ assets }) {
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
+    const viewProfileRef = useRef(null);
+
     const enterLotteryHandler = async () => {
         try {
             console.log("Lottery Address: ", lotteryAddress);
@@ -88,6 +90,7 @@ export default function Play({ assets }) {
                 from: address,
                 value: bigTicketFee
             });
+            viewProfileRef.current.click();
         } catch (err) {
             console.log("error while entering lottery: ", err.message)
         }
@@ -357,8 +360,8 @@ export default function Play({ assets }) {
                                     </div>
                                     <div className='dropdown-menu' id='dropdown-menu1' role="menu">
                                         <div className='dropdown-content'>
-                                            <Link href="/profile">
-                                                <section className='dropdown-item is-flex is-clickable  mb-2'>
+                                            <Link href="/account">
+                                                <section ref={viewProfileRef} className='dropdown-item is-flex is-clickable  mb-2'>
                                                     <Image src={profileImg} height='20px' width='20px' />
                                                     <p className='ml-2'>
                                                         View Profile
