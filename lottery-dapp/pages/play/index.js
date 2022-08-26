@@ -125,14 +125,19 @@ export default function Play({ assets }) {
 
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
+        console.log("setting up contract and address");
+        console.log("web3: ", web3);
+        const accounts = web3.eth.getAccounts();
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (wcProvider.connected) {
+        if (wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to wallet connect");
             connectWalletConnect();
         }
 
-        if (!wcProvider.connected && accounts[0] === undefined) {
+        //This state occurs when a user has not logged in to metamask but they had connected before
+        if (!wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to metamask");
             connectMetamask();
         }
 
@@ -157,7 +162,14 @@ export default function Play({ assets }) {
     }
 
     const fetchAccounts = async () => {
-        const accounts = [localStorage.getItem('metamask')];
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            console.log("Fetching accounts from wcprovider")
+            accounts = wcProvider.wc.session.accounts;
+        } else {
+            console.log("fetching accounts from metamask");
+            accounts = [localStorage.getItem('metamask')];
+        }
         checkConnection(accounts)
     }
 
@@ -198,7 +210,6 @@ export default function Play({ assets }) {
         let minutes = Math.floor((timeRemaining / (60)) % 60);
         let seconds = Math.floor((timeRemaining) % 60);
         let timeSentence = timeRemaining < 0 ? "..." : `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
-        console.log("Time sentence: ", timeSentence);
         return timeSentence;
     }
 
@@ -210,21 +221,44 @@ export default function Play({ assets }) {
 
     useEffect(() => {
         fetchAccounts();
-        const web3 = new Web3(window.ethereum);
+        let web3;
+        if (wcProvider.wc.session.connected) {
+            console.log("connecting to wallet connect web3: ")
+            web3 = new Web3(wcProvider);
+        } else {
+            web3 = new Web3(window.ethereum);
+        }
         /* set web3 instance in React state */
         setWeb3(web3);
         setupContractAndAddress(web3);
-        window.ethereum.on('accountsChanged', checkConnection);
-        window.ethereum.on('chainChanged', switchChain);
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
+        }
+
+        if (wcProvider.connected) {
+            wcProvider.on("accountsChanged", checkConnection);
+            wcProvider.on("chainChanged", switchChain);
+            wcProvider.on("disconnect", disconnectHandler);
+        }
 
         return () => {
-            window.ethereum.removeListener('accountsChanged', checkConnection);
-            window.ethereum.removeListener('chainChanged', switchChain);
+            if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+                window.ethereum.removeListener('accountsChanged', checkConnection);
+                window.ethereum.removeListener('chainChanged', switchChain);
+            }
+            if (wcProvider.connected) {
+                wcProvider.removeListener("accountsChanged", checkConnection);
+                wcProvider.removeListener("chainChanged", switchChain);
+                wcProvider.removeListener("disconnect", disconnectHandler);
+            }
         }
     }, []);
 
+
     useEffect(() => {
         if (lcContract != undefined) {
+            console.log("lottery contract: ", lcContract);
             getLotteryStats();
         }
     }, [lcContract]);
@@ -249,9 +283,13 @@ export default function Play({ assets }) {
     }
 
     const disconnectHandler = () => {
-        console.log("Wallet disconnected")
-        localStorage.clear();
+        setAddress("");
+        localStorage.removeItem('walletConnect');
+        localStorage.removeItem('metamask');
         setConnected(false);
+        if (wcProvider.wc.session.connected) {
+            wcProvider.wc.killSession();
+        }
     }
 
     const connectWalletConnect = async () => {
@@ -320,11 +358,7 @@ export default function Play({ assets }) {
                                                     </p>
                                                 </section>
                                             </Link>
-                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
-                                                setAddress("");
-                                                localStorage.removeItem('metamask', address);
-                                                setConnected(false);
-                                            }}>
+                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={disconnectHandler}>
                                                 <Image src={logoutImg} height='20px' width='20px' />
                                                 <p className='ml-2'>
                                                     Logout
