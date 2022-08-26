@@ -113,6 +113,7 @@ truffle run verify [contractName] --network [networkName]
 ```
 
 ## Admin Operations
+
 Admin currently refers to the user who deployed the Lottery to the blockchain.
 
 After verifying the source code on etherscan, you can use it to perform the following priviledged operations:
@@ -122,10 +123,20 @@ After verifying the source code on etherscan, you can use it to perform the foll
 - Pick the winners
 - Pay the winners
 
-
 <div align="center">
       <img src="images/Screenshot from 2022-06-20 21-40-03.png" width="800px">
      </div>
+
+### onlyAdmin Functions
+
+BIXCIP admin or BIXCIP Treasury access to the following functions or operations:
+
+- setTicketFee (integer) [default: 0.01 ether]
+- setBixcipTreasury (address)
+- setTimeFrame (integer)
+- pickWinners
+- startLottery
+- closeLottery
 
 ## Smart Contracts
 
