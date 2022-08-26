@@ -97,21 +97,30 @@ export default function Account({ assets }) {
 
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
+        console.log("setting up contract and address");
+        console.log("web3: ", web3);
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            accounts = web3.eth.getAccounts();
+        } else {
+            accounts = await web3.eth.getAccounts();
+        }
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (accounts[0] === undefined) {
-            connectMetamask();
+        if (wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to wallet connect");
+            connectWalletConnect();
         }
 
-        checkConnection(accounts);
-
-        setAddress(accounts[0]);
+        //This state occurs when a user has not logged in to metamask but they had connected before
+        if (!wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to metamask");
+            connectMetamask();
+        }
 
         console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
         const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
-        console.log("lc contract: ", lc);
         setLcContract(lc);
     }
 
@@ -145,16 +154,37 @@ export default function Account({ assets }) {
 
     useEffect(() => {
         fetchAccounts();
-        const web3 = new Web3(window.ethereum);
+        let web3;
+
+        if (wcProvider.wc.session.connected) {
+            web3 = new Web3(wcProvider);
+        } else {
+            web3 = new Web3(window.ethereum)
+        }
         /* set web3 instance in React state */
         setWeb3(web3);
         setupContractAndAddress(web3);
-        window.ethereum.on('accountsChanged', checkConnection);
-        window.ethereum.on('chainChanged', switchChain);
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
+        }
+
+        if (wcProvider.wc.session.connected) {
+            wcProvider.on("accountsChanged", checkConnection);
+            wcProvider.on("chainChanged", switchChain);
+            wcProvider.on("disconnect", disconnectHandler);
+        }
 
         return () => {
-            window.ethereum.removeListener('accountsChanged', checkConnection);
-            window.ethereum.removeListener('chainChanged', switchChain);
+            if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+                window.ethereum.removeListener('accountsChanged', checkConnection);
+                window.ethereum.removeListener('chainChanged', switchChain);
+            }
+            if (wcProvider.wc.session.connected) {
+                wcProvider.removeListener("accountsChanged", checkConnection);
+                wcProvider.removeListener("chainChanged", switchChain);
+                wcProvider.removeListener("disconnect", disconnectHandler);
+            }
         }
     }, []);
 

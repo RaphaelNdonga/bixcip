@@ -125,10 +125,24 @@ export default function Play({ assets }) {
 
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
+        console.log("setting up contract and address");
+        console.log("web3: ", web3);
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            accounts = web3.eth.getAccounts();
+        } else {
+            accounts = await web3.eth.getAccounts();
+        }
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (accounts[0] === undefined) {
+        if (wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to wallet connect");
+            connectWalletConnect();
+        }
+
+        //This state occurs when a user has not logged in to metamask but they had connected before
+        if (!wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to metamask");
             connectMetamask();
         }
 
@@ -153,7 +167,14 @@ export default function Play({ assets }) {
     }
 
     const fetchAccounts = async () => {
-        const accounts = [localStorage.getItem('metamask')];
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            console.log("Fetching accounts from wcprovider")
+            accounts = wcProvider.wc.session.accounts;
+        } else {
+            console.log("fetching accounts from metamask");
+            accounts = [localStorage.getItem('metamask')];
+        }
         checkConnection(accounts)
     }
 
@@ -161,19 +182,21 @@ export default function Play({ assets }) {
         const _totalArt = bixcipData.length;
         setTotalArt(_totalArt)
         const totalPlayers = await lcContract.methods.getPlayers().call();
-        const _totalArtPlayed = [];
+        console.log("total players: ", totalPlayers);
+        let artArray = [];
         for (let i = 0; i < totalPlayers.length; i++) {
             let currentPlayer = totalPlayers[i];
-            let currentPlayerWins = await lcContract.methods.getPlayerWins(currentPlayer).call();
-            _totalArtPlayed.push(currentPlayerWins);
+            console.log("current player: ", currentPlayer);
+            let currentPlayerBets = await lcContract.methods.getPlayerBets(currentPlayer).call();
+            console.log("current player wins: ", currentPlayerBets);
+            artArray.push(...currentPlayerBets);
         }
-        const totalNumberOfArtPlayed = _totalArtPlayed.length > 0 ? _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
-            previousArrayValue.length +
-            currentArrayValue.length) : 0;
+        artArray = [... new Set(artArray)];
+        console.log("total art played: ", artArray);
 
-        setTotalArtPlayed(totalNumberOfArtPlayed);
+        setTotalArtPlayed(artArray.length);
 
-        const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
+        const _totalEthPlayed = (artArray.length * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
         setTotalEthPlayed(_totalEthPlayed);
 
         const _timeFrame = await lcContract.methods.timeFrame().call();
@@ -193,8 +216,7 @@ export default function Play({ assets }) {
         let hours = Math.floor((timeRemaining / (60 * 60)) % 24);
         let minutes = Math.floor((timeRemaining / (60)) % 60);
         let seconds = Math.floor((timeRemaining) % 60);
-        let timeSentence = `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
-        console.log("Time sentence: ", timeSentence);
+        let timeSentence = timeRemaining < 0 ? "..." : `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
         return timeSentence;
     }
 
@@ -206,28 +228,51 @@ export default function Play({ assets }) {
 
     useEffect(() => {
         fetchAccounts();
-        const web3 = new Web3(window.ethereum);
+        let web3;
+        if (wcProvider.wc.session.connected) {
+            console.log("connecting to wallet connect web3: ")
+            web3 = new Web3(wcProvider);
+        } else {
+            web3 = new Web3(window.ethereum);
+        }
         /* set web3 instance in React state */
         setWeb3(web3);
         setupContractAndAddress(web3);
-        window.ethereum.on('accountsChanged', checkConnection);
-        window.ethereum.on('chainChanged', switchChain);
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            window.ethereum.on('accountsChanged', checkConnection);
+            window.ethereum.on('chainChanged', switchChain);
+        }
+
+        if (wcProvider.wc.session.connected) {
+            wcProvider.on("accountsChanged", checkConnection);
+            wcProvider.on("chainChanged", switchChain);
+            wcProvider.on("disconnect", disconnectHandler);
+        }
 
         return () => {
-            window.ethereum.removeListener('accountsChanged', checkConnection);
-            window.ethereum.removeListener('chainChanged', switchChain);
+            if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+                window.ethereum.removeListener('accountsChanged', checkConnection);
+                window.ethereum.removeListener('chainChanged', switchChain);
+            }
+            if (wcProvider.wc.session.connected) {
+                wcProvider.removeListener("accountsChanged", checkConnection);
+                wcProvider.removeListener("chainChanged", switchChain);
+                wcProvider.removeListener("disconnect", disconnectHandler);
+            }
         }
     }, []);
 
+
     useEffect(() => {
         if (lcContract != undefined) {
+            console.log("lottery contract: ", lcContract);
             getLotteryStats();
         }
     }, [lcContract]);
 
     const switchChain = async () => {
         console.log("Switching chain...")
-        if (wcProvider.connected) {
+        if (wcProvider.wc.session.connected) {
             await wcProvider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{
@@ -245,9 +290,13 @@ export default function Play({ assets }) {
     }
 
     const disconnectHandler = () => {
-        console.log("Wallet disconnected")
-        localStorage.clear();
+        setAddress("");
+        localStorage.removeItem('walletConnect');
+        localStorage.removeItem('metamask');
         setConnected(false);
+        if (wcProvider.wc.session.connected) {
+            wcProvider.wc.killSession();
+        }
     }
 
     const connectWalletConnect = async () => {
@@ -259,12 +308,19 @@ export default function Play({ assets }) {
         }
         const newChainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect new chain id: ", newChainId);
-        const web3 = new Web3(wcProvider);
-        setWeb3(web3);
-
-        setupContractAndAddress(web3);
-
         console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
+        if (!wcProvider.connected) {
+            return;
+        }
+
+        const _web3 = new Web3(wcProvider);
+        const accounts = await _web3.eth.getAccounts();
+        console.log("Accounts obtained: ", accounts);
+        setAddress(accounts[0]);
+        localStorage.setItem('metamask', accounts[0]);
+        setConnected(true);
+
 
         wcProvider.on("accountsChanged", checkConnection);
         wcProvider.on("chainChanged", switchChain);
@@ -309,11 +365,7 @@ export default function Play({ assets }) {
                                                     </p>
                                                 </section>
                                             </Link>
-                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={() => {
-                                                setAddress("");
-                                                localStorage.removeItem('metamask', address);
-                                                setConnected(false);
-                                            }}>
+                                            <section className='dropdown-item is-flex is-clickable mb-2' onClick={disconnectHandler}>
                                                 <Image src={logoutImg} height='20px' width='20px' />
                                                 <p className='ml-2'>
                                                     Logout
