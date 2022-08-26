@@ -137,6 +137,7 @@ BIXCIP admin or BIXCIP Treasury access to the following functions or operations:
 - pickWinners
 - startLottery
 - closeLottery
+- payWinners [automatically triggered after pickWinners function]
 
 ## Smart Contracts
 
