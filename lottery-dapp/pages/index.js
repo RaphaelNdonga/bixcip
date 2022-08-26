@@ -116,7 +116,7 @@ export default function Home() {
 
   const switchChain = async () => {
     console.log("Switching chain...")
-    if (wcProvider.connected) {
+    if (wcProvider.wc.session.connected) {
       await wcProvider.request({
         method: "wallet_switchEthereumChain",
         params: [{
