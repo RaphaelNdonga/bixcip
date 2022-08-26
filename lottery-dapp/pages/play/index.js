@@ -128,7 +128,11 @@ export default function Play({ assets }) {
         const accounts = await web3.eth.getAccounts();
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (accounts[0] === undefined) {
+        if (wcProvider.connected) {
+            connectWalletConnect();
+        }
+
+        if (!wcProvider.connected && accounts[0] === undefined) {
             connectMetamask();
         }
 
@@ -193,7 +197,7 @@ export default function Play({ assets }) {
         let hours = Math.floor((timeRemaining / (60 * 60)) % 24);
         let minutes = Math.floor((timeRemaining / (60)) % 60);
         let seconds = Math.floor((timeRemaining) % 60);
-        let timeSentence = `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
+        let timeSentence = timeRemaining < 0 ? "..." : `${daysRemaining} days ${hours} hours ${minutes} minutes ${seconds} seconds `;
         console.log("Time sentence: ", timeSentence);
         return timeSentence;
     }
@@ -259,12 +263,19 @@ export default function Play({ assets }) {
         }
         const newChainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect new chain id: ", newChainId);
-        const web3 = new Web3(wcProvider);
-        setWeb3(web3);
-
-        setupContractAndAddress(web3);
-
         console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
+        if (!wcProvider.connected) {
+            return;
+        }
+
+        const _web3 = new Web3(wcProvider);
+        const accounts = await _web3.eth.getAccounts();
+        console.log("Accounts obtained: ", accounts);
+        setAddress(accounts[0]);
+        localStorage.setItem('metamask', accounts[0]);
+        setConnected(true);
+
 
         wcProvider.on("accountsChanged", checkConnection);
         wcProvider.on("chainChanged", switchChain);
