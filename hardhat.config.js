@@ -2,6 +2,7 @@ require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
 require("hardhat-gas-reporter");
 require("@nomiclabs/hardhat-etherscan");
+require("solidity-docgen");
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -55,5 +56,6 @@ module.exports = {
   },
   mocha: {
     timeout: 200000
-  }
+  },
+  docgen: {}
 };
