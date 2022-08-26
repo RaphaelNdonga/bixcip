@@ -177,19 +177,21 @@ export default function Play({ assets }) {
         const _totalArt = bixcipData.length;
         setTotalArt(_totalArt)
         const totalPlayers = await lcContract.methods.getPlayers().call();
-        const _totalArtPlayed = [];
+        console.log("total players: ", totalPlayers);
+        let artArray = [];
         for (let i = 0; i < totalPlayers.length; i++) {
             let currentPlayer = totalPlayers[i];
-            let currentPlayerWins = await lcContract.methods.getPlayerWins(currentPlayer).call();
-            _totalArtPlayed.push(currentPlayerWins);
+            console.log("current player: ", currentPlayer);
+            let currentPlayerBets = await lcContract.methods.getPlayerBets(currentPlayer).call();
+            console.log("current player wins: ", currentPlayerBets);
+            artArray.push(...currentPlayerBets);
         }
-        const totalNumberOfArtPlayed = _totalArtPlayed.length > 0 ? _totalArtPlayed.reduce((previousArrayValue, currentArrayValue) =>
-            previousArrayValue.length +
-            currentArrayValue.length) : 0;
+        artArray = [... new Set(artArray)];
+        console.log("total art played: ", artArray);
 
-        setTotalArtPlayed(totalNumberOfArtPlayed);
+        setTotalArtPlayed(artArray.length);
 
-        const _totalEthPlayed = (totalNumberOfArtPlayed * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
+        const _totalEthPlayed = (artArray.length * await lcContract.methods.getTicketFee().call()) / 10 ** 18;
         setTotalEthPlayed(_totalEthPlayed);
 
         const _timeFrame = await lcContract.methods.timeFrame().call();
