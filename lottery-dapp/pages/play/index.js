@@ -236,7 +236,7 @@ export default function Play({ assets }) {
             window.ethereum.on('chainChanged', switchChain);
         }
 
-        if (wcProvider.connected) {
+        if (wcProvider.wc.session.connected) {
             wcProvider.on("accountsChanged", checkConnection);
             wcProvider.on("chainChanged", switchChain);
             wcProvider.on("disconnect", disconnectHandler);
@@ -247,7 +247,7 @@ export default function Play({ assets }) {
                 window.ethereum.removeListener('accountsChanged', checkConnection);
                 window.ethereum.removeListener('chainChanged', switchChain);
             }
-            if (wcProvider.connected) {
+            if (wcProvider.wc.session.connected) {
                 wcProvider.removeListener("accountsChanged", checkConnection);
                 wcProvider.removeListener("chainChanged", switchChain);
                 wcProvider.removeListener("disconnect", disconnectHandler);
@@ -265,7 +265,7 @@ export default function Play({ assets }) {
 
     const switchChain = async () => {
         console.log("Switching chain...")
-        if (wcProvider.connected) {
+        if (wcProvider.wc.session.connected) {
             await wcProvider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{
