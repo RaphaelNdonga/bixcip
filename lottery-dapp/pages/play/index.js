@@ -127,7 +127,12 @@ export default function Play({ assets }) {
         /* get list of accounts */
         console.log("setting up contract and address");
         console.log("web3: ", web3);
-        const accounts = web3.eth.getAccounts();
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            accounts = web3.eth.getAccounts();
+        } else {
+            accounts = await web3.eth.getAccounts();
+        }
         console.log("setupcontractandaddressaccounts: ", accounts);
 
         if (wcProvider.wc.session.connected && accounts[0] === undefined) {
