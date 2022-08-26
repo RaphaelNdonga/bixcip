@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["referentialIntegrity"]
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
