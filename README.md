@@ -4,13 +4,11 @@ This repository smart contracts (contracts) and decentralized application (DApp)
 
 ## Overview
 
-The contracts are stored here:
+The contracts are stored here: `/contracts`
 
-- /contracts
+The DApp is stored here: `/lottery-dapp`
 
-The DApp is stored here:
-
-- /lottery-dapp
+The lottery is deployed on Ethereum Rinkeby (TestNet) here: [0xa72340B19941eb5D2eb01C727a6C83EA8758EEf9](https://rinkeby.etherscan.io/address/0xa72340B19941eb5D2eb01C727a6C83EA8758EEf9#code)
 
 ## Requirements
 
@@ -27,7 +25,6 @@ Your `.env` file must contain the following:
 
   `ETHERSCAN_API_KEY='api key'` or 
   `POLYGONSCAN_API_KEY='api key'`
-
 
 Your `.env` file may optionally contain the following:
 - Your [Alchemy](https://dashboard.alchemyapi.io/) project Keys for deploying to Ethereum Rinkeby and or (optional) Mumbai networks:
@@ -47,27 +44,57 @@ Your `.env` file may optionally contain the following:
 Pull the repository from GitHub, then install its dependencies by executing this command:
 
 ```bash
-npm install
+$ npm install
+```
+
+or 
+
+```bash
+$ yarn install
+```
+
+or 
+
+```bash
+$ pnpm install
 ```
 
 ## Testing
 
 Hardhat was used to test the project.
 
-Start by testing locally. It produces the fastest result. Run the following in the terminal:
+Start by testing locally. It produces the fastest result. 
+
+Run the following in the terminal:
+
+```shell
+$ npx hardhat test
 ```
-   npx hardhat test
+
+or
+
+```shell
+$ yarn hardhat test
+```
+
+or
+
+```shell
+$ pnpm hardhat test
 ```
 
 Next, test the code on a network. If you haven't stored your private keys in a `.env` file, you can use `truffle dashboard`. Ensure dashboard is connected to `Rinkeby` network.
-```
-   npx hardhat test --network truffle-dashboard
+
+```shell
+$ truffle dashboard (in one terminal)
+$ npx hardhat test --network truffle-dashboard (in another terminal)
 ```
 
 If you had stored private keys in a `.env` file, you can use the following networks: 
 mumbai, tBNB, rinkeby.
-```
-   npx hardhat test --network [network-name]
+
+```shell
+$ npx hardhat test --network [network-name]
 ```
 
 > **Note**: Whichever network you decide to use, ensure you have sufficient crypto in that network and also sufficient Link tokens. You can fetch both from this [Faucet](https://faucets.chain.link/).
@@ -79,7 +106,7 @@ Truffle was used for deployment.
 To deploy the smart contracts to a network, replace _[networkName]_ in this command:
 
 ```bash
-truffle migrate --network [networkName]
+$ truffle migrate --network [networkName]
 ```
 
 Networks can be configured in _truffle-config.js_. We've preconfigured the following:
@@ -92,7 +119,7 @@ Note that truffle dashboard has been set up to use the rinkeby network.
 The above procedure deploys all the contracts. If you want to deploy only specific contracts, you can run only the relevant script(s) via the below command:
 
 ```bash
-truffle migrate -f [start] --to [end] --network [name]
+$ truffle migrate -f [start] --to [end] --network [name]
 ```
 
 Replace _[start]_ with the number of the first and _[end]_ with the number of the last migration script you wish to run. To run only one script, _[start]_ and _[end]_ should match. The numbers of the scripts are:
@@ -109,27 +136,16 @@ If the script fails before starting the deployment, you might need to run the fi
 For automatic verification of the source code on Etherscan you can use [truffle plugin verify](https://github.com/rkalis/truffle-plugin-verify):
 
 ```bash
-truffle run verify [contractName] --network [networkName]
+$ truffle run verify [contractName] --network [networkName]
 ```
 
-## Admin Operations
+## Admin Controlled Lottery Operations
 
-Admin currently refers to the user who deployed the Lottery to the blockchain.
+BIXCIP contract owner (BIXCIP admin) and BIXCIP Treasury (BIXCIP team) has access to `onlyAdmin` functions or operations.
+
+![](images/write-contract.png)
 
 After verifying the source code on etherscan, you can use it to perform the following priviledged operations:
-
-- Start the lottery
-- Close the lottery
-- Pick the winners
-- Pay the winners
-
-<div align="center">
-      <img src="images/Screenshot from 2022-06-20 21-40-03.png" width="800px">
-     </div>
-
-### onlyAdmin Functions
-
-BIXCIP admin or BIXCIP Treasury access to the following functions or operations:
 
 - setTicketFee (integer) [default: 0.01 ether]
 - setBixcipTreasury (address)
@@ -137,7 +153,7 @@ BIXCIP admin or BIXCIP Treasury access to the following functions or operations:
 - pickWinners
 - startLottery
 - closeLottery
-- payWinners [automatically triggered after pickWinners function]
+- payWinners (automatically triggered after pickWinners function)
 
 ## Smart Contracts
 
@@ -149,83 +165,165 @@ This smart contract generates random numbers using Chainlink. It generates 3 ran
 This smart contract obtains random numbers from `RandomNumberGenerator.sol`. It then uses these random numbers to generate 3 random winners. It picks the winner from the players who enter the lottery. It distributes to the players all the money that was in the lottery.
 
 ## Gas Reports
-### Mumbai Testnet Gas Report:
-```
-·------------------------------------------------|----------------------------|-------------|----------------------------·
-|              Solc version: 0.8.9               ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 6718946 gas  │
-·················································|····························|·············|·····························
-|  Methods                                       ·               21 gwei/gas                ·      1130.01 usd/eth       │
-··························|······················|··············|·············|·············|··············|··············
-|  Contract               ·  Method              ·  Min         ·  Max        ·  Avg        ·  # calls     ·  usd (avg)  │
-··························|······················|··············|·············|·············|··············|··············
-|  BasicToken             ·  transfer            ·       27670  ·      71007  ·      54518  ·          32  ·       1.29  │
-··························|······················|··············|·············|·············|··············|··············
-|  BIXCIPLottery          ·  enter               ·           -  ·          -  ·      67892  ·           1  ·       1.61  │
-··························|······················|··············|·············|·············|··············|··············
-|  BIXCIPLottery          ·  payWinners          ·           -  ·          -  ·     131329  ·           1  ·       3.12  │
-··························|······················|··············|·············|·············|··············|··············
-|  BIXCIPLottery          ·  pickWinners         ·           -  ·          -  ·     187878  ·           1  ·       4.46  │
-··························|······················|··············|·············|·············|··············|··············
-|  BIXCIPLottery          ·  startLottery        ·           -  ·          -  ·      26561  ·           1  ·       0.63  │
-··························|······················|··············|·············|·············|··············|··············
-|  Migrations             ·  setCompleted        ·       25790  ·      45711  ·      31473  ·           4  ·       0.75  │
-··························|······················|··············|·············|·············|··············|··············
-|  RandomNumberGenerator  ·  requestRandomWords  ·       77538  ·      96568  ·      87053  ·           2  ·       2.07  │
-··························|······················|··············|·············|·············|··············|··············
-|  RandomNumberGenerator  ·  topupSubscription   ·           -  ·          -  ·      82000  ·           1  ·       1.95  │
-··························|······················|··············|·············|·············|··············|··············
-|  StandardToken          ·  approve             ·       24113  ·      48865  ·      45024  ·          84  ·       1.07  │
-··························|······················|··············|·············|·············|··············|··············
-|  StandardToken          ·  transferFrom        ·           -  ·          -  ·      77156  ·           1  ·       1.83  │
-··························|······················|··············|·············|·············|··············|··············
-|  Deployments                                   ·                                          ·  % of limit  ·             │
-·················································|··············|·············|·············|··············|··············
-|  BIIX                                          ·           -  ·          -  ·    1216176  ·      18.1 %  ·      28.86  │
-·················································|··············|·············|·············|··············|··············
-|  BIXCIPLottery                                 ·           -  ·          -  ·    1423860  ·      21.2 %  ·      33.79  │
-·------------------------------------------------|--------------|-------------|-------------|--------------|-------------·
+
+Run gas report using Truffle Dashboard:
+
+```shell
+$ yarn test-gas --network truffle-dashboard
 ```
 
-### tBNB gas report
-```
-·------------------------------------------------|----------------------------|-------------|----------------------------·
-|              Solc version: 0.8.9               ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 6718946 gas  │
-·················································|····························|·············|·····························
-|  Methods                                                                                                               │
-··························|······················|··············|·············|·············|·············|···············
-|  Contract               ·  Method              ·  Min         ·  Max        ·  Avg        ·  # calls    ·  eur (avg)   │
-··························|······················|··············|·············|·············|·············|···············
-|  ERC20                  ·  approve             ·       24883  ·      44848  ·      38244  ·         31  ·           -  │
-··························|······················|··············|·············|·············|·············|···············
-|  ERC20                  ·  transfer            ·       27936  ·      52163  ·      43664  ·         21  ·           -  │
-··························|······················|··············|·············|·············|·············|···············
-|  RandomNumberGenerator  ·  requestRandomWords  ·           -  ·          -  ·      84178  ·          1  ·           -  │
-··························|······················|··············|·············|·············|·············|···············
-|  RandomNumberGenerator  ·  topupSubscription   ·           -  ·          -  ·      66500  ·          1  ·           -  │
-·-------------------------|----------------------|--------------|-------------|-------------|-------------|--------------·
+or
+
+```shell
+$ npm run test-gas --network truffle-dashboard
 ```
 
-### Local Gas Report
+or
+
+```shell
+$ pnpm run test-gas --network truffle-dashboard
 ```
-·-----------------------------------------------|----------------------------|-------------|-----------------------------·
-|              Solc version: 0.8.9              ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 30000000 gas  │
-················································|····························|·············|······························
-|  Methods                                      ·               147 gwei/gas               ·       1844.36 usd/eth       │
-··························|·····················|··············|·············|·············|···············|··············
-|  Contract               ·  Method             ·  Min         ·  Max        ·  Avg        ·  # calls      ·  usd (avg)  │
-··························|·····················|··············|·············|·············|···············|··············
-|  LinkToken              ·  transfer           ·           -  ·          -  ·      51806  ·            2  ·      14.05  │
-··························|·····················|··············|·············|·············|···············|··············
-|  RandomNumberGenerator  ·  topupSubscription  ·           -  ·          -  ·      81605  ·            2  ·      22.12  │
-··························|·····················|··············|·············|·············|···············|··············
-|  Deployments                                  ·                                          ·  % of limit   ·             │
-················································|··············|·············|·············|···············|··············
-|  BIIX                                         ·           -  ·          -  ·    1216176  ·        4.1 %  ·     329.73  │
-················································|··············|·············|·············|···············|··············
-|  LinkToken                                    ·           -  ·          -  ·    1363712  ·        4.5 %  ·     369.73  │
-················································|··············|·············|·············|···············|··············
-|  RandomNumberGenerator                        ·           -  ·          -  ·    1192701  ·          4 %  ·     323.37  │
-················································|··············|·············|·············|···············|··············
-|  VRFCoordinatorV2Mock                         ·           -  ·          -  ·    2584456  ·        8.6 %  ·     700.70  │
-·-----------------------------------------------|--------------|-------------|-------------|---------------|-------------·
+
+Response:
+
+```shell
+> bixcip-contracts@1.0.0 test-gas /Users/skurilyak/dev/phoenixteam/bixcip/bixcip-lottery
+> REPORT_GAS=1 hardhat test
+
+
+  End to End Lottery Smart Contracts Test
+Network name:  hardhat
+Duplicate definition of Transfer (Transfer(address,address,uint256,bytes), Transfer(address,address,uint256))
+Link Token address:  0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+Investors:  [
+  '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+  '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+]
+Contract balance:  BigNumber { value: "10000000000000000000" }
+    ✓ Should have 1 link
+Subscription balance:  BigNumber { value: "10000000000000000000" }
+    ✓ Should send 10 link to the VRF Coordinator
+SubscriptionId:  BigNumber { value: "1" }
+    ✓ Should generate a subscription id
+Waiting for time to pass
+Random Number Array:  [
+  BigNumber { value: "77676537065960878698898692042018114106337750925255485067533933387271373890921" },
+  BigNumber { value: "98521912898304110675870976153671229506380941016514884467413255631823579132687" },
+  BigNumber { value: "46856049987324987851654180578118835177937932377897439695260177228387632849548" }
+]
+    ✓ Should generate 3 random numbers on request
+ticket fee:  BigNumber { value: "10000000000000000" }
+final fee BigNumber { value: "30000000000000000" }
+[
+  '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+  '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+  '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+]
+contract balance:  BigNumber { value: "30000000000000000" }
+    ✓ should allow entrance after ether ticket fee has been deposited
+current bets:  [
+  BigNumber { value: "3" },
+  BigNumber { value: "2" },
+  BigNumber { value: "1" }
+]
+new bets [
+  BigNumber { value: "3" },
+  BigNumber { value: "2" },
+  BigNumber { value: "1" },
+  BigNumber { value: "6" },
+  BigNumber { value: "5" },
+  BigNumber { value: "4" }
+]
+    ✓ should append new bets after previous ones have been made
+timestamp:  BigNumber { value: "1661537152" }
+timeframe:  BigNumber { value: "2592000" }
+    ✓ should have a time frame
+initial lottery balance:  BigNumber { value: "60000000000000000" }
+treasury balance:  BigNumber { value: "43740000000000000" }
+player eth wins:  BigNumber { value: "16260000000000000" }
+BigNumber { value: "16260000000000000" }
+    ✓ Should pay the winners 30% and the bixcip treasury 70% as well
+previous wins:  [
+  BigNumber { value: "3" }, BigNumber { value: "2" },
+  BigNumber { value: "1" }, BigNumber { value: "6" },
+  BigNumber { value: "5" }, BigNumber { value: "4" },
+  BigNumber { value: "3" }, BigNumber { value: "2" },
+  BigNumber { value: "1" }, BigNumber { value: "6" },
+  BigNumber { value: "5" }, BigNumber { value: "4" },
+  BigNumber { value: "3" }, BigNumber { value: "2" },
+  BigNumber { value: "1" }, BigNumber { value: "6" },
+  BigNumber { value: "5" }, BigNumber { value: "4" },
+  BigNumber { value: "3" }, BigNumber { value: "2" },
+  BigNumber { value: "1" }, BigNumber { value: "6" },
+  BigNumber { value: "5" }, BigNumber { value: "4" }
+]
+    ✓ should append new wins
+1
+0
+    ✓ Should set the correct enum state
+
+  10 passing (4s)
 ```
+
+![](images/gas-report.png)
+
+## Function Call Graph
+
+Visualize functions and function calls in `BIXCIPLottery.sol`:
+
+```shell
+$ surya graph contracts/BIXCIPLottery.sol | dot -Tpng > BIXCIPLottery.png
+```
+
+Response:
+
+![](images/BIXCIPLottery.png)
+
+## Function Description
+
+Describe all functions in `BIXCIPLottery.sol`:
+
+```shell
+$ surya describe contracts/BIXCIPLottery.sol
+```
+
+Response:
+
+```shell
++  BIXCIPLottery
+    - [Pub] <Constructor> #
+    - [Pub] getWinnerByLottery
+    - [Pub] getBalance
+    - [Pub] getPlayers
+    - [Pub] getRandomNumbers
+    - [Pub] enter ($)
+       - modifiers: withinTime
+    - [Pub] getPlayerBets
+    - [Pub] getPlayerWins
+    - [Pub] getTicketFee
+    - [Pub] setTicketFee #
+       - modifiers: onlyOwner
+    - [Pub] setBixcipTreasury #
+       - modifiers: onlyOwner
+    - [Pub] setTimeFrame #
+       - modifiers: onlyOwner
+    - [Pub] pickWinners #
+       - modifiers: onlyOwner
+    - [Int] payWinners #
+    - [Pub] startLottery #
+       - modifiers: onlyOwner
+    - [Pub] closeLottery #
+       - modifiers: onlyOwner
+    - [Pub] getLotteryState
+    - [Pub] getPlayerEthWins
+
+
+ ($) = payable function
+ # = non-constant function
+```
+
+## Docs
+
+Looking for additional documentation for Solidity API? Visit: 
+
+[docs/index.md](docs/index.md)
