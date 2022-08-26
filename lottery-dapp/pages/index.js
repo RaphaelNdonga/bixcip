@@ -138,7 +138,9 @@ export default function Home() {
     localStorage.removeItem('walletConnect');
     localStorage.removeItem('metamask');
     setConnected(false);
-    wcProvider.wc.killSession();
+    if (wcProvider.wc.session.connected) {
+      wcProvider.wc.killSession();
+    }
   }
 
   const connectWalletConnect = async () => {
