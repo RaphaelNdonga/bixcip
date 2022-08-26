@@ -54,6 +54,8 @@ export default function Profile({ assets }) {
     const [totalWinnings, setTotalWinnings] = useState();
 
     const [address, setAddress] = useState("");
+    const [rinkebyId, setRinkebyId] = useState("0x4");
+
 
 
     const checkConnection = (accounts) => {
@@ -139,22 +141,30 @@ export default function Profile({ assets }) {
 
     const setupContractAndAddress = async (web3) => {
         /* get list of accounts */
-        const accounts = await web3.eth.getAccounts();
+        console.log("setting up contract and address");
+        console.log("web3: ", web3);
+        let accounts;
+        if (wcProvider.wc.session.connected) {
+            accounts = web3.eth.getAccounts();
+        } else {
+            accounts = await web3.eth.getAccounts();
+        }
         console.log("setupcontractandaddressaccounts: ", accounts);
 
-        if (accounts[0] === undefined && !wcProvider.wc.connected) {
-            console.log("connecting to metamask");
-            connectMetamask();
+        if (wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to wallet connect");
+            connectWalletConnect();
         }
 
-        checkConnection(accounts);
-
-        setAddress(accounts[0]);
+        //This state occurs when a user has not logged in to metamask but they had connected before
+        if (!wcProvider.wc.session.connected && accounts[0] === undefined) {
+            console.log("setupContractAndAddress connecting to metamask");
+            connectMetamask();
+        }
 
         console.log(`lottery details ${lotteryAbi} ${lotteryAddress}`);
 
         const lc = new web3.eth.Contract(lotteryAbi, lotteryAddress);
-        console.log("lc contract: ", lc);
         setLcContract(lc);
     }
 
