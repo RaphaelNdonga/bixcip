@@ -132,6 +132,18 @@ export default function Home() {
     console.log("Wallet connect new chain id: ", newChainId);
     console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
 
+    if (!wcProvider.connected) {
+      return;
+    }
+
+    const _web3 = new Web3(wcProvider);
+    const accounts = await _web3.eth.getAccounts();
+    console.log("Accounts obtained: ", accounts);
+    setAddress(accounts[0]);
+    localStorage.setItem('metamask', accounts[0]);
+    setConnected(true);
+
+
     wcProvider.on("accountsChanged", checkConnection);
     wcProvider.on("chainChanged", switchChain);
     wcProvider.on("disconnect", disconnectHandler);
@@ -180,6 +192,9 @@ export default function Home() {
                         setAddress("");
                         localStorage.removeItem('metamask', address);
                         setConnected(false);
+                        if (wcProvider.connected) {
+                          wcProvider.disconnect();
+                        }
                       }}>
                         <Image src={logoutImg} height='20px' width='20px' />
                         <p className='ml-2'>
