@@ -384,6 +384,20 @@ export default function Play({ assets }) {
                         </div>
                     </div>
                 </nav>
+                <section className="columns is-centered mt-5 mb-5">
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Art Available</p>
+                            <p className="is-size-3">{totalArt}</p>
+                        </section>
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Art Played</p>
+                            <p className="is-size-3">{totalArtPlayed}</p>
+                        </section>
+                        <section className="column is-flex is-flex-direction-column is-align-items-center">
+                            <p className="is-size-3">Total Eth Played</p>
+                            <p className="is-size-3">{totalEthPlayed}</p>
+                        </section>
+                    </section>
                 <div className="container is-fluid">
                     {connectClicked && <Modal setConnectClicked={setConnectClicked} connectMetamask={connectMetamask} connectWalletConnect={() => {
                         connectWalletConnect();
@@ -404,20 +418,6 @@ export default function Play({ assets }) {
                     <div className="is-flex is-flex-direction-column is-align-items-center mt-5 mb-6">
                         <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
                     </div>
-                    <section className="columns is-centered mt-5 mb-5">
-                        <section className="column is-flex is-flex-direction-column is-align-items-center">
-                            <p className="is-size-3">Total Art Available</p>
-                            <p className="is-size-3">{totalArt}</p>
-                        </section>
-                        <section className="column is-flex is-flex-direction-column is-align-items-center">
-                            <p className="is-size-3">Total Art Played</p>
-                            <p className="is-size-3">{totalArtPlayed}</p>
-                        </section>
-                        <section className="column is-flex is-flex-direction-column is-align-items-center">
-                            <p className="is-size-3">Total Eth Played</p>
-                            <p className="is-size-3">{totalEthPlayed}</p>
-                        </section>
-                    </section>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
                     </div>

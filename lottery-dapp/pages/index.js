@@ -8,7 +8,9 @@ import Modal from './components/Modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Image from "next/image";
 import bixcipLogo from '../pages/images/bixcip-logo.png';
-import slurpyImg from '../pages/images/slurpy.png'
+// import slurpyImg from '../pages/images/slurpy.png'
+import animationOne from '../pages/images/animation-one.gif'
+import animationTwo from '../pages/images/animation-two.gif'
 import metamaskWalletImg from '../pages/images/metamask_wallet.png';
 import chainlinkImg from './images/chainlink.png';
 import ethImg from './images/eth.png';
@@ -245,7 +247,8 @@ export default function Home() {
               </div>
               <div className='column is-flex is-justify-content-center'>
                 <section className="mt-5">
-                  <Image src={slurpyImg} height='300px' width='250px' />
+                  {/* <Image src={slurpyImg} height='300px' width='250px' /> */}
+                  <Image src={animationOne} height='300px' width='300px' />
                 </section>
               </div>
             </div>
@@ -282,12 +285,12 @@ export default function Home() {
                 <p className='is-size-1 mt-5 mb-5'>Dope Art</p>
                 <p className='is-size-5'>We work with artists, creators, innovators and designers to bring you the best art work from around the world</p>
               </section>
-              <section className='column is-flex is-flex-direction-column is-align-items-end'>
+              <section className='column is-flex is-justify-content-center'>
                 <Image src={artLeftImg} height='300px' width='250px' />
               </section>
             </section>
             <section className='columns'>
-              <section className='column is-flex is-flex-direction-column is-align-items-start'>
+              <section className='column is-flex is-justify-content-center'>
                 <Image src={walletImg} height='300px' width='400px' />
               </section>
               <section className='column is-flex is-flex-direction-column is-align-items-start'>
@@ -300,7 +303,7 @@ export default function Home() {
                 <p className='is-size-1 mt-5 mb-5'>Truly Random</p>
                 <p className='is-size-5'>The BIXCIP Lottery is truly random. Nobody can predict the winner in advance. Behind the hood, we use Chainlink, a decentralized oracle</p>
               </section>
-              <section className='column is-flex is-flex-direction-column is-align-items-end'>
+              <section className='column is-flex is-justify-content-center'>
                 <Image src={roundWinnersImg} height='300px' width='400px' />
               </section>
             </section>
@@ -325,11 +328,24 @@ export default function Home() {
               <p className='is-size-5'>Every round has 3 winners. Get lucky and win the art you choose.</p>
             </section>
           </section>
+          <section className='is-flex is-justify-content-center mt-6'>
+            <p className='is-size-3 mt-6 mb-6'>WHAT ARE YOU WAITING FOR?</p>
+          </section>
+          <section className='columns is-centered'>
+            <p>
+              <Image src={animationTwo} height='349px' width='698.5px'/>
+            </p>
+          </section>
+          <section className='columns is-centered' style={{marginTop: 2 + 'em'}}>
+            <p>
+              <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
+            </p>
+          </section>
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <p>&copy; 2022 BIXCIP</p>
+        <p>&copy; 2022 BIXCIP Team in collaboration with <a href="https://phoenixteam.io/">Phoenix Team</a></p>
       </footer>
     </div>
   )
