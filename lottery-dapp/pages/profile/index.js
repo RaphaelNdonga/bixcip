@@ -71,6 +71,20 @@ export default function Profile({ assets }) {
             setAddress(accounts[0])
         }
     }
+    const addPrismaAccount = async (account) => {
+        const response = await fetch('api/accounts', {
+            method: 'POST',
+            body: JSON.stringify(account)
+        })
+
+        if (!response.ok) {
+            console.log("Response: ", response);
+            console.log("Response.body(): ", response.body);
+            throw new Error(response.statusText);
+        }
+
+        return await response.json();
+    }
     const connectWalletConnect = async () => {
         await wcProvider.enable();
         const chainId = await wcProvider.request({ method: "eth_chainId" });
@@ -90,7 +104,7 @@ export default function Profile({ assets }) {
         const accounts = await _web3.eth.getAccounts();
         console.log("Accounts obtained: ", accounts);
         setAddress(accounts[0]);
-        localStorage.setItem('metamask', accounts[0]);
+        addPrismaAccount(accounts[0]);
         setConnected(true);
 
 
@@ -113,6 +127,7 @@ export default function Profile({ assets }) {
             const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
             localStorage.setItem('metamask', requestedAccount);
             setAddress(requestedAccount[0]);
+            addPrismaAccount(requestedAccount[0]);
             setConnected(true);
             /* create web3 instance & set to state */
             const web3 = new Web3(window.ethereum);

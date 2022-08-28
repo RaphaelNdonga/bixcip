@@ -36,6 +36,21 @@ export default function Home() {
 
   const howItWorksRef = useRef(null);
 
+  const addPrismaAccount = async (account) => {
+    const response = await fetch('api/accounts', {
+      method: 'POST',
+      body: JSON.stringify(account)
+    })
+
+    if (!response.ok) {
+      console.log("Response: ", response);
+      console.log("Response.body(): ", response.body);
+      throw new Error(response.statusText);
+    }
+
+    return await response.json();
+  }
+
   const connectMetamask = async () => {
     /* check if MetaMask is installed */
     if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
@@ -49,6 +64,7 @@ export default function Home() {
       }
       const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
       setAddress(requestedAccount[0]);
+      addPrismaAccount(requestedAccount[0]);
 
       localStorage.setItem('metamask', requestedAccount);
       setConnected(true);
@@ -164,6 +180,7 @@ export default function Home() {
     const accounts = await _web3.eth.getAccounts();
     console.log("Accounts obtained: ", accounts);
     setAddress(accounts[0]);
+    addPrismaAccount(accounts[0]);
     setConnected(true);
 
 
@@ -333,10 +350,10 @@ export default function Home() {
           </section>
           <section className='columns is-centered'>
             <p>
-              <Image src={animationTwo} height='349px' width='698.5px'/>
+              <Image src={animationTwo} height='349px' width='698.5px' />
             </p>
           </section>
-          <section className='columns is-centered' style={{marginTop: 2 + 'em'}}>
+          <section className='columns is-centered' style={{ marginTop: 2 + 'em' }}>
             <p>
               <Link href="/play"><button className="button is-danger">Play Lottery</button></Link>
             </p>
