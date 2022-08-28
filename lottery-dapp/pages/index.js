@@ -48,7 +48,7 @@ export default function Home() {
       throw new Error(response.statusText);
     }
 
-    return response.json();
+    return await response.json();
   }
 
   const connectMetamask = async () => {

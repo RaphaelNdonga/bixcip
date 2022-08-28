@@ -56,6 +56,21 @@ export default function Account({ assets }) {
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
     }));
 
+    const addPrismaAccount = async (account) => {
+        const response = await fetch('api/accounts', {
+            method: 'POST',
+            body: JSON.stringify(account)
+        })
+
+        if (!response.ok) {
+            console.log("Response: ", response);
+            console.log("Response.body(): ", response.body);
+            throw new Error(response.statusText);
+        }
+
+        return await response.json();
+    }
+
     const connectMetamask = async () => {
         /* check if MetaMask is installed */
         if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
@@ -70,6 +85,7 @@ export default function Account({ assets }) {
             const requestedAccount = await window.ethereum.request({ method: "eth_requestAccounts" });
             localStorage.setItem('metamask', requestedAccount);
             setAddress(requestedAccount[0]);
+            addPrismaAccount(requestedAccount[0]);
             setConnected(true);
 
             window.ethereum.on('accountsChanged', checkConnection);
@@ -231,6 +247,8 @@ export default function Account({ assets }) {
         console.log("Wallet connect new chain id: ", newChainId);
 
         console.log("connectWalletConnect: wc connected: ", wcProvider.connected);
+
+        addPrismaAccount(wcProvider.accounts[0]);
 
         wcProvider.on("accountsChanged", checkConnection);
         wcProvider.on("chainChanged", switchChain);
