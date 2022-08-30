@@ -43,6 +43,8 @@ export default function Play({ assets }) {
 
     const [bixcipSelected, setBixcipSelected] = useState([]);
 
+    const [progress, setProgress] = useState("0");
+
     const handleCheck = (event) => {
         if (event.target.checked) {
             console.log("Data: ", event.target.id);
@@ -81,8 +83,10 @@ export default function Play({ assets }) {
 
     const enterLotteryHandler = async () => {
         try {
+            setProgress("20");
             console.log("Lottery Address: ", lotteryAddress);
             const ticketFee = await lcContract.methods.getTicketFee().call();
+            setProgress("40");
             console.log("ticket fee: ", ticketFee);
             const bigTicketFee = BigNumber.from(ticketFee).mul(bixcipSelected.length);
             console.log("Ticket fee: ", bigTicketFee);
@@ -90,9 +94,11 @@ export default function Play({ assets }) {
                 from: address,
                 value: bigTicketFee
             });
+            setProgress("100");
             viewProfileRef.current.click();
         } catch (err) {
             console.log("error while entering lottery: ", err.message)
+            setProgress("0");
         }
     }
 
@@ -433,7 +439,7 @@ export default function Play({ assets }) {
                         <p>Your next step is to purchase a ticket</p>
                     </div>
                     <div className="is-flex is-flex-direction-column is-align-items-center mt-5 mb-6">
-                        <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />
+                        {progress !== "0" ? <progress value={progress} max="100" /> : <Image className="is-clickable" src={buyTicketsImg} height="100px" width="200px" onClick={enterLotteryHandler} />}
                     </div>
                     <div className="is-flex is-justify-content-center mt-5 is-size-3 ">
                         <p>HOW IT WORKS</p>
