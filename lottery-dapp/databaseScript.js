@@ -4,9 +4,20 @@ const prisma1 = require("@prisma/client");
 const prisma = new prisma1.PrismaClient();
 
 async function main() {
-    // createBixcipData()
-    createRoundsData()
+    createBixcipData()
+    // createRoundsData()
+    // createAccountAssets();
 
+}
+
+async function createAccountAssets() {
+    const accountAsset = await prisma.playerAssets.create({
+        data: {
+            address: "1",
+            assetId: 1
+        }
+    });
+    console.log(accountAsset);
 }
 
 async function createRoundsData() {
