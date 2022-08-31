@@ -94,6 +94,8 @@ export default function Play({ assets }) {
                 from: address,
                 value: bigTicketFee
             });
+            setProgress("70");
+            bixcipSelected.forEach(assetId => addAccountAsset({ address: address, assetId: assetId }));
             setProgress("100");
             viewProfileRef.current.click();
         } catch (err) {
@@ -114,6 +116,20 @@ export default function Play({ assets }) {
             throw new Error(response.statusText);
         }
 
+        return await response.json();
+    }
+
+    const addAccountAsset = async (accountAsset) => {
+        const response = await fetch('api/playerAssets', {
+            method: 'POST',
+            body: JSON.stringify(accountAsset)
+        });
+
+        if (!response.ok) {
+            console.log("Response: ", response);
+            console.log("Response.body()", response.body);
+            throw new Error(response.statusText);
+        }
         return await response.json();
     }
 

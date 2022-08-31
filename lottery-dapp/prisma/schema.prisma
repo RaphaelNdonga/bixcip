@@ -1,12 +1,12 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
+  binaryTargets   = ["native", "linux-musl"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 
@@ -32,4 +32,11 @@ model rounds {
   scheduled_end_date   DateTime
   scheduled_start_date DateTime
   open_round           Boolean  @default(false)
+}
+
+model playerAssets {
+  address String
+  assetId Int
+
+  @@id([address, assetId])
 }
