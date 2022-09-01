@@ -23,7 +23,7 @@ import profileImg from "../images/profile.png";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
-    let posts;
+    let posts = [];
     try {
         posts = await prisma.assets.findMany();
     } catch (error) {
@@ -58,10 +58,6 @@ export default function Play({ assets }) {
         }
     }
 
-    const bixcipElements = bixcipData.map((data, i) => {
-        return <Bixcip key={i} id={i} title={data.title} url={data.url} handleCheck={handleCheck} />
-    });
-
     const [address, setAddress] = useState('');
     const [lcContract, setLcContract] = useState();
     const [connected, setConnected] = useState(false);
@@ -74,6 +70,9 @@ export default function Play({ assets }) {
     const [endTime, setEndTime] = useState(0);
     const [timeLeft, setTimeLeft] = useState("");
     const [startDate, setStartDate] = useState("");
+    const [bixcipElements, setBixcipElements] = useState(bixcipData.map((data, i) => {
+        return <Bixcip key={i} id={i} title={data.title} url={data.url} handleCheck={handleCheck} />
+    }))
 
     const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
         infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -234,6 +233,12 @@ export default function Play({ assets }) {
         }
         artArray = [... new Set(artArray)];
         console.log("total art played: ", artArray);
+        console.log("bixcip data: ", bixcipData);
+        bixcipData = bixcipData.filter(object => artArray.indexOf(object.id.toString()) === -1);
+        console.log("new bixcip data: ", bixcipData);
+        setBixcipElements(bixcipData.map((data, i) => {
+            return <Bixcip key={i} id={i} title={data.title} url={data.url} handleCheck={handleCheck} />
+        }));
 
         setTotalArtPlayed(artArray.length);
 
@@ -426,7 +431,7 @@ export default function Play({ assets }) {
                 <section className="columns is-centered mt-5 mb-5">
                     <section className="column is-flex is-flex-direction-column is-align-items-center">
                         <p className="is-size-3">Total Art Available</p>
-                        <p className="is-size-3">{totalArt}</p>
+                        <p className="is-size-3">{bixcipElements.length}</p>
                     </section>
                     <section className="column is-flex is-flex-direction-column is-align-items-center">
                         <p className="is-size-3">Total Art Played</p>
