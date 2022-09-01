@@ -18,7 +18,7 @@ import BigNumber from "bignumber.js";
 
 export async function getStaticProps() {
     const prisma = new PrismaClient();
-    let posts;
+    let posts = [];
     try {
         posts = await prisma.assets.findMany();
     } catch (error) {
