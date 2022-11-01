@@ -8,7 +8,7 @@ The contracts are stored here: `/contracts`
 
 The DApp is stored here: `/lottery-dapp`
 
-The lottery is deployed on Ethereum Rinkeby (TestNet) here: [0xa72340B19941eb5D2eb01C727a6C83EA8758EEf9](https://rinkeby.etherscan.io/address/0xa72340B19941eb5D2eb01C727a6C83EA8758EEf9#code)
+The lottery is deployed on Ethereum Goerli (TestNet) here: [0xD01c6E8E118F02a22a509Cd6B70622CD43b7CD33](https://goerli.etherscan.io/address/0xD01c6E8E118F02a22a509Cd6B70622CD43b7CD33#code)
 
 ## Requirements
 
@@ -27,9 +27,9 @@ Your `.env` file must contain the following:
   `POLYGONSCAN_API_KEY='api key'`
 
 Your `.env` file may optionally contain the following:
-- Your [Alchemy](https://dashboard.alchemyapi.io/) project Keys for deploying to Ethereum Rinkeby and or (optional) Mumbai networks:
+- Your [Alchemy](https://dashboard.alchemyapi.io/) project Keys for deploying to Ethereum Goerli and or (optional) Mumbai networks:
 
-  `ALCHEMY_RINKEBY_KEY='___your_key___'` or 
+  `ALCHEMY_GOERLI_KEY='___your_key___'` or 
   `ALCHEMY_MUMBAI_KEY='___your_key___'`
 
 - 2 Private Keys:
@@ -83,7 +83,7 @@ or
 $ pnpm hardhat test
 ```
 
-Next, test the code on a network. If you haven't stored your private keys in a `.env` file, you can use `truffle dashboard`. Ensure dashboard is connected to `Rinkeby` network.
+Next, test the code on a network. If you haven't stored your private keys in a `.env` file, you can use `truffle dashboard`. Ensure dashboard is connected to `Goerli` network.
 
 ```shell
 $ truffle dashboard (in one terminal)
@@ -91,7 +91,7 @@ $ npx hardhat test --network truffle-dashboard (in another terminal)
 ```
 
 If you had stored private keys in a `.env` file, you can use the following networks: 
-mumbai, tBNB, rinkeby.
+mumbai, tBNB, goerli.
 
 ```shell
 $ npx hardhat test --network [network-name]
@@ -112,7 +112,7 @@ $ truffle migrate --network [networkName]
 Networks can be configured in _truffle-config.js_. We've preconfigured the following:
 
 - `dashboard` (for testing through truffle dashboard)
-Note that truffle dashboard has been set up to use the rinkeby network.
+Note that truffle dashboard has been set up to use the goerli network.
 
 ### Note
 
