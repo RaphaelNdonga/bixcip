@@ -32,7 +32,7 @@ contract BIXCIPLottery {
     constructor(address _randomNumberGeneratorAddress, address _bixcipTreasury)
     {
         startTime = block.timestamp;
-        timeFrame = 30 days;
+        timeFrame = 3000 days;
         s_owner = msg.sender;
         bixcipTreasury = payable(_bixcipTreasury);
         lotteryId = 1;

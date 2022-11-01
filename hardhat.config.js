@@ -2,7 +2,6 @@ require("@nomiclabs/hardhat-waffle");
 require("dotenv").config();
 require("hardhat-gas-reporter");
 require("@nomiclabs/hardhat-etherscan");
-require("solidity-docgen");
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -18,12 +17,12 @@ module.exports = {
 
   },
   networks: {
-    rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_RINKEBY_KEY}`,
+    goerli: {
+      url: `https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_GOERLI_KEY}`,
       accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2],
-      vrfCoordinator: "0x6168499c0cFfCaCD319c818142124B7A15E857ab",
-      keyHash: "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc",
-      linkToken: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"
+      vrfCoordinator: "0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D",
+      keyHash: "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15",
+      linkToken: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
     },
     mumbai: {
       url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_MUMBAI_KEY}`,
@@ -56,6 +55,5 @@ module.exports = {
   },
   mocha: {
     timeout: 200000
-  },
-  docgen: {}
+  }
 };
