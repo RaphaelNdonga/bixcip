@@ -62,7 +62,7 @@ export default function Play({ assets }) {
     const [lcContract, setLcContract] = useState();
     const [connected, setConnected] = useState(false);
     const [connectClicked, setConnectClicked] = useState(false);
-    const [rinkebyId, setRinkebyId] = useState("0x4");
+    const goerliId = "0x5";
     const [web3, setWeb3] = useState();
     const [totalArt, setTotalArt] = useState(0);
     const [totalArtPlayed, setTotalArtPlayed] = useState(0);
@@ -139,7 +139,7 @@ export default function Play({ assets }) {
             const chainId = await window.ethereum.request({ method: "eth_chainId" });
             console.log("connectMetamask: chainId: ", chainId);
 
-            if (chainId !== rinkebyId) {
+            if (chainId !== goerliId) {
                 console.log("connectMetamask: switching chains: ");
                 await switchChain();
             }
@@ -322,14 +322,14 @@ export default function Play({ assets }) {
             await wcProvider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{
-                    chainId: rinkebyId
+                    chainId: goerliId
                 }]
             })
         } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
             await window.ethereum.request({
                 method: "wallet_switchEthereumChain",
                 params: [{
-                    chainId: rinkebyId
+                    chainId: goerliId
                 }]
             })
         }
@@ -349,7 +349,7 @@ export default function Play({ assets }) {
         await wcProvider.enable();
         const chainId = await wcProvider.request({ method: "eth_chainId" });
         console.log("Wallet connect chain id: ", chainId);
-        if (`0x${chainId}` !== rinkebyId) {
+        if (`0x${chainId}` !== goerliId) {
             await switchChain()
         }
         const newChainId = await wcProvider.request({ method: "eth_chainId" });

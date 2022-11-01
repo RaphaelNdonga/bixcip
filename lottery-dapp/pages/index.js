@@ -28,7 +28,7 @@ export default function Home() {
   const [address, setAddress] = useState('');
   const [connected, setConnected] = useState(false);
   const [connectClicked, setConnectClicked] = useState(false);
-  const [rinkebyId, setRinkebyId] = useState("0x4");
+  const goerliId = "0x5";
 
   const [wcProvider, setWcProvider] = useState(new WalletConnectProvider({
     infuraId: "0f485d121a0f4dc2ad3891e12cb2c626"
@@ -58,7 +58,7 @@ export default function Home() {
       const chainId = await window.ethereum.request({ method: "eth_chainId" });
       console.log("connectMetamask: chainId: ", chainId);
 
-      if (chainId !== rinkebyId) {
+      if (chainId !== goerliId) {
         console.log("connectMetamask: switching chains: ");
         await switchChain();
       }
@@ -138,14 +138,14 @@ export default function Home() {
       await wcProvider.request({
         method: "wallet_switchEthereumChain",
         params: [{
-          chainId: rinkebyId
+          chainId: goerliId
         }]
       })
     } else if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{
-          chainId: rinkebyId
+          chainId: goerliId
         }]
       })
     }
@@ -165,7 +165,7 @@ export default function Home() {
     await wcProvider.enable();
     const chainId = await wcProvider.request({ method: "eth_chainId" });
     console.log("Wallet connect chain id: ", chainId);
-    if (`0x${chainId}` !== rinkebyId) {
+    if (`0x${chainId}` !== goerliId) {
       await switchChain()
     }
     const newChainId = await wcProvider.request({ method: "eth_chainId" });
